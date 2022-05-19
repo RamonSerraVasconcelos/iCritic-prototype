@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
 import express, { Request, Response, NextFunction } from 'express';
-import ResponseError from './ts/classes/ResponseError';
+import ResponseError from '@src/ts/classes/ResponseError';
 import cors from 'cors';
 import path from 'path';
 import routes from './routes';
@@ -31,4 +31,4 @@ server.use(
     }
 );
 
-server.listen(process.env.PORT || 5000);
+server.listen(process.env.PORT || 3000);
