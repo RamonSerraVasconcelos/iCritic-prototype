@@ -1,6 +1,9 @@
 # Node
 node_modules/
 
+#enviroment variables
+.env
+
 # Config files
 .vscode
 .env
