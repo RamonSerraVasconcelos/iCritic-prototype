@@ -31,4 +31,6 @@ server.use(
     }
 );
 
-server.listen(process.env.PORT || 3000);
+server.listen(process.env.PORT || 3000, () => {
+    console.log(`Server is running on port: http://localhost:${process.env.PORT || 3000}`)
+});
