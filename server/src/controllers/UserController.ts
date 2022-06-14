@@ -3,7 +3,14 @@ import User from '../models/User'
 
 const UserController = {
     register(req: Request, res: Response) {
-        return res.send()
+        try {
+            return res.send('sexo online')
+        } catch (error) {
+            console.error(error)
+            res.status(500).send({
+                message: "An unexpected error occurred"
+            })
+        }
     }
 }
 
