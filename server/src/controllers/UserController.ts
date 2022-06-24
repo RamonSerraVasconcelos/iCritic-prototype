@@ -1,10 +1,10 @@
 import { Request, Response } from 'express'
-import User from '../models/User'
+import { createUser } from "../services/UserService"
 
 const UserController = {
-    register(req: Request, res: Response) {
+    async register(req: Request, res: Response) {
         try {
-            return res.send('sexo online')
+            const user = await createUser(req.body)
         } catch (error) {
             console.error(error)
             res.status(500).send({

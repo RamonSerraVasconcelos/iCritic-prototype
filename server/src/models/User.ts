@@ -1,6 +1,11 @@
 import mongoose from 'mongoose'
 import bcrypt from 'bcrypt'
 
+export interface UserInput {
+    email: string;
+    name: string;
+    password: string;
+}
 export interface UserDocument extends mongoose.Document {
     email: string;
     name: string;
