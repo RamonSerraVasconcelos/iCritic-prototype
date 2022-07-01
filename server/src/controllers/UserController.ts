@@ -1,10 +1,9 @@
 import { Request, Response } from 'express'
-import { createUser } from "../services/UserService"
+import { findOneByEmail, createUser } from "../services/UserService"
 
 const UserController = {
     async register(req: Request, res: Response) {
         try {
-
             if (!req.body.email || !req.body.name || !req.body.password) {
                 return res.status(422).send({
                     message: "All fields are required"
@@ -14,6 +13,12 @@ const UserController = {
             if (req.body.email == "" || req.body.name == "" || req.body.password == "") {
                 return res.status(422).send({
                     message: "All fields are required"
+                })
+            }
+
+            if (await findOneByEmail(req.body)) {
+                return res.status(400).send({
+                    message: "Email already exists"
                 })
             }
 

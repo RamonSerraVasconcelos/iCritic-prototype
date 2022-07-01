@@ -4,6 +4,7 @@ interface IUser extends mongoose.Document {
     email: string;
     name: string;
     password: string;
+    avatar: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -11,7 +12,8 @@ interface IUser extends mongoose.Document {
 const userSchema = new mongoose.Schema<IUser>({
     email: { type: String, required: true, unique: true },
     name: { type: String, required: true },
-    password: { type: String, required: true }
+    password: { type: String, required: true },
+    avatar: { type: String }
 }, {
     timestamps: true
 })
@@ -39,11 +41,12 @@ userSchema.methods.comparePassword = async function (
     return bcrypt.compare(candidatePassword, user.password).catch((e) => false)
 };
 
-const User = mongoose.model<IUser>("User", userSchema)
+const User = mongoose.model("User", userSchema)
 export interface UserInput {
     email: string;
     name: string;
     password: string;
+    avatar: string;
 }
 
 export default User
