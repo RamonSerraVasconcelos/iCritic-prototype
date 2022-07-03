@@ -5,7 +5,7 @@
     "scripts": {
         "dev": "nodemon -q",
         "build": "tsc",
-        "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/src/index.js"
+        "start": "node -r ts-node/register/transpile-only --files -r tsconfig-paths/register dist/src/index.js"
     },
     "author": "Ramon&Paulo",
     "license": "MIT",
