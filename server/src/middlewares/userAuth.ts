@@ -3,8 +3,7 @@ import jwt from "jsonwebtoken";
 
 const userAuth = (req: Request, res: Response, next: NextFunction) => {
     if (!req.headers["authorization"]) return res.status(401).send({
-        success: false,
-        message: "User not authorized"
+        message: "User unauthorized"
     })
 
     let token: string = req.headers["authorization"]
@@ -22,4 +21,22 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
     })
 }
 
-export default userAuth
+const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
+    const { refreshToken } = req.body;
+    if (!refreshToken) return res.status(401).send({
+        message: "User unauthorized"
+    })
+
+    jwt.verify(refreshToken, <string>process.env.JWT_RERESH_SECRET, (err: any, token: any) => {
+        if (err) {
+            return res.status(401).send({
+                message: "User unauthorized"
+            })
+        }
+
+        req.user = token.user
+        next()
+    })
+}
+
+export { userAuth, userAuthRefresh }

@@ -40,7 +40,19 @@ const SessionController = {
         }
     },
     async refresh(req: Request, res: Response) {
+        try {
+            const user = req.user
+            const token = jwt.sign(user, <string>process.env.JWT_SECRET, { expiresIn: '15m' })
 
+            return res.status(200).send({
+                token
+            })
+        } catch (e: any) {
+            console.error(e)
+            res.status(500).send({
+                message: "An unexpected error occurred"
+            })
+        }
     }
 }
 
