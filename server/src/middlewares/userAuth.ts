@@ -6,6 +6,20 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
         success: false,
         message: "User not authorized"
     })
+
+    let token: string = req.headers["authorization"]
+    token = token.split(" ")[1]
+
+    jwt.verify(token, <string>process.env.JWT_SECRET, (err, user) => {
+        if (err) {
+            return res.status(401).send({
+                message: "User unauthorized"
+            })
+        }
+
+        req.user = user
+        next()
+    })
 }
 
 export default userAuth
