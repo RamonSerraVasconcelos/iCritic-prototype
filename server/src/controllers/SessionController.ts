@@ -29,13 +29,13 @@ const SessionController = {
 
             res.cookie('token', token, {
                 sameSite: "none",
-                secure: false,
+                secure: true,
                 httpOnly: true
             })
 
             res.cookie('refreshToken', refreshToken, {
                 sameSite: "none",
-                secure: false,
+                secure: true,
                 httpOnly: true
             })
 
