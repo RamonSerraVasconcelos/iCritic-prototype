@@ -55,7 +55,7 @@ const SessionController = {
 
             res.cookie('token', token, {
                 sameSite: "none",
-                secure: false,
+                secure: true,
                 httpOnly: true
             })
 
