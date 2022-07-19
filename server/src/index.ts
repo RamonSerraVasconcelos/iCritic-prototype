@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import express, { Request, Response, NextFunction } from 'express'
 import ResponseError from '@src/ts/classes/ResponseError'
 import cors from 'cors'
+import cookieParser from 'cookie-parser'
 import path from 'path'
 import connection from './database/connection'
 import routes from './routes'
@@ -17,6 +18,7 @@ server.listen(process.env.PORT || 3000, async () => {
 
 server.use(express.json())
 server.use(cors())
+server.use(cookieParser())
 server.use('/api', routes)
 
 server.use((req: Request, res: Response, next: NextFunction) => {
