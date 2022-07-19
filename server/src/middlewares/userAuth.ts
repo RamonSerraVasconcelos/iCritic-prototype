@@ -2,12 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 const userAuth = (req: Request, res: Response, next: NextFunction) => {
-    if (!req.headers["authorization"]) return res.status(401).send({
-        message: "User unauthorized"
-    })
+    const token: string = req.cookies.token || ''
 
-    let token: string = req.headers["authorization"]
-    token = token.split(" ")[1]
+    if (!token) return res.status(401).send({
+        message: "Unauthorized"
+    })
 
     jwt.verify(token, <string>process.env.JWT_SECRET, (err, user) => {
         if (err) {
@@ -22,15 +21,16 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
 }
 
 const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
-    const { refreshToken } = req.body;
+    const refreshToken: string = req.cookies.refreshToken || ''
+
     if (!refreshToken) return res.status(401).send({
-        message: "User unauthorized"
+        message: "Unauthorized"
     })
 
     jwt.verify(refreshToken, <string>process.env.JWT_RERESH_SECRET, (err: any, token: any) => {
         if (err) {
             return res.status(401).send({
-                message: "User unauthorized"
+                message: "Unauthorized"
             })
         }
 

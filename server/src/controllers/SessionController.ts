@@ -27,10 +27,19 @@ const SessionController = {
             const token = jwt.sign(user.toJSON(), <string>process.env.JWT_SECRET, { expiresIn: "15m" })
             const refreshToken = jwt.sign({ user }, <string>process.env.JWT_RERESH_SECRET, { expiresIn: "7d" })
 
-            return res.status(200).send({
-                token,
-                refreshToken
+            res.cookie('token', token, {
+                sameSite: "none",
+                secure: false,
+                httpOnly: true
             })
+
+            res.cookie('refreshToken', refreshToken, {
+                sameSite: "none",
+                secure: false,
+                httpOnly: true
+            })
+
+            return res.status(200).send({ user })
         } catch (e: any) {
             console.error(e)
             res.status(500).send({
@@ -44,9 +53,13 @@ const SessionController = {
             const user = req.user
             const token = jwt.sign(user, <string>process.env.JWT_SECRET, { expiresIn: '15m' })
 
-            return res.status(200).send({
-                token
+            res.cookie('token', token, {
+                sameSite: "none",
+                secure: false,
+                httpOnly: true
             })
+
+            return res.status(200).send({ user })
         } catch (e: any) {
             console.error(e)
             res.status(500).send({
