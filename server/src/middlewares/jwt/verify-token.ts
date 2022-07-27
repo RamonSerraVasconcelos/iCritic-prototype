@@ -9,8 +9,8 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
 
     if (!token) throw new ResponseError('Unauthorized', 401);
 
-    jwt.verify(token, <string>env.ACCESS_TOKEN_SECRET, (err, user) => {
-        if (err) throw new ResponseError('Unauthorized', 401);
+    jwt.verify(token, <string>env.ACCESS_TOKEN_SECRET, (error, user) => {
+        if (error) throw new ResponseError('Unauthorized', 401);
 
         req.user = user as User;
         return next();
@@ -24,12 +24,16 @@ const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
 
     if (!refreshToken) throw new ResponseError('Unauthorized', 401);
 
-    jwt.verify(refreshToken, <string>env.REFRESH_TOKEN_SECRET, (err, user) => {
-        if (err) throw new ResponseError('Unauthorized', 401);
+    jwt.verify(
+        refreshToken,
+        <string>env.REFRESH_TOKEN_SECRET,
+        (error, user) => {
+            if (error) throw new ResponseError('Unauthorized', 401);
 
-        req.user = user as User;
-        return next();
-    });
+            req.user = user as User;
+            return next();
+        },
+    );
 
     return next();
 };
