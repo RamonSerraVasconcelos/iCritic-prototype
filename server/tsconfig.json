@@ -4,9 +4,7 @@
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node",
-        "lib": [
-            "esnext"
-        ],
+        "lib": ["esnext"],
         "outDir": "dist",
         "declaration": true,
         "allowJs": true,
@@ -19,24 +17,13 @@
         "emitDecoratorMetadata": true,
         "rootDir": ".",
         "baseUrl": ".",
-        "types": [
-            "node"
-        ],
+        "types": ["node"],
         "paths": {
-            "@src/*": [
-                "./src/*"
-            ]
+            "@src/*": ["./src/*"]
         },
-        "typeRoots": [
-            "./src/ts/types",
-            "./node_modules/@types",
-        ]
+        "typeRoots": ["./src/ts/types", "./node_modules/@types"]
     },
-    "include": [
-        "src"
-    ],
-    "exclude": [
-        "node_modules",
-        "dist"
-    ]
+    "include": ["src"],
+    "exclude": ["node_modules", "dist"],
+    "files": ["./src/ts/types/index.d.ts"]
 }

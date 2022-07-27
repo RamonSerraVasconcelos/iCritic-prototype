@@ -17,8 +17,8 @@ const login = async (req: Request, res: Response) => {
 
     const accessToken = jwt.sign(
         {
-            userId: user.id,
-            username: user.name,
+            id: user.id,
+            name: user.name,
         },
         env.ACCESS_TOKEN_SECRET,
         { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
@@ -26,8 +26,8 @@ const login = async (req: Request, res: Response) => {
 
     const refreshToken = jwt.sign(
         {
-            userId: user.id,
-            username: user.name,
+            id: user.id,
+            name: user.name,
         },
         env.REFRESH_TOKEN_SECRET,
         { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
@@ -50,8 +50,8 @@ const login = async (req: Request, res: Response) => {
     });
 
     return res.status(201).json({
-        userId: user.id,
-        username: user.name,
+        id: user.id,
+        name: user.name,
     });
 };
 
@@ -85,31 +85,24 @@ const logout = async (req: Request, res: Response) => {
 };
 
 const refreshToken = async (req: Request, res: Response) => {
-    const { cookies } = req;
+    const { user } = req;
+    const accessToken = jwt.sign(
+        {
+            id: user.id,
+            name: user.name,
+        },
+        env.ACCESS_TOKEN_SECRET,
+        { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
+    );
 
-    if (!cookies?.refreshToken) throw new ResponseError('Unauthorized!', 401);
+    res.cookie('accessToken', accessToken, {
+        sameSite: 'none',
+        secure: true,
+        httpOnly: true,
+    });
 
-    const refreshTokenCookie = cookies.refreshToken as string;
-    const user = await userService.findByRefreshToken(refreshTokenCookie);
-
-    if (!user) throw new ResponseError('User not found!', 403);
-
-    jwt.verify(refreshTokenCookie, env.REFRESH_TOKEN_SECRET, (error) => {
-        if (error) throw new ResponseError('Invalid token!', 403);
-
-        jwt.sign(
-            {
-                userId: user.id,
-                username: user.name,
-            },
-            env.ACCESS_TOKEN_SECRET,
-            { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
-        );
-
-        return res.status(201).json({
-            userId: user.id,
-            username: user.name,
-        });
+    return res.status(200).send({
+        user,
     });
 };
 

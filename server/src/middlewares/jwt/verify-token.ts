@@ -1,18 +1,41 @@
 import jwt from 'jsonwebtoken';
 import env from '@src/config/env';
-import ResponseError from '@src/ts/classes/response-error';
 import { Request, Response, NextFunction } from 'express';
+import { User } from '@src/ts/types';
+import ResponseError from '@src/ts/classes/response-error';
 
-const verifyToken = (req: Request, res: Response, next: NextFunction) => {
-    const authHeader = req.headers.authorization;
-    if (!authHeader) throw new ResponseError('Unauthorized!', 401);
+const userAuth = (req: Request, res: Response, next: NextFunction) => {
+    const token: string = req.cookies.token || '';
 
-    const token = authHeader.split(' ')[1];
+    if (!token) throw new ResponseError('Unauthorized', 401);
 
-    jwt.verify(token, env.ACCESS_TOKEN_SECRET, (error) => {
-        if (error) throw new ResponseError('Invalid token!', 403);
-        next();
+    jwt.verify(token, <string>env.ACCESS_TOKEN_SECRET, (err, user) => {
+        if (err) throw new ResponseError('Unauthorized', 401);
+
+        req.user = user as User;
+        return next();
     });
+
+    return next();
 };
 
-export default verifyToken;
+const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
+    const refreshToken: string = req.cookies.refreshToken || '';
+
+    if (!refreshToken) throw new ResponseError('Unauthorized', 401);
+
+    jwt.verify(
+        refreshToken,
+        <string>env.REFRESH_TOKEN_SECRET,
+        (err, user: any) => {
+            if (err) throw new ResponseError('Unauthorized', 401);
+
+            req.user = user;
+            return next();
+        },
+    );
+
+    return next();
+};
+
+export { userAuth, userAuthRefresh };
