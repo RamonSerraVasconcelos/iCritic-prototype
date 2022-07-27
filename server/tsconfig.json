@@ -1,9 +1,12 @@
 {
     "compilerOptions": {
+        "sourceMap": true,
         "target": "es5",
         "module": "commonjs",
         "moduleResolution": "node",
-        "lib": ["es6"],
+        "lib": [
+            "esnext"
+        ],
         "outDir": "dist",
         "declaration": true,
         "allowJs": true,
@@ -12,14 +15,28 @@
         "esModuleInterop": true,
         "resolveJsonModule": true,
         "forceConsistentCasingInFileNames": false,
-        "rootDir": "./",
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "rootDir": ".",
         "baseUrl": ".",
+        "types": [
+            "node"
+        ],
         "paths": {
-            "@src/*": ["./src/*"]
+            "@src/*": [
+                "./src/*"
+            ]
         },
-        "typeRoots": ["./src/types"]
+        "typeRoots": [
+            "./src/ts/types",
+            "./node_modules/@types",
+        ]
     },
-    "include": ["src"],
-    "exclude": ["node_modules", "dist"],
-    "files": ["./src/types/index.d.ts"]
+    "include": [
+        "src"
+    ],
+    "exclude": [
+        "node_modules",
+        "dist"
+    ]
 }

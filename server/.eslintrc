@@ -2,23 +2,35 @@
     "root": true,
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
-        "project": ["/tsconfig.json"]
+        "project": [
+            "**/tsconfig.json"
+        ]
     },
-    "plugins": ["import", "@typescript-eslint"],
+    "plugins": [
+        "import",
+        "@typescript-eslint"
+    ],
     "extends": [
+        "airbnb-base",
         "airbnb-typescript",
         "plugin:@typescript-eslint/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "prettier"
     ],
     "rules": {
-        "indent": "off",
-        "semi": ["error", "always"],
+        "indent": 0,
+        "semi": 2,
+        "no-console": 0,
+        "arrow-body-style": 0,
+        "no-useless-escape": 0,
         "react/jsx-filename-extension": 0,
         "@typescript-eslint/no-unused-vars": 1,
         "@typescript-eslint/no-non-null-assertion": 0,
         "@typescript-eslint/no-unused-expressions": 0,
         "@typescript-eslint/ban-types": 0
     },
-    "ignorePatterns": ["/.html", "**/.js"]
+    "ignorePatterns": [
+        "**/*.html",
+        "**/*.js"
+    ]
 }

@@ -1,0 +1,26 @@
+{
+    "name": "icritic",
+    "version": "1.0.0",
+    "main": "index.js",
+    "repository": "git@github.com:iCritic/iCritic.git",
+    "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
+    "license": "MIT",
+    "scripts": {
+        "build:server": "cd server && yarn build",
+        "build": "yarn run build:server",
+        "dev:server": "cd server && yarn --silent dev",
+        "dev": "concurrently --raw -k \"yarn --silent run dev:server\"",
+        "lint": "yarn run lint:server",
+        "lint:server": "cd server && yarn lint",
+        "test:server": "cd server && yarn test",
+        "test": "yarn run test:server",
+        "coverage:server": "cd server && yarn coverage",
+        "coverage": "yarn run coverage:server",
+        "install:server": "cd server/src && yarn install",
+        "postinstall": "concurrently --raw --group \"yarn run install:*\"",
+        "migrate": "node ./server/node_modules/.bin/prisma migrate dev --schema='./server/prisma/schema.prisma'"
+    },
+    "devDependencies": {
+        "concurrently": "^7.3.0"
+    }
+}
