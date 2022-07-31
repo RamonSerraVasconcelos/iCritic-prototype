@@ -7,6 +7,7 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+//Model for the User Entity
 model User {
     id            String   @id @default(auto()) @map("_id") @db.ObjectId
     name          String
@@ -17,4 +18,62 @@ model User {
     updated_at    DateTime @updatedAt
 
     @@map("users")
+}
+
+//** Models for the movies and its associated entitys. **//
+
+//Model for Movies
+model Movie {
+    id          String     @id @default(auto()) @map("_id") @db.ObjectId
+    name        String
+    synopsis    String
+    releaseDate DateTime
+    country     String
+    language    String
+    rating      Int
+    categoryIDs String[]   @db.ObjectId
+    categories  Category[] @relation(fields: [categoryIDs], references: [id])
+    directorIDs String[]   @db.ObjectId
+    directors   Director[] @relation(fields: [directorIDs], references: [id])
+    actorIDs    String[]   @db.ObjectId
+    actors      Actor[] @relation(fields: [actorIDs], references: [id])
+    created_at  DateTime   @default(now())
+    updated_at  DateTime   @updatedAt
+
+    @@map("movies")
+}
+
+//Model for movies Categories
+model Category {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    movieIDs   String[] @db.ObjectId
+    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("categories")
+}
+
+//Model for movies Directors
+model Director {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    name       String
+    movieIDs   String[] @db.ObjectId
+    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("directors")
+}
+
+//Model for movies Actors
+model Actor {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    name       String
+    movieIDs   String[] @db.ObjectId
+    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
+
+    @@map("actors")
 }
