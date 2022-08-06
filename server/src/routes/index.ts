@@ -6,8 +6,18 @@ import movieRoutes from './movie-routes';
 
 const routes = Router();
 
+/**
+ * User authentication.
+ */
 routes.use(authRoutes);
 routes.use('/users', userRoutes);
-routes.use('/movies', userAuth, movieRoutes);
+
+/**
+ * Middleware to authenticate requests.
+ */
+routes.use(userAuth);
+
+/* Movies routes */
+routes.use('/movies', movieRoutes);
 
 export default routes;
