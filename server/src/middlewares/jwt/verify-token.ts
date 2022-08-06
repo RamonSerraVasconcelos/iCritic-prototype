@@ -5,7 +5,7 @@ import { User } from '@src/ts/types';
 import ResponseError from '@src/ts/classes/response-error';
 
 const userAuth = (req: Request, res: Response, next: NextFunction) => {
-    const token: string = req.cookies.token || '';
+    const token: string = req.cookies.accessToken || '';
 
     if (!token) throw new ResponseError('Unauthorized', 401);
 
