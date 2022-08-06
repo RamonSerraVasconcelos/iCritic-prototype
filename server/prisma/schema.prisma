@@ -13,7 +13,7 @@ model User {
     name          String
     email         String   @unique
     password      String
-    refresh_token String?
+    profilePic    String
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
 
@@ -33,10 +33,9 @@ model Movie {
     rating      Int
     categoryIDs String[]   @db.ObjectId
     categories  Category[] @relation(fields: [categoryIDs], references: [id])
-    directorIDs String[]   @db.ObjectId
-    directors   Director[] @relation(fields: [directorIDs], references: [id])
+    directorId  String
     actorIDs    String[]   @db.ObjectId
-    actors      Actor[] @relation(fields: [actorIDs], references: [id])
+    actors      Actor[]    @relation(fields: [actorIDs], references: [id])
     created_at  DateTime   @default(now())
     updated_at  DateTime   @updatedAt
 
@@ -46,6 +45,7 @@ model Movie {
 //Model for movies Categories
 model Category {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    name       String
     movieIDs   String[] @db.ObjectId
     movies     Movie[]  @relation(fields: [movieIDs], references: [id])
     created_at DateTime @default(now())
@@ -58,8 +58,7 @@ model Category {
 model Director {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
     name       String
-    movieIDs   String[] @db.ObjectId
-    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+    pictureIds String[]
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
@@ -70,10 +69,20 @@ model Director {
 model Actor {
     id         String   @id @default(auto()) @map("_id") @db.ObjectId
     name       String
+    pictureIds String[]
     movieIDs   String[] @db.ObjectId
     movies     Movie[]  @relation(fields: [movieIDs], references: [id])
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
 
     @@map("actors")
+}
+
+//** Model for storing pictures **//
+
+model Picture {
+    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+    created_at DateTime @default(now())
+
+    @@map("pictures")
 }
