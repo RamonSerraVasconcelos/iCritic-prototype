@@ -13,6 +13,8 @@ const CLIENT_URL = process.env.CLIENT_URL
     ? process.env.CLIENT_URL
     : `http://localhost:3000`;
 
+const HTTP_SECURE = process.env.ENVIRONMENT === 'prod';
+
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
 const ACCESS_TOKEN_EXPIRE_TIME = '10m' || process.env.ACCESS_TOKEN_EXPIRE_TIME;
@@ -27,6 +29,7 @@ const env = {
     SERVER_PORT,
     SERVER_URL,
     CLIENT_URL,
+    HTTP_SECURE,
     ACCESS_TOKEN_SECRET,
     REFRESH_TOKEN_SECRET,
     ACCESS_TOKEN_EXPIRE_TIME,

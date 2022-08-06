@@ -38,14 +38,14 @@ const login = async (req: Request, res: Response) => {
     res.cookie('accessToken', accessToken, {
         httpOnly: true,
         sameSite: 'none',
-        secure: true,
+        secure: env.HTTP_SECURE,
         maxAge: env.ONE_HOUR,
     });
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
         sameSite: 'none',
-        secure: true,
+        secure: env.HTTP_SECURE,
         maxAge: env.ONE_DAY,
     });
 
@@ -67,7 +67,7 @@ const logout = async (req: Request, res: Response) => {
         res.clearCookie('refreshToken', {
             httpOnly: true,
             sameSite: 'none',
-            secure: true,
+            secure: env.HTTP_SECURE,
         });
 
         return res.sendStatus(204);
@@ -78,7 +78,7 @@ const logout = async (req: Request, res: Response) => {
     res.clearCookie('refreshToken', {
         httpOnly: true,
         sameSite: 'none',
-        secure: true,
+        secure: env.HTTP_SECURE,
     });
 
     return res.sendStatus(204);
@@ -97,7 +97,7 @@ const refreshToken = async (req: Request, res: Response) => {
 
     res.cookie('accessToken', accessToken, {
         sameSite: 'none',
-        secure: true,
+        secure: env.HTTP_SECURE,
         httpOnly: true,
     });
 
