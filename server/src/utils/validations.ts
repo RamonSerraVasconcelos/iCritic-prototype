@@ -36,6 +36,22 @@ const validateEmail = (email: string) => {
         throw new ResponseError('Invalid email!', 400);
 };
 
+const validateDate = (dateStr: string) => {
+    if (!dateStr.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        return false;
+    }
+
+    const date = new Date(dateStr);
+
+    const timestamp = date.getTime();
+
+    if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) {
+        return false;
+    }
+
+    return date.toISOString().startsWith(dateStr);
+};
+
 export {
     checkEmptyRequestBody,
     checkEmptyValue,
@@ -43,4 +59,5 @@ export {
     hasValueMaxLength,
     isEmpty,
     validateEmail,
+    validateDate,
 };
