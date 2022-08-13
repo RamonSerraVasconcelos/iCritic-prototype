@@ -7,7 +7,7 @@ import authController from '@src/controllers/auth-controller';
 const routes = Router();
 
 routes.post('/login', validateLogin, tryCatch(authController.login));
-routes.get('/logout', tryCatch(authController.logout));
 routes.get('/refresh', userAuthRefresh, tryCatch(authController.refreshToken));
+routes.get('/logout', userAuthRefresh, tryCatch(authController.logout));
 
 export default routes;
