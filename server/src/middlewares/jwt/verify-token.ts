@@ -16,7 +16,7 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
         return next();
     });
 
-    return next();
+    return false;
 };
 
 const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
@@ -35,7 +35,7 @@ const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
         },
     );
 
-    return next();
+    return false;
 };
 
 export { userAuth, userAuthRefresh };

@@ -27,13 +27,13 @@ model Movie {
     id          String     @id @default(auto()) @map("_id") @db.ObjectId
     name        String
     synopsis    String
-    releaseDate DateTime
+    releaseDate String
     country     String
     language    String
     rating      Int
     categoryIDs String[]   @db.ObjectId
     categories  Category[] @relation(fields: [categoryIDs], references: [id])
-    directorId  String
+    directorId  Int
     actorIDs    String[]   @db.ObjectId
     actors      Actor[]    @relation(fields: [actorIDs], references: [id])
     created_at  DateTime   @default(now())

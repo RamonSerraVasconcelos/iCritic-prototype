@@ -6,6 +6,7 @@ interface UserData {
     name: string;
     email: string;
     password: string;
+    profilePic: string;
 }
 
 const create = async ({ name, email, password }: UserData) => {
@@ -23,21 +24,11 @@ const create = async ({ name, email, password }: UserData) => {
             name,
             email,
             password: hashedPassword,
+            profilePic: '',
         },
     });
 
     return user;
-};
-
-const updateRefreshToken = async (id: string, refreshToken: string) => {
-    await prisma.user.update({
-        data: {
-            refresh_token: refreshToken,
-        },
-        where: {
-            id,
-        },
-    });
 };
 
 const findById = async (id: string) => {
@@ -60,18 +51,8 @@ const findByEmail = async (email: string) => {
     return user;
 };
 
-const findByRefreshToken = async (refreshToken: string) => {
-    const user = await prisma.user.findFirst({
-        where: { refresh_token: refreshToken },
-    });
-
-    return user;
-};
-
 export default {
     create,
-    updateRefreshToken,
     findById,
     findByEmail,
-    findByRefreshToken,
 };
