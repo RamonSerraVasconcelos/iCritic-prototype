@@ -33,7 +33,7 @@ model Movie {
     rating      Int
     categoryIDs String[]   @db.ObjectId
     categories  Category[] @relation(fields: [categoryIDs], references: [id])
-    directorId  String
+    directorId  Int
     actorIDs    String[]   @db.ObjectId
     actors      Actor[]    @relation(fields: [actorIDs], references: [id])
     created_at  DateTime   @default(now())
