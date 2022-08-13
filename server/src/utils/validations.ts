@@ -52,6 +52,10 @@ const validateDate = (dateStr: string) => {
     return date.toISOString().startsWith(dateStr);
 };
 
+const validateNumber = (input: string) => {
+    return /^\d+\.\d+$|^\d+$/.test(input);
+};
+
 export {
     checkEmptyRequestBody,
     checkEmptyValue,
@@ -60,4 +64,5 @@ export {
     isEmpty,
     validateEmail,
     validateDate,
+    validateNumber,
 };

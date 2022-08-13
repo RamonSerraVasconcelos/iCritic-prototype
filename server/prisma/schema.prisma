@@ -27,7 +27,7 @@ model Movie {
     id          String     @id @default(auto()) @map("_id") @db.ObjectId
     name        String
     synopsis    String
-    releaseDate DateTime
+    releaseDate String
     country     String
     language    String
     rating      Int

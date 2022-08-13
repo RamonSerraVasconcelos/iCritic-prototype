@@ -2,9 +2,9 @@ import {
     checkEmptyRequestBody,
     isEmpty,
     checkEmptyValue,
-    hasValueMaxLength,
     hasValueMinLength,
     validateDate,
+    validateNumber,
 } from '@src/utils/validations';
 import { Request, Response, NextFunction } from 'express';
 import ResponseError from '@src/ts/classes/response-error';
@@ -16,7 +16,8 @@ const validateCreation = (req: Request, res: Response, next: NextFunction) => {
         checkEmptyValue(req.body[key]);
     });
 
-    const { name, synopsis, releaseDate, country, language } = req.body;
+    const { name, synopsis, releaseDate, country, language, directorId } =
+        req.body;
 
     if (
         isEmpty(name) ||
@@ -41,6 +42,10 @@ const validateCreation = (req: Request, res: Response, next: NextFunction) => {
 
     if (!validateDate(releaseDate)) {
         throw new ResponseError('Invalid release date', 400);
+    }
+
+    if (!validateNumber(directorId)) {
+        throw new ResponseError('Incorret value for director id', 400);
     }
 
     next();
