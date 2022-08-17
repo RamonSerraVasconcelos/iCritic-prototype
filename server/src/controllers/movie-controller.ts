@@ -16,7 +16,17 @@ const create = async (req: Request, res: Response) => {
 
 const update = async (req: Request, res: Response) => {};
 
-const list = async (req: Request, res: Response) => {};
+const list = async (req: Request, res: Response) => {
+    const movies = await movieService.find();
+
+    if (!movies) {
+        throw new ResponseError('', 204);
+    }
+
+    return res.status(200).send({
+        movies,
+    });
+};
 
 const get = async (req: Request, res: Response) => {};
 
