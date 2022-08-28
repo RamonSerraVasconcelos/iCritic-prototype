@@ -33,7 +33,11 @@ const insert = async ({
 
 const update = async () => {};
 
-const find = async () => {};
+const find = async () => {
+    const movies = await prisma.movie.findMany();
+
+    return movies;
+};
 
 const findById = async () => {};
 
