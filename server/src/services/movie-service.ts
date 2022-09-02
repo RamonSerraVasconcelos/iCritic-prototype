@@ -1,7 +1,7 @@
 import prisma from '@src/config/prisma-client';
-import ResponseError from '@src/ts/classes/response-error';
 
 interface MovieData {
+    id: string;
     name: string;
     synopsis: string;
     releaseDate: string;
@@ -9,13 +9,7 @@ interface MovieData {
     language: string;
 }
 
-const insert = async ({
-    name,
-    synopsis,
-    releaseDate,
-    country,
-    language,
-}: MovieData) => {
+const insert = async ({ name, synopsis, releaseDate, country, language }: MovieData) => {
     const movie = await prisma.movie.create({
         data: {
             name,
@@ -31,7 +25,22 @@ const insert = async ({
     return movie;
 };
 
-const update = async () => {};
+const update = async (movie: MovieData) => {
+    const updatedUser = await prisma.movie.update({
+        where: {
+            id: movie.id,
+        },
+        data: {
+            name: movie.name || undefined,
+            synopsis: movie.synopsis || undefined,
+            releaseDate: movie.releaseDate || undefined,
+            country: movie.country || undefined,
+            language: movie.language || undefined,
+        },
+    });
+
+    return updatedUser;
+};
 
 const find = async () => {
     const movies = await prisma.movie.findMany();

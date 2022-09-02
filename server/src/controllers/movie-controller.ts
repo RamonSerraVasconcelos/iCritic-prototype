@@ -14,7 +14,13 @@ const create = async (req: Request, res: Response) => {
     });
 };
 
-const update = async (req: Request, res: Response) => {};
+const update = async (req: Request, res: Response) => {
+    if (!(await movieService.update(req.body))) {
+        throw new ResponseError('Something went wrong. Please review the movie id and its fields', 400);
+    }
+
+    return res.status(200).send();
+};
 
 const list = async (req: Request, res: Response) => {
     const movies = await movieService.find();
