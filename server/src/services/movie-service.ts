@@ -26,7 +26,7 @@ const insert = async ({ name, synopsis, releaseDate, country, language }: MovieD
 };
 
 const update = async (movie: MovieData) => {
-    const updatedUser = await prisma.movie.update({
+    const updatedMovie = await prisma.movie.update({
         where: {
             id: movie.id,
         },
@@ -39,7 +39,7 @@ const update = async (movie: MovieData) => {
         },
     });
 
-    return updatedUser;
+    return updatedMovie;
 };
 
 const find = async () => {
