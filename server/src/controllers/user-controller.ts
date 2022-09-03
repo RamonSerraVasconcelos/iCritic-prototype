@@ -36,7 +36,9 @@ const list = async (req: Request, res: Response) => {
     });
 };
 
-const get = async (req: Request, res: Response) => {};
+const get = async (req: Request, res: Response) => {
+    console.log(req.body.id);
+};
 
 export default {
     register,

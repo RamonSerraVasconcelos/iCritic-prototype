@@ -31,7 +31,8 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
 
     checkEmptyRequestBody(req);
 
-    const { id, name, email, password } = req.body;
+    req.body.id = req.params.id;
+    const { id, name, email } = req.body;
 
     if (isEmpty(id) || !hasValueMinLength(id, 24)) {
         throw new ResponseError('Invalid Id format', 400);
@@ -49,9 +50,9 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
 
     if (email) {
         validateEmail(email);
+        req.body.email = req.body.email.toLowerCase();
     }
 
-    req.body.email = req.body.email.toLowerCase();
     next();
 };
 
