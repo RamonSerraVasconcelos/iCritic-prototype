@@ -56,4 +56,13 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
     next();
 };
 
-export { validateRegister, validateUserUpdate };
+const validateUserGet = (req: Request, res: Response, next: NextFunction) => {
+    if (isEmpty(req.params.id) || !hasValueMinLength(req.params.id, 24)) {
+        throw new ResponseError('Invalid Id format', 400);
+    }
+
+    req.body.id = req.params.id;
+    next();
+};
+
+export { validateRegister, validateUserUpdate, validateUserGet };

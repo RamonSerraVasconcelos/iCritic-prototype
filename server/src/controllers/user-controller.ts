@@ -37,7 +37,15 @@ const list = async (req: Request, res: Response) => {
 };
 
 const get = async (req: Request, res: Response) => {
-    console.log(req.body.id);
+    const user = await userService.findById(req.body.id);
+
+    if (!user) {
+        throw new ResponseError('', 404);
+    }
+
+    return res.status(200).send({
+        user,
+    });
 };
 
 export default {
