@@ -10,10 +10,11 @@ const login = async (req: Request, res: Response) => {
 
     const user = await userService.findByEmail(email);
 
+    if (!user) throw new ResponseError('Invalid email or password!', 401);
+
     const matchingPasswords = await compare(password, user.password);
 
-    if (!matchingPasswords)
-        throw new ResponseError('Invalid email or password!', 401);
+    if (!matchingPasswords) throw new ResponseError('Invalid email or password!', 401);
 
     const accessToken = jwt.sign(
         {
