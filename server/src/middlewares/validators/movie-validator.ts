@@ -49,6 +49,7 @@ const validateUpdate = (req: Request, res: Response, next: NextFunction) => {
         checkEmptyValue(req.body[key]);
     });
 
+    req.body.id = req.params.id;
     const { id, name, synopsis, releaseDate, country, language, directorId } = req.body;
 
     if (isEmpty(id) || !hasValueMinLength(id, 24)) {
