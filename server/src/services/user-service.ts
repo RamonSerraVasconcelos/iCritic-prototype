@@ -1,6 +1,5 @@
 import { hash } from 'bcrypt';
 import prisma from '@src/config/prisma-client';
-import ResponseError from '@src/ts/classes/response-error';
 
 interface UserData {
     id: string;
@@ -49,8 +48,6 @@ const findById = async (id: string) => {
     const user = await prisma.user.findUnique({
         where: { id },
     });
-
-    if (!user) throw new ResponseError('User not found!', 404);
 
     return user;
 };
