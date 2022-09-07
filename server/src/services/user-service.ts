@@ -7,9 +7,11 @@ interface UserData {
     email: string;
     password: string;
     profilePic: string;
+    description: string;
+    countryId: string;
 }
 
-const create = async ({ name, email, password }: UserData) => {
+const create = async ({ name, email, password, description, countryId }: UserData) => {
     const hashedPassword = await hash(password, 10);
 
     const user = await prisma.user.create({
@@ -17,7 +19,8 @@ const create = async ({ name, email, password }: UserData) => {
             name,
             email,
             password: hashedPassword,
-            profilePic: '',
+            description: description || undefined,
+            countryId: countryId || undefined,
         },
     });
 
@@ -32,6 +35,8 @@ const update = async (user: UserData) => {
         data: {
             name: user.name || undefined,
             email: user.email || undefined,
+            description: user.description || undefined,
+            countryId: user.countryId || undefined,
         },
     });
 
