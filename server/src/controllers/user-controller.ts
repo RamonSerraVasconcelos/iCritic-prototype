@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import ResponseError from '@src/ts/classes/response-error';
 import userService from '@src/services/user-service';
 
