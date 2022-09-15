@@ -30,6 +30,7 @@ const login = async (req: Request, res: Response) => {
         {
             id: user.id,
             name: user.name,
+            role: user.role,
         },
         env.REFRESH_TOKEN_SECRET,
         { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
