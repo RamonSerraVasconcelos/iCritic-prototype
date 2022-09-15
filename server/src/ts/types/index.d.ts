@@ -6,6 +6,7 @@ export interface User {
     email: String;
     password: String;
     refresh_token: String;
+    role: String;
     created_at: string;
     updated_at: string;
 }

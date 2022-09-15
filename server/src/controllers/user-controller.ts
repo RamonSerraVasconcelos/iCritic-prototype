@@ -26,7 +26,7 @@ const update = async (req: Request, res: Response) => {
 
 const list = async (req: Request, res: Response) => {
     const users = await userService.find();
-
+    console.log(req.user);
     if (!users) {
         throw new ResponseError('', 204);
     }
