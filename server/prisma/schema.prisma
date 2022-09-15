@@ -17,10 +17,17 @@ model User {
     countryId     String?
     profilePic    String?
     resetHash     String?
+    role          Role     @default(USER)
     created_at    DateTime @default(now())
     updated_at    DateTime @updatedAt
 
     @@map("users")
+}
+
+enum Role {
+  ADMIN
+  MODERATOR
+  USER
 }
 
 //** Models for the movies and its associated entitys. **//
