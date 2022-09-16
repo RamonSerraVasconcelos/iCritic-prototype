@@ -8,8 +8,8 @@ import userController from '@src/controllers/user-controller';
 const routes = Router();
 
 routes.post('/register', validateRegister, tryCatch(userController.register));
-routes.put('/:id', userAuth, validateUserUpdate, tryCatch(userController.update));
+routes.put('/:id', userAuth, roles('USER'), validateUserUpdate, tryCatch(userController.update));
 routes.get('/', userAuth, roles('ADMIN'), tryCatch(userController.list));
-routes.get('/:id', userAuth, validateUserGet, tryCatch(userController.get));
+routes.get('/:id', userAuth, roles('USER'), validateUserGet, tryCatch(userController.get));
 
 export default routes;
