@@ -17,8 +17,12 @@ const register = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
+    if (req.body.id !== req.user.id) {
+        throw new ResponseError("You cannot edit another user's info", 403);
+    }
+
     if (!userService.update(req.body)) {
-        throw new ResponseError('Something went wrong. Please review the user id and its fields', 400);
+        throw new ResponseError('Please review the user id and its fields', 400);
     }
 
     return res.status(200).send();
