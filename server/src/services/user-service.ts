@@ -43,6 +43,19 @@ const update = async (user: UserData) => {
     return updatedUser;
 };
 
+const updateProfilePic = async (id: string, profilePic: string) => {
+    const updatedUser = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            profilePic,
+        },
+    });
+
+    return updatedUser;
+};
+
 const find = async () => {
     const users = await prisma.user.findMany();
 
@@ -68,6 +81,7 @@ const findByEmail = async (email: string) => {
 export default {
     create,
     update,
+    updateProfilePic,
     find,
     findById,
     findByEmail,

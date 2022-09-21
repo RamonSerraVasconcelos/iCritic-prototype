@@ -52,9 +52,39 @@ const get = async (req: Request, res: Response) => {
     });
 };
 
+const updateProfilePic = async (req: Request, res: Response) => {
+    if (!req.body.id || req.body.id === '') {
+        throw new ResponseError('Missing User Id', 400);
+    }
+
+    if (Object.keys(req.body).length > 1) {
+        throw new ResponseError('You can only pass the User Id as argument', 400);
+    }
+
+    if (req.body.id !== req.user.id) {
+        throw new ResponseError("You cannot edit another user's info", 403);
+    }
+
+    const documentFile = (req as any).file;
+    if (!documentFile) {
+        throw new ResponseError('Error saving the file', 400);
+    }
+
+    if (!documentFile.filename || documentFile.filename === '') {
+        throw new ResponseError('Error saving the file', 400);
+    }
+
+    if (!userService.updateProfilePic(req.body.id, documentFile.filename)) {
+        throw new ResponseError('Please review the user id and its fields', 400);
+    }
+
+    return res.status(200).send();
+};
+
 export default {
     register,
     update,
     list,
     get,
+    updateProfilePic,
 };
