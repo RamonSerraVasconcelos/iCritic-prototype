@@ -15,7 +15,7 @@ app.use('/', routes);
 
 // Error handling
 app.use((req: Request, res: Response, next: NextFunction) => {
-    const error = new ResponseError('Something went wrong!', 404);
+    const error = new ResponseError('', 404);
     next(error);
 });
 
