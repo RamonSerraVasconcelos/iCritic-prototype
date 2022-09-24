@@ -1,7 +1,8 @@
 import { Request, Response } from 'express';
-import { compare } from 'bcrypt';
+import { compare, hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import env from '@src/config/env';
+import crypto from 'crypto';
 import userService from '@src/services/user-service';
 import ResponseError from '@src/ts/classes/response-error';
 
@@ -95,8 +96,34 @@ const logout = async (req: Request, res: Response) => {
     return res.sendStatus(204);
 };
 
+const forgotPassword = async (req: Request, res: Response) => {
+    const { email } = req.body;
+
+    if (!email) throw new ResponseError('No email informed', 400);
+
+    const user = await userService.findByEmail(email);
+
+    if (!user) throw new ResponseError('Email not found', 400);
+
+    const passwordResetToken = crypto.randomBytes(20).toString('hex');
+    const hashedToken = await hash(passwordResetToken, 10);
+
+    const expirationDate = Date.now() + 600000; // 10 minutes converted to miliseconds
+
+    req.body.id = user.id;
+    req.body.passwordReset = hashedToken;
+    req.body.passwordResetDate = expirationDate;
+
+    if (!(await userService.update(req.body))) {
+        throw new ResponseError('Error generating Token', 400);
+    }
+
+    return res.status(200).send();
+};
+
 export default {
     login,
     refreshToken,
     logout,
+    forgotPassword,
 };

@@ -9,6 +9,8 @@ interface UserData {
     profilePic: string;
     description: string;
     countryId: string;
+    passwordReset: string;
+    passwordResetDate: number;
 }
 
 const create = async ({ name, email, password, description, countryId }: UserData) => {
@@ -37,6 +39,8 @@ const update = async (user: UserData) => {
             email: user.email || undefined,
             description: user.description || undefined,
             countryId: user.countryId || undefined,
+            passwordReset: user.passwordReset || undefined,
+            passwordResetDate: user.passwordResetDate || undefined,
         },
     });
 
