@@ -5,6 +5,7 @@ import env from '@src/config/env';
 import crypto from 'crypto';
 import userService from '@src/services/user-service';
 import ResponseError from '@src/ts/classes/response-error';
+import mailer from '@src/services/mailer-service';
 
 const login = async (req: Request, res: Response) => {
     const { email, password } = req.body;
@@ -118,12 +119,28 @@ const forgotPassword = async (req: Request, res: Response) => {
         throw new ResponseError('Error generating Token', 400);
     }
 
+    const mail = await mailer.sendMail({
+        to: user.email,
+        from: 'ramom_serrav@hotmail.com',
+        subject: 'Password Recovery',
+        html: `<h2>CHANGE YOUR PASSWORD:</h2>
+                    <p><a href="${env.SERVER_URL}/reset-password?token=${passwordResetToken}" target="_blank">CHANGE PASSWORD</a></p>
+        `,
+    });
+
+    if (!mail) {
+        throw new ResponseError('Error generating Token', 400);
+    }
+
     return res.status(200).send();
 };
+
+const resetPassword = async (req: Request, res: Response) => {};
 
 export default {
     login,
     refreshToken,
     logout,
     forgotPassword,
+    resetPassword,
 };
