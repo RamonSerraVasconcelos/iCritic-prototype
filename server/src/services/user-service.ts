@@ -47,6 +47,21 @@ const update = async (user: UserData) => {
     return updatedUser;
 };
 
+const updatePassword = async (id: string, password: string) => {
+    const hashedPassword = await hash(password, 10);
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            password: hashedPassword,
+        },
+    });
+
+    return updatedUser;
+};
+
 const updateProfilePic = async (id: string, profilePic: string) => {
     const updatedUser = await prisma.user.update({
         where: {
@@ -85,6 +100,7 @@ const findByEmail = async (email: string) => {
 export default {
     create,
     update,
+    updatePassword,
     updateProfilePic,
     find,
     findById,

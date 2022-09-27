@@ -135,7 +135,37 @@ const forgotPassword = async (req: Request, res: Response) => {
     return res.status(200).send();
 };
 
-const resetPassword = async (req: Request, res: Response) => {};
+const resetPassword = async (req: Request, res: Response) => {
+    const { email, token, password, confirmPassword } = req.body;
+
+    if (!email || email === '') throw new ResponseError('Missing email', 400);
+
+    if (!token || token === '') throw new ResponseError('Missing token', 400);
+
+    if (!password || password === '') throw new ResponseError('Missing password', 400);
+
+    if (!confirmPassword || confirmPassword === '') throw new ResponseError('Missing password confirmation', 400);
+
+    if (password !== confirmPassword) throw new ResponseError("Passwords don't match", 400);
+
+    const user = await userService.findByEmail(email);
+
+    if (!user) throw new ResponseError('User not found', 400);
+
+    const matchingTokens = await compare(token, user.passwordReset!);
+
+    if (!matchingTokens) throw new ResponseError('Invalid token', 401);
+
+    const now = Date.now();
+
+    if (now > user.passwordResetDate!) throw new ResponseError('Expired token', 401);
+
+    const updatedPassword = userService.updatePassword(user.id, password);
+
+    if (!updatedPassword) throw new ResponseError('Error updating password', 500);
+
+    return res.status(200).send();
+};
 
 export default {
     login,
