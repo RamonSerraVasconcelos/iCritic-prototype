@@ -9,6 +9,8 @@ interface UserData {
     profilePic: string;
     description: string;
     countryId: string;
+    passwordReset: string;
+    passwordResetDate: number;
 }
 
 const create = async ({ name, email, password, description, countryId }: UserData) => {
@@ -37,6 +39,23 @@ const update = async (user: UserData) => {
             email: user.email || undefined,
             description: user.description || undefined,
             countryId: user.countryId || undefined,
+            passwordReset: user.passwordReset || undefined,
+            passwordResetDate: user.passwordResetDate || undefined,
+        },
+    });
+
+    return updatedUser;
+};
+
+const updatePassword = async (id: string, password: string) => {
+    const hashedPassword = await hash(password, 10);
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            password: hashedPassword,
         },
     });
 
@@ -81,6 +100,7 @@ const findByEmail = async (email: string) => {
 export default {
     create,
     update,
+    updatePassword,
     updateProfilePic,
     find,
     findById,

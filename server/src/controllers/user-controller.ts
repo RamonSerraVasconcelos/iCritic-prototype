@@ -28,6 +28,26 @@ const update = async (req: Request, res: Response) => {
     return res.status(200).send();
 };
 
+const updatePassword = async (req: Request, res: Response) => {
+    const { password, confirmPassword } = req.body;
+
+    if (!password || password === '') throw new ResponseError('Missing password', 400);
+
+    if (!confirmPassword || confirmPassword === '') throw new ResponseError('Missing password confirmation', 400);
+
+    if (password !== confirmPassword) throw new ResponseError("Passwords don't match", 400);
+
+    const user = await userService.findById(req.user.id);
+
+    if (!user) throw new ResponseError('Error updating password', 500);
+
+    const updatedPassword = await userService.updatePassword(req.user.id, password);
+
+    if (!updatedPassword) throw new ResponseError('Error updating password', 500);
+
+    return res.status(200).send();
+};
+
 const list = async (req: Request, res: Response) => {
     const users = await userService.find();
 
@@ -84,6 +104,7 @@ const updateProfilePic = async (req: Request, res: Response) => {
 export default {
     register,
     update,
+    updatePassword,
     list,
     get,
     updateProfilePic,

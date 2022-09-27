@@ -9,5 +9,7 @@ const routes = Router();
 routes.post('/login', validateLogin, tryCatch(authController.login));
 routes.get('/refresh', userAuthRefresh, tryCatch(authController.refreshToken));
 routes.get('/logout', userAuthRefresh, tryCatch(authController.logout));
+routes.post('/forgot-password', tryCatch(authController.forgotPassword));
+routes.post('/reset-password', tryCatch(authController.resetPassword));
 
 export default routes;

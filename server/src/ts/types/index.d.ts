@@ -1,12 +1,16 @@
 export {};
 
 export interface User {
-    id: String;
-    name: String;
-    email: String;
-    password: String;
-    refresh_token: String;
-    role: String;
+    id: string;
+    name: string;
+    email: string;
+    password: string;
+    description: string;
+    countryId: string;
+    profilePic: string;
+    resetHash: string;
+    resetHashDate: Number;
+    role: string;
     created_at: string;
     updated_at: string;
 }

@@ -20,5 +20,6 @@ routes.put('/:id', roles('USER'), validateUserUpdate, tryCatch(userController.up
 routes.get('/', roles('ADMIN'), tryCatch(userController.list));
 routes.get('/:id', roles('USER'), validateUserGet, tryCatch(userController.get));
 routes.post('/profilePic', roles('USER'), multer(multerConfig).single('file'), tryCatch(userController.updateProfilePic));
+routes.post('/change-password', roles('USER'), tryCatch(userController.updatePassword));
 
 export default routes;
