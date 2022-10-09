@@ -27,15 +27,15 @@ const validateCreation = (req: Request, res: Response, next: NextFunction) => {
         throw new ResponseError('Invalid release date', 400);
     }
 
-    if (!validateNumber(country)) {
+    if (!hasValueMinLength(country, 24)) {
         throw new ResponseError('Incorret value for country id', 400);
     }
 
-    if (!validateNumber(language)) {
+    if (!hasValueMinLength(language, 24)) {
         throw new ResponseError('Incorret value for language id', 400);
     }
 
-    if (!validateNumber(directorId)) {
+    if (!hasValueMinLength(directorId, 24)) {
         throw new ResponseError('Incorret value for director id', 400);
     }
 
@@ -68,15 +68,15 @@ const validateUpdate = (req: Request, res: Response, next: NextFunction) => {
         throw new ResponseError('Invalid release date', 400);
     }
 
-    if (country && !validateNumber(country)) {
+    if (country && !hasValueMinLength(country, 24)) {
         throw new ResponseError('Incorret value for country id', 400);
     }
 
-    if (language && !validateNumber(language)) {
+    if (language && !hasValueMinLength(language, 24)) {
         throw new ResponseError('Incorret value for language id', 400);
     }
 
-    if (directorId && !validateNumber(directorId)) {
+    if (directorId && !hasValueMinLength(directorId, 24)) {
         throw new ResponseError('Incorret value for director id', 400);
     }
 
