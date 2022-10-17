@@ -13,17 +13,6 @@ interface UserData {
     passwordResetDate: number;
 }
 
-enum Role {
-    ADMIN,
-    MODERATOR,
-    USER,
-}
-
-enum Status {
-    ACTIVE,
-    BANNED,
-}
-
 const create = async ({ name, email, password, description, countryId }: UserData) => {
     const hashedPassword = await hash(password, 10);
 

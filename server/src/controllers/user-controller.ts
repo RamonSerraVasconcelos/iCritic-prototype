@@ -2,6 +2,8 @@ import { Request, Response } from 'express';
 import ResponseError from '@src/ts/classes/response-error';
 import userService from '@src/services/user-service';
 
+const ROLES = ['USER', 'MODERATOR', 'ADMIN'];
+
 const register = async (req: Request, res: Response) => {
     const isDuplicated = await userService.findByEmail(req.body.email);
 
@@ -90,14 +92,34 @@ const updateProfilePic = async (req: Request, res: Response) => {
     return res.status(200).send();
 };
 
-const updateRole = (req: Request, res: Response) => {};
+const updateRole = async (req: Request, res: Response) => {
+    if (!req.params.id) {
+        throw new ResponseError('Missing User Id', 400);
+    }
+
+    const { role } = req.body;
+
+    if (!role || role === '') {
+        throw new ResponseError('Missing User role', 400);
+    }
+
+    if (!ROLES.includes(role)) {
+        throw new ResponseError('Invalid role', 400);
+    }
+
+    if (!(await userService.updateUserRole(req.params.id, role))) {
+        throw new ResponseError('Error updating user role', 400);
+    }
+
+    return res.status(200).send();
+};
 
 const banUser = async (req: Request, res: Response) => {
     if (!req.params.id) {
         throw new ResponseError('Missing User Id', 400);
     }
 
-    if (!req.body.motive) {
+    if (!req.body.motive || req.body.motive === '') {
         throw new ResponseError('Missing Ban motive', 400);
     }
 
