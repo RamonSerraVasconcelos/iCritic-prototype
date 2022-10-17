@@ -2,14 +2,16 @@ import { Request, Response } from 'express';
 import ResponseError from '@src/ts/classes/response-error';
 import userService from '@src/services/user-service';
 
+const ROLES = ['USER', 'MODERATOR', 'ADMIN'];
+
 const register = async (req: Request, res: Response) => {
     const isDuplicated = await userService.findByEmail(req.body.email);
 
-    if (isDuplicated) throw new ResponseError('This email is already registered!', 409);
+    if (isDuplicated) throw new ResponseError('This email is already registered', 409);
 
     const user = await userService.create(req.body);
 
-    if (!user) throw new ResponseError('Something went wrong.', 400);
+    if (!user) throw new ResponseError('User not found', 404);
 
     return res.status(201).json({
         user,
@@ -39,11 +41,11 @@ const updatePassword = async (req: Request, res: Response) => {
 
     const user = await userService.findById(req.user.id);
 
-    if (!user) throw new ResponseError('Error updating password', 500);
+    if (!user) throw new ResponseError('User not found', 404);
 
     const updatedPassword = await userService.updatePassword(req.user.id, password);
 
-    if (!updatedPassword) throw new ResponseError('Error updating password', 500);
+    if (!updatedPassword) throw new ResponseError('Error updating password', 400);
 
     return res.status(200).send();
 };
@@ -73,19 +75,8 @@ const get = async (req: Request, res: Response) => {
 };
 
 const updateProfilePic = async (req: Request, res: Response) => {
-    if (!req.body.id || req.body.id === '') {
-        throw new ResponseError('Missing User Id', 400);
-    }
-
-    if (Object.keys(req.body).length > 1) {
-        throw new ResponseError('You can only pass the User Id as argument', 400);
-    }
-
-    if (req.body.id !== req.user.id) {
-        throw new ResponseError("You cannot edit another user's info", 403);
-    }
-
     const documentFile = (req as any).file;
+
     if (!documentFile) {
         throw new ResponseError('Error saving the file', 400);
     }
@@ -94,8 +85,62 @@ const updateProfilePic = async (req: Request, res: Response) => {
         throw new ResponseError('Error saving the file', 400);
     }
 
-    if (!userService.updateProfilePic(req.body.id, documentFile.filename)) {
+    if (!userService.updateProfilePic(req.user.id, documentFile.filename)) {
         throw new ResponseError('Please review the user id and its fields', 400);
+    }
+
+    return res.status(200).send();
+};
+
+const updateRole = async (req: Request, res: Response) => {
+    if (!req.params.id) {
+        throw new ResponseError('Missing User Id', 400);
+    }
+
+    const { role } = req.body;
+
+    if (!role || role === '') {
+        throw new ResponseError('Missing User role', 400);
+    }
+
+    if (!ROLES.includes(role)) {
+        throw new ResponseError('Invalid role', 400);
+    }
+
+    if (!(await userService.updateUserRole(req.params.id, role))) {
+        throw new ResponseError('Error updating user role', 400);
+    }
+
+    return res.status(200).send();
+};
+
+const banUser = async (req: Request, res: Response) => {
+    if (!req.params.id) {
+        throw new ResponseError('Missing User Id', 400);
+    }
+
+    if (!req.body.motive || req.body.motive === '') {
+        throw new ResponseError('Missing Ban motive', 400);
+    }
+
+    if (!(await userService.updateUserStatus(req.params.id, 'BANNED'))) {
+        throw new ResponseError('Error updating user status', 400);
+    }
+
+    if (!(await userService.insertBan(req.params.id, req.body.motive))) {
+        throw new ResponseError('Error updating user status', 400);
+    }
+
+    return res.status(200).send();
+};
+
+const unbanUser = async (req: Request, res: Response) => {
+    if (!req.params.id) {
+        throw new ResponseError('Missing User Id', 400);
+    }
+
+    if (!(await userService.updateUserStatus(req.params.id, 'ACTIVE'))) {
+        throw new ResponseError('Error updating user status', 400);
     }
 
     return res.status(200).send();
@@ -108,4 +153,7 @@ export default {
     list,
     get,
     updateProfilePic,
+    updateRole,
+    banUser,
+    unbanUser,
 };

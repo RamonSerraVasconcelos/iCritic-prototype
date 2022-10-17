@@ -75,6 +75,43 @@ const updateProfilePic = async (id: string, profilePic: string) => {
     return updatedUser;
 };
 
+const updateUserRole = async (id: string, role: string) => {
+    const updatedUser = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            role,
+        },
+    });
+
+    return updatedUser;
+};
+
+const updateUserStatus = async (id: string, status: string) => {
+    const updatedUser = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            status,
+        },
+    });
+
+    return updatedUser;
+};
+
+const insertBan = async (id: string, motive: string) => {
+    const insertedBan = await prisma.banlist.create({
+        data: {
+            userId: id,
+            motive,
+        },
+    });
+
+    return insertedBan;
+};
+
 const find = async () => {
     const users = await prisma.user.findMany();
 
@@ -102,6 +139,9 @@ export default {
     update,
     updatePassword,
     updateProfilePic,
+    updateUserRole,
+    updateUserStatus,
+    insertBan,
     find,
     findById,
     findByEmail,

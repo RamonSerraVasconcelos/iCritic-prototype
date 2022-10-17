@@ -16,10 +16,16 @@ routes.post('/register', validateRegister, tryCatch(userController.register));
  */
 routes.use(userAuth);
 
-routes.put('/:id', roles('USER'), validateUserUpdate, tryCatch(userController.update));
-routes.get('/', roles('ADMIN'), tryCatch(userController.list));
+routes.get('/', roles('MODERATOR'), tryCatch(userController.list));
 routes.get('/:id', roles('USER'), validateUserGet, tryCatch(userController.get));
+
+routes.put('/:id', roles('USER'), validateUserUpdate, tryCatch(userController.update));
+
 routes.post('/profilePic', roles('USER'), multer(multerConfig).single('file'), tryCatch(userController.updateProfilePic));
-routes.post('/change-password', roles('USER'), tryCatch(userController.updatePassword));
+
+routes.patch('/password', roles('USER'), tryCatch(userController.updatePassword));
+routes.patch('/:id/role', roles('ADMIN'), tryCatch(userController.updateRole));
+routes.patch('/:id/ban', roles('MODERATOR'), tryCatch(userController.banUser));
+routes.patch('/:id/unban', roles('MODERATOR'), tryCatch(userController.unbanUser));
 
 export default routes;
