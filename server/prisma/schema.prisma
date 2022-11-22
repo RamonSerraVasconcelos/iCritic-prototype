@@ -8,24 +8,34 @@ datasource db {
 }
 
 model User {
-    id                Int      @id @default(autoincrement())
+    id                Int       @id @default(autoincrement())
     name              String
-    email             String   @unique
+    email             String    @unique
     password          String
     description       String?
-    countryId         String?
-    profilePic        String?
-    passwordReset     String?
-    passwordResetDate Int?
-    role              Role     @default(DEFAULT)
-    active            Boolean  @default(true)
+    role              Role      @default(DEFAULT)
+    active            Boolean   @default(true)
     banlist           BanList?
-    image             Image    @relation(fields: [imageId], references: [id])
-    imageId           Int      @unique
-    created_at        DateTime @default(now())
-    updated_at        DateTime @updatedAt
+    countryId         Int?
+    country           Country?  @relation(fields: [countryId], references: [id])
+    image             Image     @relation(fields: [imageId], references: [id])
+    imageId           Int       @unique
+    passwordResetHash String?
+    passwordResetDate DateTime?
+    created_at        DateTime  @default(now())
+    updated_at        DateTime  @updatedAt
 
     @@map("users")
+}
+
+model Country {
+    id       Int        @id @default(autoincrement())
+    name     String
+    user     User[]
+    actor    Actor[]
+    director Director[]
+
+    @@map("countries")
 }
 
 model BanList {
@@ -96,6 +106,8 @@ model Director {
     name           String
     Movie          Movie?
     Director_Image Director_Image[]
+    country        Country?         @relation(fields: [countryId], references: [id])
+    countryId      Int?
     created_at     DateTime         @default(now())
     updated_at     DateTime         @updatedAt
 
@@ -119,6 +131,8 @@ model Actor {
     name        String
     Movie_Actor Movie_Actor[]
     Actor_Image Actor_Image[]
+    country     Country?      @relation(fields: [countryId], references: [id])
+    countryId   Int?
     created_at  DateTime      @default(now())
     updated_at  DateTime      @updatedAt
 
