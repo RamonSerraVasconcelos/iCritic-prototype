@@ -18,7 +18,8 @@
         "coverage": "yarn run coverage:server",
         "install:server": "cd server/src && yarn install",
         "postinstall": "concurrently --raw --group \"yarn run install:*\"",
-        "generate": "npx prisma generate --schema='./server/prisma/schema.prisma'"
+        "generate": "node ./server/node_modules/.bin/prisma generate --schema='./server/prisma/schema.prisma'",
+        "migrate": "node ./server/node_modules/.bin/prisma migrate dev --schema='./server/prisma/schema.prisma'"
     },
     "devDependencies": {
         "concurrently": "^7.3.0"
