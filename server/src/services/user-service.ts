@@ -24,11 +24,7 @@ const create = async ({ name, email, password, description, countryId }: UserDat
             email,
             password: hashedPassword,
             description: description || undefined,
-            country: {
-                connect: {
-                    id: countryId,
-                },
-            },
+            countryId: Number(countryId),
         },
     });
 

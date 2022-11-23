@@ -16,8 +16,8 @@ model User {
     role              Role     @default(DEFAULT)
     active            Boolean  @default(true)
     banlist           BanList?
-    countryId         Int?
-    country           Country? @relation(fields: [countryId], references: [id])
+    countryId         Int
+    country           Country  @relation(fields: [countryId], references: [id])
     image             Image?   @relation(fields: [imageId], references: [id])
     imageId           Int?     @unique
     passwordResetHash String?
