@@ -19,7 +19,7 @@ const register = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
-    if (req.body.id !== req.user.id) {
+    if (Number(req.params.id) !== req.user.id) {
         throw new ResponseError("You cannot edit another user's info", 403);
     }
 

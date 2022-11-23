@@ -34,13 +34,13 @@ const create = async ({ name, email, password, description, countryId }: UserDat
 const update = async (user: UserData) => {
     const updatedUser = await prisma.user.update({
         where: {
-            id: user.id,
+            id: Number(user.id),
         },
         data: {
             name: user.name || undefined,
             email: user.email || undefined,
             description: user.description || undefined,
-            countryId: Number(user.countryId),
+            countryId: Number(user.countryId) || undefined,
             passwordResetHash: user.passwordReset || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
         },
