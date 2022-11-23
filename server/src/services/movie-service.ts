@@ -1,7 +1,7 @@
 import prisma from '@src/config/prisma-client';
 
 interface MovieData {
-    id: string;
+    id: number;
     name: string;
     synopsis: string;
     releaseDate: string;

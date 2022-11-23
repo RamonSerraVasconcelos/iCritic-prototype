@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-    id                Int       @id @default(autoincrement())
+    id                Int      @id @default(autoincrement())
     name              String
-    email             String    @unique
+    email             String   @unique
     password          String
     description       String?
-    role              Role      @default(DEFAULT)
-    active            Boolean   @default(true)
+    role              Role     @default(DEFAULT)
+    active            Boolean  @default(true)
     banlist           BanList?
     countryId         Int?
-    country           Country?  @relation(fields: [countryId], references: [id])
-    image             Image     @relation(fields: [imageId], references: [id])
-    imageId           Int       @unique
+    country           Country? @relation(fields: [countryId], references: [id])
+    image             Image?   @relation(fields: [imageId], references: [id])
+    imageId           Int?     @unique
     passwordResetHash String?
-    passwordResetDate DateTime?
-    created_at        DateTime  @default(now())
-    updated_at        DateTime  @updatedAt
+    passwordResetDate Int?
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
 
     @@map("users")
 }
