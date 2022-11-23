@@ -40,7 +40,7 @@ const update = async (user: UserData) => {
             name: user.name || undefined,
             email: user.email || undefined,
             description: user.description || undefined,
-            countryId: user.countryId || undefined,
+            countryId: Number(user.countryId),
             passwordResetHash: user.passwordReset || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
         },
