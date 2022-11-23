@@ -54,7 +54,7 @@ const updatePassword = async (id: number, password: string) => {
 
     const updatedUser = await prisma.user.update({
         where: {
-            id,
+            id: Number(id),
         },
         data: {
             password: hashedPassword,
@@ -67,7 +67,7 @@ const updatePassword = async (id: number, password: string) => {
 const updateProfilePic = async (id: number, imageId: number) => {
     const updatedUser = await prisma.user.update({
         where: {
-            id,
+            id: Number(id),
         },
         data: {
             imageId,
@@ -80,7 +80,7 @@ const updateProfilePic = async (id: number, imageId: number) => {
 const updateUserRole = async (id: number, role: Role) => {
     const updatedUser = await prisma.user.update({
         where: {
-            id,
+            id: Number(id),
         },
         data: {
             role,
@@ -93,7 +93,7 @@ const updateUserRole = async (id: number, role: Role) => {
 const updateUserStatus = async (id: number, active: boolean) => {
     const updatedUser = await prisma.user.update({
         where: {
-            id,
+            id: Number(id),
         },
         data: {
             active,
@@ -122,7 +122,7 @@ const find = async () => {
 
 const findById = async (id: number) => {
     const user = await prisma.user.findUnique({
-        where: { id },
+        where: { id: Number(id) },
     });
 
     return user;
