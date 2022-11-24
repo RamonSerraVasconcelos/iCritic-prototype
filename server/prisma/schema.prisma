@@ -153,6 +153,7 @@ model Actor_Image {
 
 model Image {
     id             Int              @id @default(autoincrement())
+    path           String
     Director_Image Director_Image[]
     Actor_Image    Actor_Image[]
     User           User?

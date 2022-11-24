@@ -64,13 +64,17 @@ const updatePassword = async (id: number, password: string) => {
     return updatedUser;
 };
 
-const updateProfilePic = async (id: number, imageId: number) => {
+const updateProfilePic = async (id: number, imagePath: string) => {
     const updatedUser = await prisma.user.update({
         where: {
             id: Number(id),
         },
         data: {
-            imageId,
+            image: {
+                create: {
+                    path: imagePath,
+                },
+            },
         },
     });
 
