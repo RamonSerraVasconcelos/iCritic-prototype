@@ -19,7 +19,7 @@ const register = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
-    if (req.body.id !== req.user.id) {
+    if (Number(req.params.id) !== req.user.id) {
         throw new ResponseError("You cannot edit another user's info", 403);
     }
 
@@ -107,7 +107,7 @@ const updateRole = async (req: Request, res: Response) => {
         throw new ResponseError('Invalid role', 400);
     }
 
-    if (!(await userService.updateUserRole(req.params.id, role))) {
+    if (!(await userService.updateUserRole(Number(req.params.id), role))) {
         throw new ResponseError('Error updating user role', 400);
     }
 
@@ -123,11 +123,11 @@ const banUser = async (req: Request, res: Response) => {
         throw new ResponseError('Missing Ban motive', 400);
     }
 
-    if (!(await userService.updateUserStatus(req.params.id, 'BANNED'))) {
+    if (!(await userService.updateUserStatus(Number(req.params.id), false))) {
         throw new ResponseError('Error updating user status', 400);
     }
 
-    if (!(await userService.insertBan(req.params.id, req.body.motive))) {
+    if (!(await userService.insertBan(Number(req.params.id), req.body.motive))) {
         throw new ResponseError('Error updating user status', 400);
     }
 
@@ -139,7 +139,7 @@ const unbanUser = async (req: Request, res: Response) => {
         throw new ResponseError('Missing User Id', 400);
     }
 
-    if (!(await userService.updateUserStatus(req.params.id, 'ACTIVE'))) {
+    if (!(await userService.updateUserStatus(Number(req.params.id), true))) {
         throw new ResponseError('Error updating user status', 400);
     }
 

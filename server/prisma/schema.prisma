@@ -3,101 +3,168 @@ generator client {
 }
 
 datasource db {
-    provider = "mongodb"
+    provider = "postgresql"
     url      = env("DATABASE_URL")
 }
 
-//Model for the User Entity
 model User {
-    id                String    @id @default(auto()) @map("_id") @db.ObjectId
+    id                Int      @id @default(autoincrement())
     name              String
-    email             String    @unique
+    email             String   @unique
     password          String
     description       String?
-    countryId         String?
-    profilePic        String?
-    passwordReset     String?
+    role              Role     @default(DEFAULT)
+    active            Boolean  @default(true)
+    banlist           BanList?
+    countryId         Int
+    country           Country  @relation(fields: [countryId], references: [id])
+    image             Image?   @relation(fields: [imageId], references: [id])
+    imageId           Int?     @unique
+    passwordResetHash String?
     passwordResetDate Int?
-    role              String    @default("USER")
-    status            String    @default("ACTIVE")
-    created_at        DateTime  @default(now())
-    updated_at        DateTime  @updatedAt
-    Banlist           Banlist[]
+    created_at        DateTime @default(now())
+    updated_at        DateTime @updatedAt
 
     @@map("users")
 }
 
-model Banlist {
-    id     String   @id @default(auto()) @map("_id") @db.ObjectId
-    user   User     @relation(fields: [userId], references: [id])
-    motive String
-    date   DateTime @default(now())
-    userId String   @db.ObjectId
+model Country {
+    id       Int        @id @default(autoincrement())
+    name     String
+    user     User[]
+    actor    Actor[]
+    director Director[]
+
+    @@map("countries")
 }
 
-//** Models for the movies and its associated entitys. **//
+model BanList {
+    id         Int      @id @default(autoincrement())
+    motive     String
+    user       User     @relation(fields: [userId], references: [id])
+    userId     Int      @unique
+    created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-//Model for Movies
+    @@map("banlist")
+}
+
 model Movie {
-    id          String     @id @default(auto()) @map("_id") @db.ObjectId
-    name        String
-    synopsis    String
-    releaseDate String
-    country     String
-    language    String
-    rating      Int
-    categoryIDs String[]   @db.ObjectId
-    categories  Category[] @relation(fields: [categoryIDs], references: [id])
-    directorId  Int
-    actorIDs    String[]   @db.ObjectId
-    actors      Actor[]    @relation(fields: [actorIDs], references: [id])
-    created_at  DateTime   @default(now())
-    updated_at  DateTime   @updatedAt
+    id             Int              @id @default(autoincrement())
+    name           String
+    synopsis       String
+    releaseDate    String
+    country        String
+    language       String
+    rating         Int
+    director       Director         @relation(fields: [directorId], references: [id])
+    directorId     Int              @unique
+    Movie_Category Movie_Category[]
+    Movie_Actor    Movie_Actor[]
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
 
     @@map("movies")
 }
 
-//Model for movies Categories
-model Category {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    name       String
-    movieIDs   String[] @db.ObjectId
-    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+model Movie_Category {
+    id         Int      @id @default(autoincrement())
+    movie      Movie    @relation(fields: [movieId], references: [id])
+    movieId    Int
+    category   Category @relation(fields: [categoryId], references: [id])
+    categoryId Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+
+    @@map("movie_category")
+}
+
+model Category {
+    id             Int              @id @default(autoincrement())
+    name           String
+    Movie_Category Movie_Category[]
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
 
     @@map("categories")
 }
 
-//Model for movies Directors
-model Director {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    name       String
-    pictureIds String[]
+model Movie_Actor {
+    id         Int      @id @default(autoincrement())
+    movie      Movie    @relation(fields: [movieId], references: [id])
+    movieId    Int
+    actor      Actor    @relation(fields: [actorId], references: [id])
+    actorId    Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+
+    @@map("movie_actor")
+}
+
+model Director {
+    id             Int              @id @default(autoincrement())
+    name           String
+    Movie          Movie?
+    Director_Image Director_Image[]
+    country        Country?         @relation(fields: [countryId], references: [id])
+    countryId      Int?
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
 
     @@map("directors")
 }
 
-//Model for movies Actors
-model Actor {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
-    name       String
-    pictureIds String[]
-    movieIDs   String[] @db.ObjectId
-    movies     Movie[]  @relation(fields: [movieIDs], references: [id])
+model Director_Image {
+    id         Int      @id @default(autoincrement())
+    director   Director @relation(fields: [directorId], references: [id])
+    directorId Int
+    image      Image    @relation(fields: [imageId], references: [id])
+    imageId    Int
     created_at DateTime @default(now())
     updated_at DateTime @updatedAt
+
+    @@map("director_image")
+}
+
+model Actor {
+    id          Int           @id @default(autoincrement())
+    name        String
+    Movie_Actor Movie_Actor[]
+    Actor_Image Actor_Image[]
+    country     Country?      @relation(fields: [countryId], references: [id])
+    countryId   Int?
+    created_at  DateTime      @default(now())
+    updated_at  DateTime      @updatedAt
 
     @@map("actors")
 }
 
-//** Model for storing pictures **//
-
-model Picture {
-    id         String   @id @default(auto()) @map("_id") @db.ObjectId
+model Actor_Image {
+    id         Int      @id @default(autoincrement())
+    actor      Actor    @relation(fields: [actorId], references: [id])
+    actorId    Int
+    image      Image    @relation(fields: [imageId], references: [id])
+    imageId    Int
     created_at DateTime @default(now())
+    updated_at DateTime @updatedAt
 
-    @@map("pictures")
+    @@map("actor_image")
+}
+
+model Image {
+    id             Int              @id @default(autoincrement())
+    path           String
+    Director_Image Director_Image[]
+    Actor_Image    Actor_Image[]
+    User           User?
+    created_at     DateTime         @default(now())
+    updated_at     DateTime         @updatedAt
+
+    @@map("images")
+}
+
+enum Role {
+    DEFAULT
+    ADMIN
+    MODERATOR
 }

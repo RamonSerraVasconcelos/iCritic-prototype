@@ -17,13 +17,13 @@ routes.post('/register', validateRegister, tryCatch(userController.register));
 routes.use(userAuth);
 
 routes.get('/', roles('MODERATOR'), tryCatch(userController.list));
-routes.get('/:id', roles('USER'), validateUserGet, tryCatch(userController.get));
+routes.get('/:id', roles('DEFAULT'), validateUserGet, tryCatch(userController.get));
 
-routes.put('/:id', roles('USER'), validateUserUpdate, tryCatch(userController.update));
+routes.put('/:id', roles('DEFAULT'), validateUserUpdate, tryCatch(userController.update));
 
-routes.post('/profilePic', roles('USER'), multer(multerConfig).single('file'), tryCatch(userController.updateProfilePic));
+routes.post('/profilePic', roles('DEFAULT'), multer(multerConfig).single('file'), tryCatch(userController.updateProfilePic));
 
-routes.patch('/password', roles('USER'), tryCatch(userController.updatePassword));
+routes.patch('/password', roles('DEFAULT'), tryCatch(userController.updatePassword));
 routes.patch('/:id/role', roles('ADMIN'), tryCatch(userController.updateRole));
 routes.patch('/:id/ban', roles('MODERATOR'), tryCatch(userController.banUser));
 routes.patch('/:id/unban', roles('MODERATOR'), tryCatch(userController.unbanUser));

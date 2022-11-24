@@ -152,7 +152,7 @@ const resetPassword = async (req: Request, res: Response) => {
 
     if (!user) throw new ResponseError('User not found', 400);
 
-    const matchingTokens = await compare(token, user.passwordReset!);
+    const matchingTokens = await compare(token, user.passwordResetHash!);
 
     if (!matchingTokens) throw new ResponseError('Invalid token', 401);
 

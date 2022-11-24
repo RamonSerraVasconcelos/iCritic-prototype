@@ -23,7 +23,7 @@ const validateRegister = (req: Request, res: Response, next: NextFunction) => {
         if (!hasValueMaxLength(description, 400)) throw new ResponseError('Description must contain 400 characters maximum!', 400);
     }
 
-    if (countryId && !hasValueMinLength(countryId, 24)) {
+    if (countryId && !hasValueMinLength(countryId, 1)) {
         throw new ResponseError('Invalid Id format', 400);
     }
 
@@ -41,7 +41,7 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
     req.body.id = req.params.id;
     const { id, name, email, description, countryId } = req.body;
 
-    if (isEmpty(id) || !hasValueMinLength(id, 24)) {
+    if (isEmpty(id) || !hasValueMinLength(id, 1)) {
         throw new ResponseError('Invalid Id format', 400);
     }
 
@@ -65,7 +65,7 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
         if (!hasValueMaxLength(description, 400)) throw new ResponseError('Description must contain 400 characters maximum!', 400);
     }
 
-    if (countryId && !hasValueMinLength(countryId, 24)) {
+    if (countryId && !hasValueMinLength(countryId, 1)) {
         throw new ResponseError('Invalid Id format', 400);
     }
 
@@ -73,7 +73,7 @@ const validateUserUpdate = (req: Request, res: Response, next: NextFunction) => 
 };
 
 const validateUserGet = (req: Request, res: Response, next: NextFunction) => {
-    if (isEmpty(req.params.id) || !hasValueMinLength(req.params.id, 24)) {
+    if (isEmpty(req.params.id) || !hasValueMinLength(req.params.id, 1)) {
         throw new ResponseError('Invalid Id format', 400);
     }
 
