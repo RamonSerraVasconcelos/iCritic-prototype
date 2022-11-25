@@ -1,0 +1,38 @@
+{
+    "root": true,
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "project": ["**/tsconfig.json"]
+    },
+    "plugins": ["import", "react", "react-hooks", "@typescript-eslint"],
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "extends": [
+        "airbnb-typescript",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/eslint-recommended",
+        "prettier"
+    ],
+    "rules": {
+        "indent": "off",
+        "semi": ["error", "always"],
+        "@typescript-eslint/no-unused-vars": 1,
+        "@typescript-eslint/no-non-null-assertion": 1,
+        "@typescript-eslint/no-unused-expressions": 1,
+        "@typescript-eslint/ban-types": 0,
+        "react/prop-types": 1,
+        "react/react-in-jsx-scope": 0,
+        "react-hooks/exhaustive-deps": 0,
+        "react/jsx-filename-extension": [
+            1,
+            {
+                "extensions": [".tsx"]
+            }
+        ]
+    },
+    "ignorePatterns": ["**/*.html", "**/*.scss", "**/*.js", "**/*.config.ts"]
+}
