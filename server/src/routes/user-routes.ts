@@ -11,9 +11,7 @@ const routes = Router();
 
 routes.post('/register', validateRegister, tryCatch(userController.register));
 
-/**
- * Middleware to authenticate requests.
- */
+// Middleware to authenticate requests.
 routes.use(userAuth);
 
 routes.get('/', roles('MODERATOR'), tryCatch(userController.list));
@@ -21,11 +19,11 @@ routes.get('/:id', roles('DEFAULT'), validateUserGet, tryCatch(userController.ge
 
 routes.put('/:id', roles('DEFAULT'), validateUserUpdate, tryCatch(userController.update));
 
-routes.post('/profilePic', roles('DEFAULT'), multer(multerConfig).single('file'), tryCatch(userController.updateProfilePic));
+routes.post('/image', roles('DEFAULT'), multer(multerConfig).single('file'), tryCatch(userController.updateImage));
 
 routes.patch('/password', roles('DEFAULT'), tryCatch(userController.updatePassword));
 routes.patch('/:id/role', roles('ADMIN'), tryCatch(userController.updateRole));
-routes.patch('/:id/ban', roles('MODERATOR'), tryCatch(userController.banUser));
-routes.patch('/:id/unban', roles('MODERATOR'), tryCatch(userController.unbanUser));
+routes.patch('/:id/ban', roles('MODERATOR'), tryCatch(userController.ban));
+routes.patch('/:id/unban', roles('MODERATOR'), tryCatch(userController.unban));
 
 export default routes;

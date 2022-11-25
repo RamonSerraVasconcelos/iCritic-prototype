@@ -74,8 +74,8 @@ const get = async (req: Request, res: Response) => {
     });
 };
 
-const updateProfilePic = async (req: Request, res: Response) => {
-    const documentFile = (req as any).file;
+const updateImage = async (req: Request, res: Response) => {
+    const documentFile = req.file;
 
     if (!documentFile) {
         throw new ResponseError('Error saving the file', 400);
@@ -85,7 +85,7 @@ const updateProfilePic = async (req: Request, res: Response) => {
         throw new ResponseError('Error saving the file', 400);
     }
 
-    if (!userService.updateProfilePic(req.user.id, documentFile.filename)) {
+    if (!userService.updateImage(req.user.id, documentFile.filename)) {
         throw new ResponseError('Please review the user id and its fields', 400);
     }
 
@@ -107,14 +107,14 @@ const updateRole = async (req: Request, res: Response) => {
         throw new ResponseError('Invalid role', 400);
     }
 
-    if (!(await userService.updateUserRole(Number(req.params.id), role))) {
+    if (!(await userService.updateRole(Number(req.params.id), role))) {
         throw new ResponseError('Error updating user role', 400);
     }
 
     return res.status(200).send();
 };
 
-const banUser = async (req: Request, res: Response) => {
+const ban = async (req: Request, res: Response) => {
     if (!req.params.id) {
         throw new ResponseError('Missing User Id', 400);
     }
@@ -123,23 +123,23 @@ const banUser = async (req: Request, res: Response) => {
         throw new ResponseError('Missing Ban motive', 400);
     }
 
-    if (!(await userService.updateUserStatus(Number(req.params.id), false))) {
+    if (!(await userService.updateStatus(Number(req.params.id), false))) {
         throw new ResponseError('Error updating user status', 400);
     }
 
-    if (!(await userService.insertBan(Number(req.params.id), req.body.motive))) {
+    if (!(await userService.ban(Number(req.params.id), req.body.motive))) {
         throw new ResponseError('Error updating user status', 400);
     }
 
     return res.status(200).send();
 };
 
-const unbanUser = async (req: Request, res: Response) => {
+const unban = async (req: Request, res: Response) => {
     if (!req.params.id) {
         throw new ResponseError('Missing User Id', 400);
     }
 
-    if (!(await userService.updateUserStatus(Number(req.params.id), true))) {
+    if (!(await userService.updateStatus(Number(req.params.id), true))) {
         throw new ResponseError('Error updating user status', 400);
     }
 
@@ -152,8 +152,8 @@ export default {
     updatePassword,
     list,
     get,
-    updateProfilePic,
+    updateImage,
     updateRole,
-    banUser,
-    unbanUser,
+    ban,
+    unban,
 };

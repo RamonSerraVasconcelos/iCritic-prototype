@@ -1,21 +1,9 @@
 import { hash } from 'bcrypt';
-import prisma from '@src/config/prisma-client';
-// import { Role } from '@src/ts/enums/roles';
+import { UserProps } from '@src/ts/interfaces/user-props';
 import { Role } from '@prisma/client';
+import prisma from '@src/config/prisma-client';
 
-interface UserData {
-    id: number;
-    name: string;
-    email: string;
-    password: string;
-    profilePic: string;
-    description: string;
-    countryId: number;
-    passwordReset: string;
-    passwordResetDate: number;
-}
-
-const create = async ({ name, email, password, description, countryId }: UserData) => {
+const create = async ({ name, email, password, description, countryId }: UserProps) => {
     const hashedPassword = await hash(password, 10);
 
     const user = await prisma.user.create({
@@ -31,7 +19,7 @@ const create = async ({ name, email, password, description, countryId }: UserDat
     return user;
 };
 
-const update = async (user: UserData) => {
+const update = async (user: UserProps) => {
     const updatedUser = await prisma.user.update({
         where: {
             id: Number(user.id),
@@ -41,7 +29,7 @@ const update = async (user: UserData) => {
             email: user.email || undefined,
             description: user.description || undefined,
             countryId: Number(user.countryId) || undefined,
-            passwordResetHash: user.passwordReset || undefined,
+            passwordResetHash: user.passwordResetHash || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
         },
     });
@@ -64,7 +52,7 @@ const updatePassword = async (id: number, password: string) => {
     return updatedUser;
 };
 
-const updateProfilePic = async (id: number, imagePath: string) => {
+const updateImage = async (id: number, imagePath: string) => {
     const updatedUser = await prisma.user.update({
         where: {
             id: Number(id),
@@ -81,7 +69,7 @@ const updateProfilePic = async (id: number, imagePath: string) => {
     return updatedUser;
 };
 
-const updateUserRole = async (id: number, role: Role) => {
+const updateRole = async (id: number, role: Role) => {
     const updatedUser = await prisma.user.update({
         where: {
             id: Number(id),
@@ -94,7 +82,7 @@ const updateUserRole = async (id: number, role: Role) => {
     return updatedUser;
 };
 
-const updateUserStatus = async (id: number, active: boolean) => {
+const updateStatus = async (id: number, active: boolean) => {
     const updatedUser = await prisma.user.update({
         where: {
             id: Number(id),
@@ -107,7 +95,7 @@ const updateUserStatus = async (id: number, active: boolean) => {
     return updatedUser;
 };
 
-const insertBan = async (id: number, motive: string) => {
+const ban = async (id: number, motive: string) => {
     const insertedBan = await prisma.banList.create({
         data: {
             userId: id,
@@ -144,10 +132,10 @@ export default {
     create,
     update,
     updatePassword,
-    updateProfilePic,
-    updateUserRole,
-    updateUserStatus,
-    insertBan,
+    updateImage,
+    updateRole,
+    updateStatus,
+    ban,
     find,
     findById,
     findByEmail,
