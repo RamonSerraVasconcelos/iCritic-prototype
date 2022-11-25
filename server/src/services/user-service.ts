@@ -106,7 +106,7 @@ const ban = async (id: number, motive: string) => {
     return insertedBan;
 };
 
-const find = async () => {
+const list = async () => {
     const users = await prisma.user.findMany();
 
     return users;
@@ -136,7 +136,7 @@ export default {
     updateRole,
     updateStatus,
     ban,
-    find,
+    list,
     findById,
     findByEmail,
 };

@@ -12,6 +12,7 @@
   - You are about to drop the column `movieId` on the `movie_actor` table. All the data in the column will be lost.
   - You are about to drop the column `categoryId` on the `movie_category` table. All the data in the column will be lost.
   - You are about to drop the column `movieId` on the `movie_category` table. All the data in the column will be lost.
+  - You are about to drop the column `country` on the `movies` table. All the data in the column will be lost.
   - You are about to drop the column `directorId` on the `movies` table. All the data in the column will be lost.
   - You are about to drop the column `releaseDate` on the `movies` table. All the data in the column will be lost.
   - You are about to drop the column `countryId` on the `users` table. All the data in the column will be lost.
@@ -32,6 +33,7 @@
   - Added the required column `movie_id` to the `movie_actor` table without a default value. This is not possible if the table is not empty.
   - Added the required column `category_id` to the `movie_category` table without a default value. This is not possible if the table is not empty.
   - Added the required column `movie_id` to the `movie_category` table without a default value. This is not possible if the table is not empty.
+  - Added the required column `country_id` to the `movies` table without a default value. This is not possible if the table is not empty.
   - Added the required column `director_id` to the `movies` table without a default value. This is not possible if the table is not empty.
   - Added the required column `release_date` to the `movies` table without a default value. This is not possible if the table is not empty.
   - Added the required column `country_id` to the `users` table without a default value. This is not possible if the table is not empty.
@@ -125,8 +127,10 @@ ADD COLUMN     "category_id" INTEGER NOT NULL,
 ADD COLUMN     "movie_id" INTEGER NOT NULL;
 
 -- AlterTable
-ALTER TABLE "movies" DROP COLUMN "directorId",
+ALTER TABLE "movies" DROP COLUMN "country",
+DROP COLUMN "directorId",
 DROP COLUMN "releaseDate",
+ADD COLUMN     "country_id" INTEGER NOT NULL,
 ADD COLUMN     "director_id" INTEGER NOT NULL,
 ADD COLUMN     "release_date" TEXT NOT NULL;
 
@@ -157,6 +161,9 @@ ALTER TABLE "users" ADD CONSTRAINT "users_image_id_fkey" FOREIGN KEY ("image_id"
 
 -- AddForeignKey
 ALTER TABLE "banlist" ADD CONSTRAINT "banlist_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "movies" ADD CONSTRAINT "movies_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "movies" ADD CONSTRAINT "movies_director_id_fkey" FOREIGN KEY ("director_id") REFERENCES "directors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

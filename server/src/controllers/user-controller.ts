@@ -51,7 +51,7 @@ const updatePassword = async (req: Request, res: Response) => {
 };
 
 const list = async (req: Request, res: Response) => {
-    const users = await userService.find();
+    const users = await userService.list();
 
     if (!users) {
         throw new ResponseError('', 204);
