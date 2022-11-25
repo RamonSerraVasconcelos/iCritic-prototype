@@ -156,7 +156,7 @@ const resetPassword = async (req: Request, res: Response) => {
 
     if (!matchingTokens) throw new ResponseError('Invalid token', 401);
 
-    const now = Date.now();
+    const now = new Date();
 
     if (now > user.passwordResetDate!) throw new ResponseError('Expired token', 401);
 

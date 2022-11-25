@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import env from '@src/config/env';
 import { Request, Response, NextFunction } from 'express';
-import { User } from '@src/ts/types';
+import { UserProps } from '@src/ts/interfaces/user-props';
 import ResponseError from '@src/ts/classes/response-error';
 
 const userAuth = (req: Request, res: Response, next: NextFunction) => {
@@ -12,7 +12,7 @@ const userAuth = (req: Request, res: Response, next: NextFunction) => {
     jwt.verify(token, <string>env.ACCESS_TOKEN_SECRET, (error, user) => {
         if (error) throw new ResponseError('Unauthorized', 401);
 
-        req.user = user as User;
+        req.user = user as UserProps;
         return next();
     });
 
@@ -24,16 +24,12 @@ const userAuthRefresh = (req: Request, res: Response, next: NextFunction) => {
 
     if (!refreshToken) throw new ResponseError('Unauthorized', 401);
 
-    jwt.verify(
-        refreshToken,
-        <string>env.REFRESH_TOKEN_SECRET,
-        (error, user) => {
-            if (error) throw new ResponseError('Unauthorized', 401);
+    jwt.verify(refreshToken, <string>env.REFRESH_TOKEN_SECRET, (error, user) => {
+        if (error) throw new ResponseError('Unauthorized', 401);
 
-            req.user = user as User;
-            return next();
-        },
-    );
+        req.user = user as UserProps;
+        return next();
+    });
 
     return false;
 };

@@ -23,7 +23,7 @@ const update = async (req: Request, res: Response) => {
 };
 
 const list = async (req: Request, res: Response) => {
-    const movies = await movieService.find();
+    const movies = await movieService.list();
 
     if (!movies) {
         throw new ResponseError('', 204);
@@ -34,7 +34,17 @@ const list = async (req: Request, res: Response) => {
     });
 };
 
-const get = async (req: Request, res: Response) => {};
+const get = async (req: Request, res: Response) => {
+    const movie = await movieService.findById(req.body.id);
+
+    if (!movie) {
+        throw new ResponseError('', 404);
+    }
+
+    return res.status(200).send({
+        movie,
+    });
+};
 
 export default {
     create,

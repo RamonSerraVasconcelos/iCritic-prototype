@@ -8,22 +8,22 @@ datasource db {
 }
 
 model User {
-    id                Int      @id @default(autoincrement())
+    id                Int       @id @default(autoincrement())
     name              String
-    email             String   @unique
+    email             String    @unique
     password          String
     description       String?
-    role              Role     @default(DEFAULT)
-    active            Boolean  @default(true)
+    role              Role      @default(DEFAULT)
+    active            Boolean   @default(true)
     banlist           BanList?
-    countryId         Int
-    country           Country  @relation(fields: [countryId], references: [id])
-    image             Image?   @relation(fields: [imageId], references: [id])
-    imageId           Int?     @unique
-    passwordResetHash String?
-    passwordResetDate Int?
-    created_at        DateTime @default(now())
-    updated_at        DateTime @updatedAt
+    country           Country   @relation(fields: [countryId], references: [id])
+    countryId         Int       @map("country_id")
+    image             Image?    @relation(fields: [imageId], references: [id])
+    imageId           Int?      @unique @map("image_id")
+    passwordResetHash String?   @map("password_reset_hash")
+    passwordResetDate DateTime? @map("password_reset_date")
+    createdAt         DateTime  @default(now()) @map("created_at")
+    updatedAt         DateTime  @updatedAt @map("updated_at")
 
     @@map("users")
 }
@@ -32,6 +32,7 @@ model Country {
     id       Int        @id @default(autoincrement())
     name     String
     user     User[]
+    movie    Movie[]
     actor    Actor[]
     director Director[]
 
@@ -39,30 +40,31 @@ model Country {
 }
 
 model BanList {
-    id         Int      @id @default(autoincrement())
-    motive     String
-    user       User     @relation(fields: [userId], references: [id])
-    userId     Int      @unique
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    motive    String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int      @unique @map("user_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     @@map("banlist")
 }
 
 model Movie {
-    id             Int              @id @default(autoincrement())
-    name           String
-    synopsis       String
-    releaseDate    String
-    country        String
-    language       String
-    rating         Int
-    director       Director         @relation(fields: [directorId], references: [id])
-    directorId     Int              @unique
-    Movie_Category Movie_Category[]
-    Movie_Actor    Movie_Actor[]
-    created_at     DateTime         @default(now())
-    updated_at     DateTime         @updatedAt
+    id            Int              @id @default(autoincrement())
+    name          String
+    synopsis      String
+    releaseDate   String           @map("release_date")
+    language      String
+    rating        Int
+    country       Country          @relation(fields: [countryId], references: [id])
+    countryId     Int              @map("country_id")
+    director      Director         @relation(fields: [directorId], references: [id])
+    directorId    Int              @unique @map("director_id")
+    movieCategory Movie_Category[]
+    movieActor    Movie_Actor[]
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
 
     @@map("movies")
 }
@@ -70,46 +72,46 @@ model Movie {
 model Movie_Category {
     id         Int      @id @default(autoincrement())
     movie      Movie    @relation(fields: [movieId], references: [id])
-    movieId    Int
+    movieId    Int      @map("movie_id")
     category   Category @relation(fields: [categoryId], references: [id])
-    categoryId Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    categoryId Int      @map("category_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
 
     @@map("movie_category")
 }
 
 model Category {
-    id             Int              @id @default(autoincrement())
-    name           String
-    Movie_Category Movie_Category[]
-    created_at     DateTime         @default(now())
-    updated_at     DateTime         @updatedAt
+    id            Int              @id @default(autoincrement())
+    name          String
+    movieCategory Movie_Category[]
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
 
     @@map("categories")
 }
 
 model Movie_Actor {
-    id         Int      @id @default(autoincrement())
-    movie      Movie    @relation(fields: [movieId], references: [id])
-    movieId    Int
-    actor      Actor    @relation(fields: [actorId], references: [id])
-    actorId    Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    movie     Movie    @relation(fields: [movieId], references: [id])
+    movieId   Int      @map("movie_id")
+    actor     Actor    @relation(fields: [actorId], references: [id])
+    actorId   Int      @map("actor_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     @@map("movie_actor")
 }
 
 model Director {
-    id             Int              @id @default(autoincrement())
-    name           String
-    Movie          Movie?
-    Director_Image Director_Image[]
-    country        Country?         @relation(fields: [countryId], references: [id])
-    countryId      Int?
-    created_at     DateTime         @default(now())
-    updated_at     DateTime         @updatedAt
+    id            Int              @id @default(autoincrement())
+    name          String
+    movie         Movie?
+    directorImage Director_Image[]
+    country       Country          @relation(fields: [countryId], references: [id])
+    countryId     Int              @map("country_id")
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
 
     @@map("directors")
 }
@@ -117,48 +119,48 @@ model Director {
 model Director_Image {
     id         Int      @id @default(autoincrement())
     director   Director @relation(fields: [directorId], references: [id])
-    directorId Int
+    directorId Int      @map("director_id")
     image      Image    @relation(fields: [imageId], references: [id])
-    imageId    Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    imageId    Int      @map("image_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
 
     @@map("director_image")
 }
 
 model Actor {
-    id          Int           @id @default(autoincrement())
-    name        String
-    Movie_Actor Movie_Actor[]
-    Actor_Image Actor_Image[]
-    country     Country?      @relation(fields: [countryId], references: [id])
-    countryId   Int?
-    created_at  DateTime      @default(now())
-    updated_at  DateTime      @updatedAt
+    id         Int           @id @default(autoincrement())
+    name       String
+    movieActor Movie_Actor[]
+    actorImage Actor_Image[]
+    country    Country       @relation(fields: [countryId], references: [id])
+    countryId  Int           @map("country_id")
+    createdAt  DateTime      @default(now()) @map("created_at")
+    updatedAt  DateTime      @updatedAt @map("updated_at")
 
     @@map("actors")
 }
 
 model Actor_Image {
-    id         Int      @id @default(autoincrement())
-    actor      Actor    @relation(fields: [actorId], references: [id])
-    actorId    Int
-    image      Image    @relation(fields: [imageId], references: [id])
-    imageId    Int
-    created_at DateTime @default(now())
-    updated_at DateTime @updatedAt
+    id        Int      @id @default(autoincrement())
+    actor     Actor    @relation(fields: [actorId], references: [id])
+    actorId   Int      @map("actor_id")
+    image     Image    @relation(fields: [imageId], references: [id])
+    imageId   Int      @map("image_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
 
     @@map("actor_image")
 }
 
 model Image {
-    id             Int              @id @default(autoincrement())
-    path           String
-    Director_Image Director_Image[]
-    Actor_Image    Actor_Image[]
-    User           User?
-    created_at     DateTime         @default(now())
-    updated_at     DateTime         @updatedAt
+    id            Int              @id @default(autoincrement())
+    path          String
+    directorImage Director_Image[]
+    actorImage    Actor_Image[]
+    user          User?
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
 
     @@map("images")
 }
