@@ -4,7 +4,7 @@ import tryCatch from '@src/utils/try-catch';
 import { userAuth } from '@src/middlewares/jwt/verify-token';
 import roles from '@src/middlewares/validators/role-validator';
 import multer from 'multer';
-import { multerConfig } from '@src/middlewares/files/multerConfig';
+import { multerConfig } from '@src/middlewares/files/multer-config';
 import userController from '@src/controllers/user-controller';
 
 const routes = Router();

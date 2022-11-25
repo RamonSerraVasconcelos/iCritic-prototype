@@ -1,9 +1,11 @@
 {
-    "name": "icritic",
-    "version": "1.0.0",
+    "name": "icritic-server",
+    "private": true,
+    "license": "UNLICENSED",
     "main": "index.js",
+    "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
     "scripts": {
-        "dev": "tsnd --inspect --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
+        "dev": "tsnd --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
         "build": "rm -rf dist && tsc",
         "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/src/index.js",
         "lint": "npx eslint ./",
@@ -12,8 +14,6 @@
         "coverage": "jest --runInBand --coverage --coverageReporters='text-summary'",
         "generate": "node ./node_modules/.bin/prisma generate --schema='./prisma/schema.prisma'"
     },
-    "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
-    "license": "MIT",
     "dependencies": {
         "@prisma/client": "^4.6.1",
         "@types/multer": "^1.4.7",
