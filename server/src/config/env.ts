@@ -9,7 +9,7 @@ const SERVER_URL = process.env.SERVER_URL ? process.env.SERVER_URL : `http://loc
 
 const CLIENT_URL = process.env.CLIENT_URL ? process.env.CLIENT_URL : `http://localhost:3000`;
 
-const HTTP_SECURE = process.env.ENVIRONMENT === 'prod';
+const HTTP_SECURE = process.env.NODE_ENV === 'production';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
