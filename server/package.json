@@ -5,7 +5,7 @@
     "main": "index.js",
     "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
     "scripts": {
-        "dev": "tsnd --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
+        "dev": "tsnd --inspect --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
         "build": "rm -rf dist && tsc",
         "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/src/index.js",
         "lint": "npx eslint ./",

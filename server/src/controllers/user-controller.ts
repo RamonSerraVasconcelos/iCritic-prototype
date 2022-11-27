@@ -4,6 +4,15 @@ import userService from '@src/services/user-service';
 
 const ROLES = ['USER', 'MODERATOR', 'ADMIN'];
 
+// Exclude keys from user
+function exclude<User, Key extends keyof User>(user: User, keys: Key[]): Omit<User, Key> {
+    for (const key of keys) {
+        delete user[key];
+    }
+
+    return user;
+}
+
 const register = async (req: Request, res: Response) => {
     const isDuplicated = await userService.findByEmail(req.body.email);
 
@@ -57,6 +66,10 @@ const list = async (req: Request, res: Response) => {
         throw new ResponseError('', 204);
     }
 
+    users.forEach((user) => {
+        exclude(user, ['password', 'passwordResetHash', 'passwordResetDate', 'updatedAt']);
+    });
+
     return res.status(200).send({
         users,
     });
@@ -68,6 +81,8 @@ const get = async (req: Request, res: Response) => {
     if (!user) {
         throw new ResponseError('', 404);
     }
+
+    exclude(user, ['password', 'passwordResetHash', 'passwordResetDate', 'updatedAt']);
 
     return res.status(200).send({
         user,
