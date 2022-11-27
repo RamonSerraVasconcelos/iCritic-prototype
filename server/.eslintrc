@@ -23,7 +23,11 @@
         "@typescript-eslint/no-non-null-assertion": 0,
         "@typescript-eslint/no-unused-expressions": 0,
         "@typescript-eslint/ban-types": 0,
-        "import/prefer-default-export": "off"
+        "import/prefer-default-export": "off",
+        "no-param-reassign": [2, {
+            "props": false
+        }],
+        "no-restricted-syntax": 0
     },
     "ignorePatterns": ["**/*.html", "**/*.js"]
 }
