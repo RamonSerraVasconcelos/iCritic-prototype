@@ -23,7 +23,7 @@ app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) 
     res.status(error.status || 500).json({
         error: {
             status: error.status || 500,
-            message: error.message,
+            message: error.status === 500 ? '' : error.message,
         },
     });
 
