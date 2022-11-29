@@ -112,7 +112,7 @@ const forgotPassword = async (req: Request, res: Response) => {
     const expirationDate = Date.now() + 600000; // 10 minutes converted to miliseconds
 
     req.body.id = user.id;
-    req.body.passwordReset = hashedToken;
+    req.body.passwordResetHash = hashedToken;
     req.body.passwordResetDate = expirationDate;
 
     if (!(await userService.update(req.body))) {
@@ -158,7 +158,7 @@ const resetPassword = async (req: Request, res: Response) => {
 
     const now = new Date();
 
-    if (now > user.passwordResetDate!) throw new ResponseError('Expired token', 401);
+    if (Number(now) > user.passwordResetDate!) throw new ResponseError('Expired token', 401);
 
     const updatedPassword = userService.updatePassword(user.id, password);
 
