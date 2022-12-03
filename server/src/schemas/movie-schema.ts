@@ -1,7 +1,7 @@
 import { date, number, object } from 'yup';
 import { movieRules } from '@src/schemas/rules/movie-rules';
 
-const create = object({
+const add = object({
     name: movieRules.name.required(),
     synopsis: movieRules.synopsis.required(),
     releaseDate: date().required(),
@@ -10,7 +10,7 @@ const create = object({
     requiredId: number().required(),
 });
 
-const update = object({
+const edit = object({
     id: number().required(),
     name: movieRules.name.required(),
     synopsis: movieRules.synopsis.required(),
@@ -20,4 +20,4 @@ const update = object({
     requiredId: number().required(),
 });
 
-export const movieSchema = { create, update };
+export const movieSchema = { add, edit };

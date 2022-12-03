@@ -7,8 +7,10 @@ export interface UserProps {
     password: string;
     description: string;
     role: Role;
-    passwordResetHash: string;
+    passwordResetHash?: string | null;
     passwordResetDate: Date;
+    refreshToken?: string | null;
+    active: boolean;
     countryId: number;
     createdAt: Date;
     updatedAt: Date;

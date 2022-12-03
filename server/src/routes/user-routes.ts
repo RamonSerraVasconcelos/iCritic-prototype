@@ -10,34 +10,28 @@ import { Role } from '@prisma/client';
 const routes = Router();
 
 routes.get('/', tryCatch(userController.list));
-routes.get('/:userId', tryCatch(userController.get));
+routes.get('/:id', tryCatch(userController.get));
 routes.put(
-    '/:userId/update',
-    validate(userSchema.update),
-    tryCatch(userController.update),
-);
-routes.patch('/password', tryCatch(userController.updatePassword));
-routes.patch(
-    '/:userId/role',
-    roles(Role.ADMIN),
-    tryCatch(userController.updateRole),
+    '/:id/edit',
+    validate(userSchema.edit),
+    uploadImage.single('file'),
+    tryCatch(userController.edit),
 );
 
-// User image upload
-routes.post(
-    '/image',
-    uploadImage.single('file'),
-    tryCatch(userController.updateImage),
+routes.patch(
+    '/:id/role',
+    roles(Role.ADMIN),
+    tryCatch(userController.changeRole),
 );
 
 // User banishment
 routes.patch(
-    '/:userId/ban',
+    '/:id/ban',
     roles(Role.ADMIN, Role.MODERATOR),
     tryCatch(userController.ban),
 );
 routes.patch(
-    '/:userId/unban',
+    '/:id/unban',
     roles(Role.ADMIN, Role.MODERATOR),
     tryCatch(userController.unban),
 );

@@ -7,6 +7,7 @@ import { userService } from '@src/services/user-service';
 import { ResponseError } from '@src/ts/classes/response-error';
 import { nodemailer } from '@src/lib/nodemailer';
 import { TokenProps } from '@src/ts/interfaces/token-props';
+import { UserProps } from '@src/ts/interfaces/user-props';
 
 const register = async (req: Request, res: Response) => {
     const isDuplicated = await userService.findByEmail(req.body.email);
@@ -57,7 +58,11 @@ const login = async (req: Request, res: Response) => {
         { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
     );
 
-    await userService.updateRefreshToken(user.id, refreshToken);
+    const userData = {
+        refreshToken,
+    } as UserProps;
+
+    await userService.update(user.id, userData);
 
     res.cookie('refreshToken', refreshToken, {
         httpOnly: true,
@@ -87,7 +92,11 @@ const logout = async (req: Request, res: Response) => {
         return res.sendStatus(204);
     }
 
-    await userService.updateRefreshToken(user.id, null);
+    const userData = {
+        refreshToken: null,
+    } as UserProps;
+
+    await userService.update(user.id, userData);
 
     res.clearCookie('refreshToken', {
         httpOnly: true,
@@ -157,7 +166,11 @@ const resetPassword = async (req: Request, res: Response) => {
         throw new ResponseError('Invalid hash!', 401);
     }
 
-    await userService.updatePassword(user.id, password);
+    const userData = {
+        password,
+    } as UserProps;
+
+    await userService.update(user.id, userData);
     await userService.updatePasswordResetHash(user.id, null);
 
     return res.sendStatus(200);
