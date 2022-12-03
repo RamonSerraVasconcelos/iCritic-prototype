@@ -1,20 +1,17 @@
-import prisma from '@src/config/prisma-client';
+import { prisma } from '@src/config/prisma-client';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 
-const insert = async ({ name, synopsis, releaseDate, language, countryId, directorId }: MovieProps) => {
-    const movie = await prisma.movie.create({
+const insert = async (movie: MovieProps) => {
+    const createdMovie = await prisma.movie.create({
         data: {
-            name,
-            synopsis,
-            releaseDate,
-            language,
+            ...movie,
             rating: 0,
-            countryId: Number(countryId),
-            directorId: Number(directorId),
+            countryId: Number(movie.countryId),
+            directorId: Number(movie.directorId),
         },
     });
 
-    return movie;
+    return createdMovie;
 };
 
 const update = async (movie: MovieProps) => {
@@ -41,15 +38,15 @@ const list = async () => {
     return movies;
 };
 
-const findById = async (id: number) => {
+const findById = async (movieId: number) => {
     const movie = await prisma.movie.findUnique({
-        where: { id: Number(id) },
+        where: { id: movieId },
     });
 
     return movie;
 };
 
-export default {
+export const movieService = {
     insert,
     update,
     list,

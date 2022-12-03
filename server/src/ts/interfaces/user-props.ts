@@ -8,7 +8,7 @@ export interface UserProps {
     description: string;
     role: Role;
     passwordResetHash: string;
-    passwordResetDate: number;
+    passwordResetDate: Date;
     countryId: number;
     createdAt: Date;
     updatedAt: Date;

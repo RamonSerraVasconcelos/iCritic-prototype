@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import ResponseError from '@src/ts/classes/response-error';
-import movieService from '@src/services/movie-service';
+import { ResponseError } from '@src/ts/classes/response-error';
+import { movieService } from '@src/services/movie-service';
 
 const create = async (req: Request, res: Response) => {
     const movie = await movieService.insert(req.body);
@@ -15,8 +15,15 @@ const create = async (req: Request, res: Response) => {
 };
 
 const update = async (req: Request, res: Response) => {
-    if (!(await movieService.update(req.body))) {
-        throw new ResponseError('Something went wrong. Please review the movie id and its fields', 400);
+    const movieData = req.body;
+
+    const movie = await movieService.update(movieData);
+
+    if (!movie) {
+        throw new ResponseError(
+            'Something went wrong. Please review the movie id and its fields',
+            400,
+        );
     }
 
     return res.status(200).send();
@@ -35,7 +42,9 @@ const list = async (req: Request, res: Response) => {
 };
 
 const get = async (req: Request, res: Response) => {
-    const movie = await movieService.findById(req.body.id);
+    const movieId = req.body.id;
+
+    const movie = await movieService.findById(movieId);
 
     if (!movie) {
         throw new ResponseError('', 404);
@@ -46,7 +55,7 @@ const get = async (req: Request, res: Response) => {
     });
 };
 
-export default {
+export const movieController = {
     create,
     update,
     list,

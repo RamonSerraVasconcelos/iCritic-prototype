@@ -1,9 +1,9 @@
 import express, { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import corsOptions from '@src/config/cors-options';
+import { corsOptions } from '@src/config/cors-options';
 import cookieParser from 'cookie-parser';
 import routes from '@src/routes';
-import ResponseError from '@src/ts/classes/response-error';
+import { ResponseError } from '@src/ts/classes/response-error';
 
 const app = express();
 app.use(cors(corsOptions));
@@ -20,10 +20,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) => {
-    res.status(error.status || 500).json({
+    const { status, message } = error;
+
+    res.status(status || 500).json({
         error: {
-            status: error.status || 500,
-            message: error.status === 500 ? '' : error.message,
+            status: status || 500,
+            message,
         },
     });
 

@@ -1,13 +1,22 @@
 import { Router } from 'express';
-import tryCatch from '@src/utils/try-catch';
-import { validateCreation, validateUpdate } from '@src/middlewares/validators/movie-validator';
-import movieController from '@src/controllers/movie-controller';
+import { validate } from '@src/middlewares/validate-middleware';
+import { tryCatch } from '@src/utils/try-catch';
+import { movieSchema } from '@src/schemas/movie-schema';
+import { movieController } from '@src/controllers/movie-controller';
 
-const movieRoutes = Router();
+const routes = Router();
 
-movieRoutes.post('/:id', validateCreation, tryCatch(movieController.create));
-movieRoutes.put('/:id', validateUpdate, tryCatch(movieController.update));
-movieRoutes.get('/', tryCatch(movieController.list));
-movieRoutes.get('/:id', tryCatch(movieController.get));
+routes.post(
+    '/:movieId',
+    validate(movieSchema.create),
+    tryCatch(movieController.create),
+);
+routes.put(
+    '/:movieId',
+    validate(movieSchema.update),
+    tryCatch(movieController.update),
+);
+routes.get('/', tryCatch(movieController.list));
+routes.get('/:movieId', tryCatch(movieController.get));
 
-export default movieRoutes;
+export default routes;

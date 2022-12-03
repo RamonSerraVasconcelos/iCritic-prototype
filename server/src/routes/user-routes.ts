@@ -1,29 +1,45 @@
 import { Router } from 'express';
-import { validateRegister, validateUserUpdate, validateUserGet } from '@src/middlewares/validators/user-validator';
-import tryCatch from '@src/utils/try-catch';
-import { userAuth } from '@src/middlewares/jwt/verify-token';
-import roles from '@src/middlewares/validators/role-validator';
-import multer from 'multer';
-import { multerConfig } from '@src/middlewares/files/multer-config';
-import userController from '@src/controllers/user-controller';
+import { validate } from '@src/middlewares/validate-middleware';
+import { tryCatch } from '@src/utils/try-catch';
+import { userSchema } from '@src/schemas/user-schema';
+import { userController } from '@src/controllers/user-controller';
+import { roles } from '@src/middlewares/roles-middleware';
+import { uploadImage } from '@src/middlewares/upload-image-middleware';
+import { Role } from '@prisma/client';
 
 const routes = Router();
 
-routes.post('/register', validateRegister, tryCatch(userController.register));
+routes.get('/', tryCatch(userController.list));
+routes.get('/:userId', tryCatch(userController.get));
+routes.put(
+    '/:userId/update',
+    validate(userSchema.update),
+    tryCatch(userController.update),
+);
+routes.patch('/password', tryCatch(userController.updatePassword));
+routes.patch(
+    '/:userId/role',
+    roles(Role.ADMIN),
+    tryCatch(userController.updateRole),
+);
 
-// Middleware to authenticate requests.
-routes.use(userAuth);
+// User image upload
+routes.post(
+    '/image',
+    uploadImage.single('file'),
+    tryCatch(userController.updateImage),
+);
 
-routes.get('/', roles('MODERATOR'), tryCatch(userController.list));
-routes.get('/:id', roles('DEFAULT'), validateUserGet, tryCatch(userController.get));
-
-routes.put('/:id', roles('DEFAULT'), validateUserUpdate, tryCatch(userController.update));
-
-routes.post('/image', roles('DEFAULT'), multer(multerConfig).single('file'), tryCatch(userController.updateImage));
-
-routes.patch('/password', roles('DEFAULT'), tryCatch(userController.updatePassword));
-routes.patch('/:id/role', roles('ADMIN'), tryCatch(userController.updateRole));
-routes.patch('/:id/ban', roles('MODERATOR'), tryCatch(userController.ban));
-routes.patch('/:id/unban', roles('MODERATOR'), tryCatch(userController.unban));
+// User banishment
+routes.patch(
+    '/:userId/ban',
+    roles(Role.ADMIN, Role.MODERATOR),
+    tryCatch(userController.ban),
+);
+routes.patch(
+    '/:userId/unban',
+    roles(Role.ADMIN, Role.MODERATOR),
+    tryCatch(userController.unban),
+);
 
 export default routes;

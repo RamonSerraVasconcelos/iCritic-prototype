@@ -1,34 +1,46 @@
 import { hash } from 'bcrypt';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import { Role } from '@prisma/client';
-import prisma from '@src/config/prisma-client';
+import { prisma, excludeFields } from '@src/config/prisma-client';
 
-const create = async ({ name, email, password, description, countryId }: UserProps) => {
-    const hashedPassword = await hash(password, 10);
+const create = async (user: UserProps) => {
+    const hashedPassword = await hash(user.password, 10);
 
-    const user = await prisma.user.create({
+    const createdUser = await prisma.user.create({
         data: {
-            name,
-            email,
+            ...user,
             password: hashedPassword,
-            description: description || undefined,
-            countryId: Number(countryId),
+            countryId: Number(user.countryId),
         },
     });
 
-    return user;
+    return createdUser;
+};
+
+const updateRefreshToken = async (
+    userId: number,
+    refreshToken: string | null,
+) => {
+    await prisma.user.update({
+        data: {
+            refreshToken,
+        },
+        where: {
+            id: userId,
+        },
+    });
 };
 
 const update = async (user: UserProps) => {
     const updatedUser = await prisma.user.update({
         where: {
-            id: Number(user.id),
+            id: user.id,
         },
         data: {
             name: user.name || undefined,
             email: user.email || undefined,
             description: user.description || undefined,
-            countryId: Number(user.countryId) || undefined,
+            countryId: user.countryId || undefined,
             passwordResetHash: user.passwordResetHash || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
         },
@@ -37,25 +49,25 @@ const update = async (user: UserProps) => {
     return updatedUser;
 };
 
-const updatePassword = async (id: number, password: string) => {
+const updatePassword = async (userId: number, password: string) => {
     const hashedPassword = await hash(password, 10);
 
-    const updatedUser = await prisma.user.update({
+    const user = await prisma.user.update({
         where: {
-            id: Number(id),
+            id: userId,
         },
         data: {
             password: hashedPassword,
         },
     });
 
-    return updatedUser;
+    return user;
 };
 
-const updateImage = async (id: number, imagePath: string) => {
-    const updatedUser = await prisma.user.update({
+const updateImage = async (userId: number, imagePath: string) => {
+    const user = await prisma.user.update({
         where: {
-            id: Number(id),
+            id: userId,
         },
         data: {
             image: {
@@ -66,39 +78,59 @@ const updateImage = async (id: number, imagePath: string) => {
         },
     });
 
-    return updatedUser;
+    return user;
 };
 
-const updateRole = async (id: number, role: Role) => {
-    const updatedUser = await prisma.user.update({
+const updateRole = async (userId: number, role: Role) => {
+    const user = await prisma.user.update({
         where: {
-            id: Number(id),
+            id: userId,
         },
         data: {
             role,
         },
     });
 
-    return updatedUser;
+    return user;
 };
 
-const updateStatus = async (id: number, active: boolean) => {
-    const updatedUser = await prisma.user.update({
+const updateStatus = async (userId: number, active: boolean) => {
+    const user = await prisma.user.update({
         where: {
-            id: Number(id),
+            id: userId,
         },
         data: {
             active,
         },
     });
 
-    return updatedUser;
+    return user;
 };
 
-const ban = async (id: number, motive: string) => {
+const updatePasswordResetHash = async (
+    userId: number,
+    passwordResetHash: string | null,
+) => {
+    const nowPlusTenMinutes = new Date();
+    nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 10); // adding 10 minutes as expiring time
+
+    const user = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            passwordResetHash,
+            passwordResetDate: nowPlusTenMinutes,
+        },
+    });
+
+    return user;
+};
+
+const ban = async (userId: number, motive: string) => {
     const insertedBan = await prisma.banList.create({
         data: {
-            userId: id,
+            userId,
             motive,
         },
     });
@@ -107,14 +139,29 @@ const ban = async (id: number, motive: string) => {
 };
 
 const list = async () => {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findMany({
+        select: excludeFields('User', [
+            'password',
+            'passwordResetHash',
+            'passwordResetDate',
+            'refreshToken',
+            'updatedAt',
+        ]),
+    });
 
     return users;
 };
 
-const findById = async (id: number) => {
+const findById = async (userId: number) => {
     const user = await prisma.user.findUnique({
-        where: { id: Number(id) },
+        where: { id: userId },
+        select: excludeFields('User', [
+            'password',
+            'passwordResetHash',
+            'passwordResetDate',
+            'refreshToken',
+            'updatedAt',
+        ]),
     });
 
     return user;
@@ -128,9 +175,28 @@ const findByEmail = async (email: string) => {
     return user;
 };
 
-export default {
+const findByRefreshToken = async (refreshToken: string) => {
+    const user = await prisma.user.findFirst({
+        where: { refreshToken },
+    });
+
+    return user;
+};
+
+const findByPasswordResetHash = async (passwordResetHash: string) => {
+    const user = await prisma.user.findFirst({
+        where: { passwordResetHash },
+        select: excludeFields('User', ['refreshToken', 'updatedAt']),
+    });
+
+    return user;
+};
+
+export const userService = {
     create,
     update,
+    updateRefreshToken,
+    updatePasswordResetHash,
     updatePassword,
     updateImage,
     updateRole,
@@ -139,4 +205,6 @@ export default {
     list,
     findById,
     findByEmail,
+    findByRefreshToken,
+    findByPasswordResetHash,
 };

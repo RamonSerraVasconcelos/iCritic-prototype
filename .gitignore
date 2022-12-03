@@ -25,5 +25,7 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Public folder
-server/public/
+# Images from uploads folder
+server/uploads/*.jpeg
+server/uploads/*.jpg
+server/uploads/*.png

@@ -1,11 +1,11 @@
-import { UserProps } from '@src/ts/interfaces/user-props';
+import { TokenProps } from '@src/ts/interfaces/token-props';
 
 export {};
 
 declare global {
     namespace Express {
         interface Request {
-            user: UserProps;
+            user: TokenProps['user'];
         }
     }
 }

@@ -4,6 +4,5 @@
     "trailingComma": "all",
     "arrowParens": "always",
     "tabWidth": 4,
-    "bracketSpacing": true,
-    "printWidth": 150
+    "bracketSpacing": true
 }

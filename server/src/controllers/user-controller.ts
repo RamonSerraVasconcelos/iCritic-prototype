@@ -1,31 +1,8 @@
 import { Request, Response } from 'express';
-import ResponseError from '@src/ts/classes/response-error';
-import userService from '@src/services/user-service';
+import { ResponseError } from '@src/ts/classes/response-error';
+import { userService } from '@src/services/user-service';
 
 const ROLES = ['USER', 'MODERATOR', 'ADMIN'];
-
-// Exclude keys from user
-function exclude<User, Key extends keyof User>(user: User, keys: Key[]): Omit<User, Key> {
-    for (const key of keys) {
-        delete user[key];
-    }
-
-    return user;
-}
-
-const register = async (req: Request, res: Response) => {
-    const isDuplicated = await userService.findByEmail(req.body.email);
-
-    if (isDuplicated) throw new ResponseError('This email is already registered', 409);
-
-    const user = await userService.create(req.body);
-
-    if (!user) throw new ResponseError('User not found', 404);
-
-    return res.status(201).json({
-        user,
-    });
-};
 
 const update = async (req: Request, res: Response) => {
     if (Number(req.params.id) !== req.user.id) {
@@ -33,7 +10,10 @@ const update = async (req: Request, res: Response) => {
     }
 
     if (!userService.update(req.body)) {
-        throw new ResponseError('Please review the user id and its fields', 400);
+        throw new ResponseError(
+            'Please review the user id and its fields',
+            400,
+        );
     }
 
     return res.status(200).send();
@@ -42,19 +22,26 @@ const update = async (req: Request, res: Response) => {
 const updatePassword = async (req: Request, res: Response) => {
     const { password, confirmPassword } = req.body;
 
-    if (!password || password === '') throw new ResponseError('Missing password', 400);
+    if (!password || password === '')
+        throw new ResponseError('Missing password', 400);
 
-    if (!confirmPassword || confirmPassword === '') throw new ResponseError('Missing password confirmation', 400);
+    if (!confirmPassword || confirmPassword === '')
+        throw new ResponseError('Missing password confirmation', 400);
 
-    if (password !== confirmPassword) throw new ResponseError("Passwords don't match", 400);
+    if (password !== confirmPassword)
+        throw new ResponseError("Passwords don't match", 400);
 
     const user = await userService.findById(req.user.id);
 
     if (!user) throw new ResponseError('User not found', 404);
 
-    const updatedPassword = await userService.updatePassword(req.user.id, password);
+    const updatedPassword = await userService.updatePassword(
+        req.user.id,
+        password,
+    );
 
-    if (!updatedPassword) throw new ResponseError('Error updating password', 400);
+    if (!updatedPassword)
+        throw new ResponseError('Error updating password', 400);
 
     return res.status(200).send();
 };
@@ -66,23 +53,19 @@ const list = async (req: Request, res: Response) => {
         throw new ResponseError('', 204);
     }
 
-    users.forEach((user) => {
-        exclude(user, ['password', 'passwordResetHash', 'passwordResetDate', 'updatedAt']);
-    });
-
     return res.status(200).send({
         users,
     });
 };
 
 const get = async (req: Request, res: Response) => {
-    const user = await userService.findById(req.body.id);
+    const userId = Number(req.params.id);
+
+    const user = await userService.findById(userId);
 
     if (!user) {
         throw new ResponseError('', 404);
     }
-
-    exclude(user, ['password', 'passwordResetHash', 'passwordResetDate', 'updatedAt']);
 
     return res.status(200).send({
         user,
@@ -90,25 +73,21 @@ const get = async (req: Request, res: Response) => {
 };
 
 const updateImage = async (req: Request, res: Response) => {
-    const documentFile = req.file;
+    const { file } = req;
 
-    if (!documentFile) {
+    if (!file || !file.filename || file.filename === '') {
         throw new ResponseError('Error saving the file', 400);
     }
 
-    if (!documentFile.filename || documentFile.filename === '') {
-        throw new ResponseError('Error saving the file', 400);
-    }
+    userService.updateImage(req.user.id, file.filename);
 
-    if (!userService.updateImage(req.user.id, documentFile.filename)) {
-        throw new ResponseError('Please review the user id and its fields', 400);
-    }
-
-    return res.status(200).send();
+    return res.sendStatus(200);
 };
 
 const updateRole = async (req: Request, res: Response) => {
-    if (!req.params.id) {
+    const { userId } = req.params;
+
+    if (!userId) {
         throw new ResponseError('Missing User Id', 400);
     }
 
@@ -126,43 +105,40 @@ const updateRole = async (req: Request, res: Response) => {
         throw new ResponseError('Error updating user role', 400);
     }
 
-    return res.status(200).send();
+    return res.sendStatus(200);
 };
 
 const ban = async (req: Request, res: Response) => {
-    if (!req.params.id) {
-        throw new ResponseError('Missing User Id', 400);
+    const userId = Number(req.params.userId);
+    const { motive } = req.body;
+
+    if (!userId) {
+        throw new ResponseError('Missing user Id!', 400);
     }
 
-    if (!req.body.motive || req.body.motive === '') {
+    if (!motive || motive === '') {
         throw new ResponseError('Missing Ban motive', 400);
     }
 
-    if (!(await userService.updateStatus(Number(req.params.id), false))) {
-        throw new ResponseError('Error updating user status', 400);
-    }
+    await userService.updateStatus(userId, false);
+    await userService.ban(userId, motive);
 
-    if (!(await userService.ban(Number(req.params.id), req.body.motive))) {
-        throw new ResponseError('Error updating user status', 400);
-    }
-
-    return res.status(200).send();
+    return res.sendStatus(200);
 };
 
 const unban = async (req: Request, res: Response) => {
-    if (!req.params.id) {
-        throw new ResponseError('Missing User Id', 400);
+    const userId = Number(req.params.userId);
+
+    if (!userId) {
+        throw new ResponseError('Missing user Id!', 400);
     }
 
-    if (!(await userService.updateStatus(Number(req.params.id), true))) {
-        throw new ResponseError('Error updating user status', 400);
-    }
+    await userService.updateStatus(userId, true);
 
-    return res.status(200).send();
+    return res.sendStatus(200);
 };
 
-export default {
-    register,
+export const userController = {
     update,
     updatePassword,
     list,
