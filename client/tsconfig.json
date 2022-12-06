@@ -1,32 +1,31 @@
 {
-  "compilerOptions": {
-    "target": "ESNext",
-    "useDefineForClassFields": true,
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "allowJs": false,
-    "skipLibCheck": true,
-    "esModuleInterop": false,
-    "allowSyntheticDefaultImports": true,
-    "strict": true,
-    "forceConsistentCasingInFileNames": true,
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "rootDir": "./",
-    "baseUrl": ".",
-    "types": ["vite/client"],
-    "paths": {
-      "@src/*": ["src/*"]
-    }
-  },
-  "include": ["src", "tests", "index.d.ts", "jest.config.ts"],
-  "exclude": ["node_modules", "dist", "tests/resolver.js"],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ]
+    "compilerOptions": {
+        "baseUrl": ".",
+        "target": "es5",
+        "lib": ["dom", "dom.iterable", "esnext"],
+        "allowJs": true,
+        "skipLibCheck": true,
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        "noEmit": true,
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "resolveJsonModule": true,
+        "isolatedModules": true,
+        "jsx": "preserve",
+        "incremental": true,
+        "paths": {
+            "@src/*": ["./src/*"]
+        },
+        "typeRoots": ["./src/ts/types", "./node_modules/@types"]
+    },
+    "include": [
+        "next-env.d.ts",
+        "**/*.ts",
+        "**/*.tsx",
+        "src/pages/_document.js",
+        "next-i18next.config.js"
+    ],
+    "exclude": ["node_modules", "dist"]
 }
