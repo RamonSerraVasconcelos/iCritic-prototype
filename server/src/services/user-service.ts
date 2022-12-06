@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
 import { UserProps } from '@src/ts/interfaces/user-props';
-import { prisma, excludeFields } from '@src/config/prisma-client';
+import { prisma, excludeFields } from '@src/lib/prisma';
 
 const list = async () => {
     const users = await prisma.user.findMany({

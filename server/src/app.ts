@@ -19,17 +19,19 @@ app.use((req: Request, res: Response, next: NextFunction) => {
     next(error);
 });
 
-app.use((error: ResponseError, req: Request, res: Response, next: NextFunction) => {
-    const { status, message } = error;
+app.use(
+    (error: ResponseError, req: Request, res: Response, next: NextFunction) => {
+        const { status, message } = error;
 
-    res.status(status || 500).json({
-        error: {
-            status: status || 500,
-            message,
-        },
-    });
+        res.status(status || 500).json({
+            error: {
+                status: status || 500,
+                message,
+            },
+        });
 
-    next();
-});
+        next();
+    },
+);
 
 export default app;

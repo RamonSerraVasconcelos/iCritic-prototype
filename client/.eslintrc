@@ -11,6 +11,7 @@
         }
     },
     "extends": [
+        "next/core-web-vitals",
         "airbnb-typescript",
         "plugin:react/recommended",
         "plugin:@typescript-eslint/recommended",

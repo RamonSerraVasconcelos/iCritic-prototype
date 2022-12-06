@@ -1,4 +1,4 @@
-import { prisma } from '@src/config/prisma-client';
+import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 
 const list = async () => {
