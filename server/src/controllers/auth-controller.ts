@@ -1,5 +1,5 @@
-import { Request, Response } from 'express';
-import { compare } from 'bcrypt';
+import { query, Request, Response } from 'express';
+import { compare, hash } from 'bcrypt';
 import { env } from '@src/config/env';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
@@ -144,22 +144,34 @@ const forgotPassword = async (req: Request, res: Response) => {
     if (!user) throw new ResponseError('Email not found', 400);
 
     const passwordResetHash = crypto.randomUUID();
+    const encryptedHash = await hash(passwordResetHash, 10);
 
-    await userService.updatePasswordResetHash(user.id, passwordResetHash);
+    await userService.updatePasswordResetHash(user.id, encryptedHash);
     await nodemailer.sendPasswordResetLink(email, passwordResetHash);
 
     return res.sendStatus(200);
 };
 
 const resetPassword = async (req: Request, res: Response) => {
-    const { passwordResetHash } = req.params;
+    const { email, passwordResetHash } = req.params;
     const { password } = req.body;
+
+    if (!email) throw new ResponseError('Email not found!', 400);
 
     if (!passwordResetHash)
         throw new ResponseError('Password reset hash not found!', 400);
 
-    const user = await userService.findByPasswordResetHash(passwordResetHash);
+    const user = await userService.findByResetHashPassword(email);
     if (!user) throw new ResponseError('User not found!', 400);
+
+    if (!user.passwordResetHash) throw new ResponseError('Invalid token!', 400);
+
+    const isResetHashValid = compare(
+        passwordResetHash,
+        user.passwordResetHash!,
+    );
+
+    if (!isResetHashValid) throw new ResponseError('Invalid token!', 400);
 
     if (new Date() > user.passwordResetDate!) {
         await userService.updatePasswordResetHash(user.id, null);

@@ -1,6 +1,6 @@
 import { hash } from 'bcrypt';
 import { UserProps } from '@src/ts/interfaces/user-props';
-import { prisma, excludeFields } from '@src/lib/prisma';
+import { prisma, excludeFields, includeFields } from '@src/lib/prisma';
 
 const list = async () => {
     const users = await prisma.user.findMany({
@@ -47,10 +47,14 @@ const findByRefreshToken = async (refreshToken: string) => {
     return user;
 };
 
-const findByPasswordResetHash = async (passwordResetHash: string) => {
+const findByResetHashPassword = async (email: string) => {
     const user = await prisma.user.findFirst({
-        where: { passwordResetHash },
-        select: excludeFields('User', ['refreshToken', 'updatedAt']),
+        where: { email },
+        select: includeFields('User', [
+            'id',
+            'passwordResetHash',
+            'passwordResetDate',
+        ]),
     });
 
     return user;
@@ -147,7 +151,7 @@ export const userService = {
     findById,
     findByEmail,
     findByRefreshToken,
-    findByPasswordResetHash,
+    findByResetHashPassword,
     create,
     update,
     updatePasswordResetHash,
