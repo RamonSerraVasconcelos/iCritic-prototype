@@ -17,7 +17,7 @@ const HTTPS_SECURE = process.env.NODE_ENV === 'production';
 
 const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET!;
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET!;
-const ACCESS_TOKEN_EXPIRE_TIME = '10m' || process.env.ACCESS_TOKEN_EXPIRE_TIME;
+const ACCESS_TOKEN_EXPIRE_TIME = '1m' || process.env.ACCESS_TOKEN_EXPIRE_TIME;
 const REFRESH_TOKEN_EXPIRE_TIME = '1d' || process.env.REFRESH_TOKEN_EXPIRE_TIME;
 
 const NODEMAILER_HOST = process.env.NODEMAILER_HOST!;
