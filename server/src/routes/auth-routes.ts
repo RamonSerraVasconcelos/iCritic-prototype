@@ -7,8 +7,16 @@ import { authController } from '@src/controllers/auth-controller';
 const routes = Router();
 
 // Authentication
-routes.post('/register', validate(authSchema.register), tryCatch(authController.register));
-routes.post('/login', validate(authSchema.login), tryCatch(authController.login));
+routes.post(
+    '/register',
+    validate(authSchema.register),
+    tryCatch(authController.register),
+);
+routes.post(
+    '/login',
+    validate(authSchema.login),
+    tryCatch(authController.login),
+);
 routes.get('/logout', tryCatch(authController.logout));
 routes.get('/refresh', tryCatch(authController.refresh));
 
@@ -19,7 +27,7 @@ routes.post(
     tryCatch(authController.forgotPassword),
 );
 routes.post(
-    '/reset-password/:passwordResetHash',
+    '/reset-password/:passwordResetHash/:email',
     validate(authSchema.resetPassword),
     tryCatch(authController.resetPassword),
 );

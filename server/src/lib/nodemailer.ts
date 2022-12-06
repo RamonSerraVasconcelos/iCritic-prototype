@@ -1,5 +1,9 @@
 import { env } from '@src/config/env';
-import { createTransport, getTestMessageUrl, createTestAccount } from 'nodemailer';
+import {
+    createTransport,
+    getTestMessageUrl,
+    createTestAccount,
+} from 'nodemailer';
 
 const isProduction = env.NODE_ENV === 'production';
 
@@ -28,9 +32,12 @@ if (isProduction) {
     });
 }
 
-const sendPasswordResetLink = async (email: string, passwordResetHash: string) => {
+const sendPasswordResetLink = async (
+    email: string,
+    passwordResetHash: string,
+) => {
     const transport = createTransport(transportOptions);
-    const link = `${env.SERVER_URL}/reset-password/${passwordResetHash}`;
+    const link = `${env.SERVER_URL}/reset-password/${passwordResetHash}/${email}`;
 
     const transporter = await transport.sendMail({
         from: `noreply@icritic.com`,
@@ -42,7 +49,8 @@ const sendPasswordResetLink = async (email: string, passwordResetHash: string) =
         `,
     });
 
-    if (!isProduction) console.log(`Preview URL: ${getTestMessageUrl(transporter)}`);
+    if (!isProduction)
+        console.log(`Preview URL: ${getTestMessageUrl(transporter)}`);
 };
 
 export const nodemailer = { sendPasswordResetLink };
