@@ -52,6 +52,7 @@ const findByResetHashPassword = async (email: string) => {
         where: { email },
         select: includeFields('User', [
             'id',
+            'password',
             'passwordResetHash',
             'passwordResetDate',
         ]),

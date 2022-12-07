@@ -37,7 +37,7 @@ const sendPasswordResetLink = async (
     passwordResetHash: string,
 ) => {
     const transport = createTransport(transportOptions);
-    const link = `${env.SERVER_URL}/reset-password/${passwordResetHash}/${email}`;
+    const link = `${env.SERVER_URL}/reset-password/${passwordResetHash}?email=${email}`;
 
     const transporter = await transport.sendMail({
         from: `noreply@icritic.com`,

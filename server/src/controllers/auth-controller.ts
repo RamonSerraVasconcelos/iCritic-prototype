@@ -1,4 +1,4 @@
-import { query, Request, Response } from 'express';
+import { Request, Response } from 'express';
 import { compare, hash } from 'bcrypt';
 import { env } from '@src/config/env';
 import jwt from 'jsonwebtoken';
@@ -153,7 +153,8 @@ const forgotPassword = async (req: Request, res: Response) => {
 };
 
 const resetPassword = async (req: Request, res: Response) => {
-    const { email, passwordResetHash } = req.params;
+    const { passwordResetHash } = req.params;
+    const email = req.query.email?.toString();
     const { password } = req.body;
 
     if (!email) throw new ResponseError('Email not found!', 400);
@@ -166,17 +167,23 @@ const resetPassword = async (req: Request, res: Response) => {
 
     if (!user.passwordResetHash) throw new ResponseError('Invalid token!', 400);
 
-    const isResetHashValid = compare(
+    const isResetHashValid = await compare(
         passwordResetHash,
         user.passwordResetHash!,
     );
-
     if (!isResetHashValid) throw new ResponseError('Invalid token!', 400);
 
     if (new Date() > user.passwordResetDate!) {
         await userService.updatePasswordResetHash(user.id, null);
-        throw new ResponseError('Invalid hash!', 401);
+        throw new ResponseError('Expired hash!', 401);
     }
+
+    const isDuplicatedPassword = await compare(password, user.password);
+    if (isDuplicatedPassword)
+        throw new ResponseError(
+            'Your new password must be different from your previous password!',
+            400,
+        );
 
     const userData = {
         password,
