@@ -165,13 +165,14 @@ const resetPassword = async (req: Request, res: Response) => {
     const user = await userService.findByResetHashPassword(email);
     if (!user) throw new ResponseError('User not found!', 400);
 
-    if (!user.passwordResetHash) throw new ResponseError('Invalid token!', 400);
+    if (!user.passwordResetHash)
+        throw new ResponseError('No password reset was requested!', 400);
 
     const isResetHashValid = await compare(
         passwordResetHash,
         user.passwordResetHash!,
     );
-    if (!isResetHashValid) throw new ResponseError('Invalid token!', 400);
+    if (!isResetHashValid) throw new ResponseError('Invalid hash!', 400);
 
     if (new Date() > user.passwordResetDate!) {
         await userService.updatePasswordResetHash(user.id, null);
