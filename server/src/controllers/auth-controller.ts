@@ -170,7 +170,7 @@ const resetPassword = async (req: Request, res: Response) => {
 
     const isResetHashValid = await compare(
         passwordResetHash,
-        user.passwordResetHash!,
+        user.passwordResetHash,
     );
     if (!isResetHashValid) throw new ResponseError('Invalid hash!', 400);
 
