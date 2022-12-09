@@ -179,8 +179,8 @@ const resetPassword = async (req: Request, res: Response) => {
         throw new ResponseError('Expired hash!', 401);
     }
 
-    const isDuplicatedPassword = await compare(password, user.password);
-    if (isDuplicatedPassword)
+    const isPasswordDuplicated = await compare(password, user.password);
+    if (isPasswordDuplicated)
         throw new ResponseError(
             'Your new password must be different from your previous password!',
             400,
