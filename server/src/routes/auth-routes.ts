@@ -27,7 +27,7 @@ routes.post(
     tryCatch(authController.forgotPassword),
 );
 routes.post(
-    '/reset-password/:passwordResetHash/:email',
+    '/reset-password/:passwordResetHash',
     validate(authSchema.resetPassword),
     tryCatch(authController.resetPassword),
 );
