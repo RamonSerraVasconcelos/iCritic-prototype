@@ -17,7 +17,7 @@
         "emitDecoratorMetadata": true,
         "rootDir": ".",
         "baseUrl": ".",
-        "types": ["node"],
+        "types": ["node", "jest"],
         "paths": {
             "@src/*": ["./src/*"]
         },
