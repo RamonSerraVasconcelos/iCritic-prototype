@@ -8,25 +8,35 @@ datasource db {
 }
 
 model User {
-    id                Int       @id @default(autoincrement())
+    id                Int            @id @default(autoincrement())
     name              String
-    email             String    @unique
+    email             String         @unique
     password          String
     description       String?
-    role              Role      @default(DEFAULT)
-    active            Boolean   @default(true)
+    role              Role           @default(DEFAULT)
+    active            Boolean        @default(true)
     banlist           BanList[]
-    country           Country   @relation(fields: [countryId], references: [id])
-    countryId         Int       @map("country_id")
-    image             Image?    @relation(fields: [imageId], references: [id])
-    imageId           Int?      @unique @map("image_id")
-    passwordResetHash String?   @map("password_reset_hash")
-    passwordResetDate DateTime? @map("password_reset_date")
-    refreshToken      String?   @map("refresh_token")
-    createdAt         DateTime  @default(now()) @map("created_at")
-    updatedAt         DateTime  @updatedAt @map("updated_at")
+    country           Country        @relation(fields: [countryId], references: [id])
+    countryId         Int            @map("country_id")
+    image             Image?         @relation(fields: [imageId], references: [id])
+    imageId           Int?           @unique @map("image_id")
+    passwordResetHash String?        @map("password_reset_hash")
+    passwordResetDate DateTime?      @map("password_reset_date")
+    refreshToken      RefreshToken[]
+    createdAt         DateTime       @default(now()) @map("created_at")
+    updatedAt         DateTime       @updatedAt @map("updated_at")
 
     @@map("users")
+}
+
+model RefreshToken {
+    id        Int      @id @default(autoincrement())
+    token     String
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int      @map("user_id")
+    createdAt DateTime @default(now()) @map("created_at")
+
+    @@map("refresh_tokens")
 }
 
 model Country {

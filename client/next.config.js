@@ -13,6 +13,7 @@ const nextConfig = {
     i18n,
     reactStrictMode: true,
     swcMinify: true,
+    distDir: '.next/build',
 };
 
 module.exports = nextConfig;

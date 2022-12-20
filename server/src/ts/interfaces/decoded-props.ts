@@ -1,6 +1,6 @@
 import { Role } from '@prisma/client';
 
-export interface TokenProps {
+export interface DecodedProps {
     user: {
         id: number;
         name: string;
