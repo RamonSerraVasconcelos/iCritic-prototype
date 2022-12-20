@@ -32,7 +32,7 @@ const findById = async (userId: number) => {
 
 const findByEmail = async (email: string) => {
     const user = await prisma.user.findUnique({
-        where: { email },
+        where: { email: email.toLowerCase() },
     });
 
     return user;
@@ -69,6 +69,7 @@ const create = async (user: UserProps) => {
     const createdUser = await prisma.user.create({
         data: {
             ...user,
+            email: user.email.toLowerCase(),
             password: hashedPassword,
             countryId: Number(user.countryId),
         },
