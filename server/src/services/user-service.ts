@@ -1,6 +1,7 @@
 import { hash } from 'bcrypt';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import { prisma, excludeFields, includeFields } from '@src/lib/prisma';
+import { RefreshTokenProps } from '@src/ts/interfaces/refresh-token-props';
 
 const list = async () => {
     const users = await prisma.user.findMany({
@@ -8,7 +9,6 @@ const list = async () => {
             'password',
             'passwordResetHash',
             'passwordResetDate',
-            'refreshToken',
             'updatedAt',
         ]),
     });
@@ -23,7 +23,6 @@ const findById = async (userId: number) => {
             'password',
             'passwordResetHash',
             'passwordResetDate',
-            'refreshToken',
             'updatedAt',
         ]),
     });
@@ -33,18 +32,21 @@ const findById = async (userId: number) => {
 
 const findByEmail = async (email: string) => {
     const user = await prisma.user.findUnique({
-        where: { email },
+        where: { email: email.toLowerCase() },
     });
 
     return user;
 };
 
 const findByRefreshToken = async (refreshToken: string) => {
-    const user = await prisma.user.findFirst({
-        where: { refreshToken },
+    const token = await prisma.refreshToken.findFirst({
+        where: { token: refreshToken },
+        include: {
+            user: true,
+        },
     });
 
-    return user;
+    return token?.user;
 };
 
 const findByResetHashPassword = async (email: string) => {
@@ -67,12 +69,21 @@ const create = async (user: UserProps) => {
     const createdUser = await prisma.user.create({
         data: {
             ...user,
+            email: user.email.toLowerCase(),
             password: hashedPassword,
             countryId: Number(user.countryId),
         },
     });
 
     return createdUser;
+};
+
+const createRefreshToken = async (refreshToken: RefreshTokenProps) => {
+    const createdRefreshToken = await prisma.refreshToken.create({
+        data: refreshToken,
+    });
+
+    return createdRefreshToken;
 };
 
 const update = async (userId: number, user: UserProps) => {
@@ -92,11 +103,22 @@ const update = async (userId: number, user: UserProps) => {
             active: user.active,
             passwordResetHash: user.passwordResetHash || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
-            refreshToken: user.refreshToken || undefined,
         },
     });
 
     return updatedUser;
+};
+
+const deleteRefreshToken = async (refreshToken: string) => {
+    await prisma.refreshToken.deleteMany({
+        where: { token: refreshToken },
+    });
+};
+
+const deleteAllRefreshTokens = async (userId: number) => {
+    await prisma.refreshToken.deleteMany({
+        where: { userId },
+    });
 };
 
 const updatePasswordResetHash = async (
@@ -154,8 +176,11 @@ export const userService = {
     findByRefreshToken,
     findByResetHashPassword,
     create,
+    createRefreshToken,
     update,
     updatePasswordResetHash,
     updateAvatar,
+    deleteRefreshToken,
+    deleteAllRefreshTokens,
     ban,
 };
