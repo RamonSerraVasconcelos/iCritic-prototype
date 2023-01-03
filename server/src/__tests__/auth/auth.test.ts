@@ -5,7 +5,6 @@ import { exec } from 'child_process';
 import crypto from 'crypto';
 import app from '../../app';
 
-let accessCookie: string;
 let refreshCookie: string;
 
 describe('auth', () => {
@@ -40,14 +39,10 @@ describe('auth', () => {
                 .send(data)
                 .expect(200)
                 .then(async (res) => {
-                    accessCookie = res.headers['set-cookie'][1]
+                    refreshCookie = res.headers['set-cookie'][0]
                         .split(',')
                         .map((item: string) => item.split(';')[0]);
-                    refreshCookie = res.headers['set-cookie'][1]
-                        .split(',')
-                        .map((item: string) => item.split(';')[0]);
-                    expect(res.body.id).toBeTruthy();
-                    expect(res.body.name).toBeTruthy();
+                    expect(res.body.accessToken).toBeTruthy();
                 });
         });
     });
