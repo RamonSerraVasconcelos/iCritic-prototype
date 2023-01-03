@@ -87,7 +87,7 @@ const login = async (req: Request, res: Response) => {
         maxAge: env.ONE_DAY,
     });
 
-    return res.status(201).json({ accessToken });
+    return res.status(200).json({ accessToken });
 };
 
 const logout = async (req: Request, res: Response) => {
