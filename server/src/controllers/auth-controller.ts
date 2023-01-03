@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { compare, hash } from 'bcrypt';
 import { env } from '@src/config/env';
 import jwt from 'jsonwebtoken';
@@ -6,8 +6,9 @@ import crypto from 'crypto';
 import { userService } from '@src/services/user-service';
 import { ResponseError } from '@src/ts/classes/response-error';
 import { nodemailer } from '@src/lib/nodemailer';
-import { TokenProps } from '@src/ts/interfaces/token-props';
+import { DecodedProps } from '@src/ts/interfaces/decoded-props';
 import { UserProps } from '@src/ts/interfaces/user-props';
+import { RefreshTokenProps } from '@src/ts/interfaces/refresh-token-props';
 
 const register = async (req: Request, res: Response) => {
     const isDuplicated = await userService.findByEmail(req.body.email);
@@ -25,6 +26,7 @@ const register = async (req: Request, res: Response) => {
 };
 
 const login = async (req: Request, res: Response) => {
+    const { cookies } = req;
     const { email, password } = req.body;
 
     const foundUser = await userService.findByEmail(email);
@@ -50,7 +52,7 @@ const login = async (req: Request, res: Response) => {
         { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
     );
 
-    const refreshToken = jwt.sign(
+    const newRefreshToken = jwt.sign(
         {
             user,
         },
@@ -58,13 +60,27 @@ const login = async (req: Request, res: Response) => {
         { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
     );
 
-    const userData = {
-        refreshToken,
-    } as UserProps;
+    if (cookies?.refreshToken) {
+        const refreshToken = cookies?.refreshToken as string;
 
-    await userService.update(user.id, userData);
+        const foundToken = await userService.findByRefreshToken(refreshToken);
+        if (!foundToken) await userService.deleteAllRefreshTokens(user.id);
 
-    res.cookie('refreshToken', refreshToken, {
+        await userService.deleteRefreshToken(refreshToken);
+
+        res.clearCookie('refreshToken', {
+            httpOnly: true,
+            sameSite: 'none',
+            secure: env.HTTPS_SECURE,
+        });
+    }
+
+    await userService.createRefreshToken({
+        token: newRefreshToken,
+        userId: user.id,
+    } as RefreshTokenProps);
+
+    res.cookie('refreshToken', newRefreshToken, {
         httpOnly: true,
         sameSite: 'none',
         secure: env.HTTPS_SECURE,
@@ -92,11 +108,7 @@ const logout = async (req: Request, res: Response) => {
         return res.sendStatus(204);
     }
 
-    const userData = {
-        refreshToken: null,
-    } as UserProps;
-
-    await userService.update(user.id, userData);
+    await userService.deleteRefreshToken(refreshToken);
 
     res.clearCookie('refreshToken', {
         httpOnly: true,
@@ -107,34 +119,88 @@ const logout = async (req: Request, res: Response) => {
     return res.sendStatus(204);
 };
 
-const refresh = async (req: Request, res: Response) => {
+const refresh = async (req: Request, res: Response, next: NextFunction) => {
     const { cookies } = req;
 
     if (!cookies?.refreshToken) throw new ResponseError('Unauthorized!', 401);
 
     const refreshToken = cookies.refreshToken as string;
+
+    res.clearCookie('refreshToken', {
+        httpOnly: true,
+        sameSite: 'none',
+        secure: env.HTTPS_SECURE,
+    });
+
     const foundUser = await userService.findByRefreshToken(refreshToken);
 
-    if (!foundUser) throw new ResponseError('User not found!', 403);
+    // Detect reuse of refresh token
+    if (!foundUser) {
+        jwt.verify(
+            refreshToken,
+            env.REFRESH_TOKEN_SECRET,
+            async (error, decoded) => {
+                if (error)
+                    return next(new ResponseError('Invalid token!', 403));
 
-    jwt.verify(refreshToken, env.REFRESH_TOKEN_SECRET, (error, decoded) => {
-        const { user } = decoded as TokenProps;
+                const { user } = decoded as DecodedProps;
 
-        if (error || foundUser.id !== user.id)
-            throw new ResponseError('Invalid token!', 403);
-
-        const accessToken = jwt.sign(
-            {
-                user,
+                await userService.deleteAllRefreshTokens(user.id);
+                return next();
             },
-            env.ACCESS_TOKEN_SECRET,
-            { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
         );
 
-        return res.status(201).json({
-            accessToken,
-        });
-    });
+        throw new ResponseError('User not found!', 403);
+    }
+
+    jwt.verify(
+        refreshToken,
+        env.REFRESH_TOKEN_SECRET,
+        async (error, decoded) => {
+            if (error) {
+                await userService.deleteRefreshToken(refreshToken);
+                return next(new ResponseError('Invalid token!', 403));
+            }
+
+            const { user } = decoded as DecodedProps;
+
+            if (foundUser.id !== user.id)
+                return next(new ResponseError('Invalid token!', 403));
+
+            const accessToken = jwt.sign(
+                {
+                    user,
+                },
+                env.ACCESS_TOKEN_SECRET,
+                { expiresIn: env.ACCESS_TOKEN_EXPIRE_TIME },
+            );
+
+            const newRefreshToken = jwt.sign(
+                {
+                    user,
+                },
+                env.REFRESH_TOKEN_SECRET,
+                { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
+            );
+
+            await userService.deleteRefreshToken(refreshToken);
+            await userService.createRefreshToken({
+                token: newRefreshToken,
+                userId: user.id,
+            } as RefreshTokenProps);
+
+            res.cookie('refreshToken', newRefreshToken, {
+                httpOnly: true,
+                sameSite: 'none',
+                secure: env.HTTPS_SECURE,
+                maxAge: env.ONE_DAY,
+            });
+
+            return res.status(201).json({
+                accessToken,
+            });
+        },
+    );
 };
 
 const forgotPassword = async (req: Request, res: Response) => {

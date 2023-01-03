@@ -9,7 +9,6 @@ export interface UserProps {
     role: Role;
     passwordResetHash?: string | null;
     passwordResetDate: Date;
-    refreshToken?: string | null;
     active: boolean;
     countryId: number;
     createdAt: Date;
