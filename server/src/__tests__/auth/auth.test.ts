@@ -46,4 +46,61 @@ describe('auth', () => {
                 });
         });
     });
+
+    describe('refresh token', () => {
+        it('should return a new access token', async () => {
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', refreshCookie)
+                .expect(200)
+                .then(async (res) => {
+                    expect(res.headers['set-cookie']).toBeTruthy();
+                    expect(res.body.accessToken).toBeTruthy();
+                });
+        });
+    });
+
+    describe('forgot password', () => {
+        it('should return OK status code ', async () => {
+            await supertest(app)
+                .post(`/forgot-password`)
+                .send({ email: 'test@test.test' })
+                .expect(200);
+        });
+    });
+
+    describe('reset password', () => {
+        it('should reset the user password', async () => {
+            const passwordResetToken = crypto.randomBytes(20).toString('hex');
+            const hashedToken = await hash(passwordResetToken, 10);
+
+            await prisma.user.update({
+                where: {
+                    email: 'test@test.test',
+                },
+                data: {
+                    passwordResetHash: hashedToken,
+                },
+            });
+
+            const data = {
+                password: '123456789',
+            };
+
+            await supertest(app)
+                .post(
+                    `/reset-password/${passwordResetToken}?email=test@test.test`,
+                )
+                .send(data)
+                .expect(200);
+
+            await supertest(app)
+                .post(`/login`)
+                .send({
+                    email: 'test@test.test',
+                    password: '123456789',
+                })
+                .expect(200);
+        });
+    });
 });
