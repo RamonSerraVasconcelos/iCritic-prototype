@@ -196,7 +196,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
                 maxAge: env.ONE_DAY,
             });
 
-            return res.status(201).json({
+            return res.status(200).json({
                 accessToken,
             });
         },
