@@ -25,14 +25,10 @@ routes.patch(
 );
 
 // User banishment
-routes.patch(
-    '/:id/ban',
-    roles(Role.ADMIN, Role.MODERATOR),
-    tryCatch(userController.ban),
-);
+routes.patch('/:id/ban', roles(Role.MODERATOR), tryCatch(userController.ban));
 routes.patch(
     '/:id/unban',
-    roles(Role.ADMIN, Role.MODERATOR),
+    roles(Role.MODERATOR),
     tryCatch(userController.unban),
 );
 
