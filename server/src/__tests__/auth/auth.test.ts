@@ -1,11 +1,13 @@
 import supertest from 'supertest';
 import { prisma } from '@src/lib/prisma';
+import { env } from '@src/config/env';
 import { hash } from 'bcrypt';
 import { exec } from 'child_process';
 import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 import app from '../../app';
 
-let refreshCookie: string;
+let refreshToken: string;
 
 describe('auth', () => {
     beforeAll((done) => {
@@ -39,7 +41,7 @@ describe('auth', () => {
                 .send(data)
                 .expect(200)
                 .then(async (res) => {
-                    refreshCookie = res.headers['set-cookie'][0]
+                    refreshToken = res.headers['set-cookie'][0]
                         .split(',')
                         .map((item: string) => item.split(';')[0]);
                     expect(res.body.accessToken).toBeTruthy();
@@ -51,12 +53,56 @@ describe('auth', () => {
         it('should return a new access token', async () => {
             await supertest(app)
                 .get(`/refresh`)
-                .set('Cookie', refreshCookie)
+                .set('Cookie', refreshToken)
                 .expect(200)
                 .then(async (res) => {
                     expect(res.headers['set-cookie']).toBeTruthy();
                     expect(res.body.accessToken).toBeTruthy();
                 });
+        });
+    });
+
+    describe('try to use the already used refresh token', () => {
+        it('should return unauthorized', async () => {
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', refreshToken)
+                .expect(401);
+        });
+    });
+
+    describe('try to use an invalid refresh token', () => {
+        it('should return unauthorized', async () => {
+            const randomToken = crypto.randomBytes(20).toString('hex');
+
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', randomToken)
+                .expect(401);
+        });
+    });
+
+    describe('try to use an expired refresh token', () => {
+        it('should return unauthorized', async () => {
+            const user = {
+                id: 1,
+                name: 'Test User',
+            };
+
+            const newRefreshToken = jwt.sign(
+                {
+                    user,
+                },
+                env.REFRESH_TOKEN_SECRET,
+                { expiresIn: '1s' },
+            );
+
+            refreshToken = newRefreshToken;
+
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', refreshToken)
+                .expect(401);
         });
     });
 
