@@ -62,15 +62,6 @@ describe('auth', () => {
         });
     });
 
-    describe('try to use the already used refresh token', () => {
-        it('should return unauthorized', async () => {
-            await supertest(app)
-                .get(`/refresh`)
-                .set('Cookie', refreshToken)
-                .expect(401);
-        });
-    });
-
     describe('try to use an invalid refresh token', () => {
         it('should return unauthorized', async () => {
             const randomToken = crypto.randomBytes(20).toString('hex');
@@ -99,6 +90,15 @@ describe('auth', () => {
 
             refreshToken = newRefreshToken;
 
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', refreshToken)
+                .expect(401);
+        });
+    });
+
+    describe('try to use the already used refresh token', () => {
+        it('should return unauthorized', async () => {
             await supertest(app)
                 .get(`/refresh`)
                 .set('Cookie', refreshToken)
@@ -147,6 +147,35 @@ describe('auth', () => {
                     password: '123456789',
                 })
                 .expect(200);
+        });
+    });
+
+    describe('logout', () => {
+        it('should destroy the refresh token and return ok', async () => {
+            const data = {
+                email: 'test@test.test',
+                password: '123456789',
+            };
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    refreshToken = res.headers['set-cookie'][0]
+                        .split(',')
+                        .map((item: string) => item.split(';')[0]);
+                });
+
+            await supertest(app)
+                .get(`/logout`)
+                .set('Cookie', refreshToken)
+                .expect(204);
+
+            await supertest(app)
+                .get(`/refresh`)
+                .set('Cookie', refreshToken)
+                .expect(401);
         });
     });
 });
