@@ -73,6 +73,7 @@ const create = async (user: UserProps) => {
             password: hashedPassword,
             countryId: Number(user.countryId),
         },
+        select: includeFields('User', ['id', 'name', 'email', 'description']),
     });
 
     return createdUser;
