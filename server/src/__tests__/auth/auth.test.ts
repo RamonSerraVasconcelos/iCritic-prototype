@@ -5,9 +5,9 @@ import { hash } from 'bcrypt';
 import { exec } from 'child_process';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import generator from '@src/utils/random-generator';
+import { userService } from '@src/services/user-service';
 import app from '../../app';
-
-let refreshToken: string;
 
 describe('auth', () => {
     beforeAll((done) => {
@@ -19,22 +19,58 @@ describe('auth', () => {
 
     describe('login', () => {
         it('should return a 200 with user info', async () => {
-            const hashedPassword = await hash('12345678', 10);
+            const userData = await generator.getRandomUser();
 
             await prisma.user.create({
                 data: {
-                    email: 'test@test.test',
-                    name: 'Test User',
-                    description: 'Testing user',
-                    countryId: 29,
-                    password: hashedPassword,
+                    email: userData.email,
+                    name: userData.name,
+                    description: userData.description,
+                    countryId: userData.countryId,
+                    password: userData.password,
                 },
             });
 
             const data = {
-                email: 'test@test.test',
+                email: userData.email,
                 password: '12345678',
             };
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    expect(
+                        res.headers['set-cookie'][0]
+                            .split(',')
+                            .map((item: string) => item.split(';')[0]),
+                    ).toBeTruthy();
+                    expect(res.body.accessToken).toBeTruthy();
+                });
+        });
+    });
+
+    describe('refresh token', () => {
+        it('should return a new access token', async () => {
+            const userData = await generator.getRandomUser();
+
+            await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    name: userData.name,
+                    description: userData.description,
+                    countryId: userData.countryId,
+                    password: userData.password,
+                },
+            });
+
+            const data = {
+                email: userData.email,
+                password: '12345678',
+            };
+
+            let refreshToken = '';
 
             await supertest(app)
                 .post(`/login`)
@@ -44,13 +80,8 @@ describe('auth', () => {
                     refreshToken = res.headers['set-cookie'][0]
                         .split(',')
                         .map((item: string) => item.split(';')[0]);
-                    expect(res.body.accessToken).toBeTruthy();
                 });
-        });
-    });
 
-    describe('refresh token', () => {
-        it('should return a new access token', async () => {
             await supertest(app)
                 .get(`/refresh`)
                 .set('Cookie', refreshToken)
@@ -64,20 +95,32 @@ describe('auth', () => {
 
     describe('try to use an invalid refresh token', () => {
         it('should return unauthorized', async () => {
-            const randomToken = crypto.randomBytes(20).toString('hex');
+            const refreshToken = crypto.randomBytes(20).toString('hex');
 
             await supertest(app)
                 .get(`/refresh`)
-                .set('Cookie', randomToken)
+                .set('Cookie', refreshToken)
                 .expect(401);
         });
     });
 
     describe('try to use an expired refresh token', () => {
         it('should return unauthorized', async () => {
+            const userData = await generator.getRandomUser();
+
+            const createdUser = await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    name: userData.name,
+                    description: userData.description,
+                    countryId: userData.countryId,
+                    password: userData.password,
+                },
+            });
+
             const user = {
-                id: 1,
-                name: 'Test User',
+                id: createdUser.id,
+                name: userData.name,
             };
 
             const newRefreshToken = jwt.sign(
@@ -88,7 +131,7 @@ describe('auth', () => {
                 { expiresIn: '1s' },
             );
 
-            refreshToken = newRefreshToken;
+            const refreshToken = newRefreshToken;
 
             await supertest(app)
                 .get(`/refresh`)
@@ -99,6 +142,42 @@ describe('auth', () => {
 
     describe('try to use the already used refresh token', () => {
         it('should return unauthorized', async () => {
+            const userData = await generator.getRandomUser();
+
+            await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    name: userData.name,
+                    description: userData.description,
+                    countryId: userData.countryId,
+                    password: userData.password,
+                },
+            });
+
+            const data = {
+                email: userData.email,
+                password: '12345678',
+            };
+
+            let refreshToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    refreshToken = res.headers['set-cookie'][0]
+                        .split(',')
+                        .map((item: string) => item.split(';')[0]);
+                });
+
+            // remove refresh token from database
+            const refreshTokenString = refreshToken[0].substring(
+                refreshToken[0].indexOf('=') + 1,
+            );
+            await userService.deleteRefreshToken(refreshTokenString);
+
+            // try to use it
             await supertest(app)
                 .get(`/refresh`)
                 .set('Cookie', refreshToken)
@@ -108,9 +187,21 @@ describe('auth', () => {
 
     describe('forgot password', () => {
         it('should return OK status code ', async () => {
+            const hashedPassword = await hash('12345678', 10);
+
+            await prisma.user.create({
+                data: {
+                    email: 'forgotpassword@test.test',
+                    name: 'Forgot password test',
+                    description: 'Testing user',
+                    countryId: 29,
+                    password: hashedPassword,
+                },
+            });
+
             await supertest(app)
                 .post(`/forgot-password`)
-                .send({ email: 'test@test.test' })
+                .send({ email: 'forgotpassword@test.test' })
                 .expect(200);
         });
     });
@@ -122,7 +213,7 @@ describe('auth', () => {
 
             await prisma.user.update({
                 where: {
-                    email: 'test@test.test',
+                    email: 'forgotpassword@test.test',
                 },
                 data: {
                     passwordResetHash: hashedToken,
@@ -135,7 +226,7 @@ describe('auth', () => {
 
             await supertest(app)
                 .post(
-                    `/reset-password/${passwordResetToken}?email=test@test.test`,
+                    `/reset-password/${passwordResetToken}?email=forgotpassword@test.test`,
                 )
                 .send(data)
                 .expect(200);
@@ -143,7 +234,7 @@ describe('auth', () => {
             await supertest(app)
                 .post(`/login`)
                 .send({
-                    email: 'test@test.test',
+                    email: 'forgotpassword@test.test',
                     password: '123456789',
                 })
                 .expect(200);
@@ -152,10 +243,24 @@ describe('auth', () => {
 
     describe('logout', () => {
         it('should destroy the refresh token and return ok', async () => {
+            const userData = await generator.getRandomUser();
+
+            await prisma.user.create({
+                data: {
+                    email: userData.email,
+                    name: userData.name,
+                    description: userData.description,
+                    countryId: userData.countryId,
+                    password: userData.password,
+                },
+            });
+
             const data = {
-                email: 'test@test.test',
-                password: '123456789',
+                email: userData.email,
+                password: '12345678',
             };
+
+            let refreshToken = '';
 
             await supertest(app)
                 .post(`/login`)
