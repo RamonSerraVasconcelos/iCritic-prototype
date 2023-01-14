@@ -49,7 +49,7 @@ describe('user', () => {
                 });
 
             await supertest(app)
-                .get(`/users/1`)
+                .get(`/users/${userData.id}`)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200)
                 .then(async (res) => {
@@ -61,6 +61,47 @@ describe('user', () => {
                     expect(res.body.user.active).toBeTruthy();
                     expect(res.body.user.countryId).toBeTruthy();
                     expect(res.body.user.createdAt).toBeTruthy();
+                });
+        });
+    });
+
+    describe('edit user', () => {
+        it('should update username and description', async () => {
+            const userData = await generator.createRandomUser();
+
+            const data = {
+                email: userData.email,
+                password: userData.password,
+            };
+
+            let accessToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    accessToken = res.body.accessToken;
+                });
+
+            const body = {
+                name: 'new name',
+                description: 'new description',
+            };
+
+            await supertest(app)
+                .put(`/users/${userData.id}/edit`)
+                .send(body)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(200);
+
+            await supertest(app)
+                .get(`/users/${userData.id}`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(200)
+                .then(async (res) => {
+                    expect(res.body.user.name).toBe('new name');
+                    expect(res.body.user.description).toBe('new description');
                 });
         });
     });
