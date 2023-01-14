@@ -25,8 +25,7 @@ app.use(
 
         res.status(status || 500).json({
             error: {
-                status: status || 500,
-                message,
+                message: status ? message : '',
             },
         });
 
