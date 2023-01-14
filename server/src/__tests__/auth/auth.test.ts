@@ -19,21 +19,11 @@ describe('auth', () => {
 
     describe('login', () => {
         it('should return a 200 with user info', async () => {
-            const userData = await generator.getRandomUser();
-
-            await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const data = {
                 email: userData.email,
-                password: '12345678',
+                password: userData.password,
             };
 
             await supertest(app)
@@ -53,21 +43,11 @@ describe('auth', () => {
 
     describe('refresh token', () => {
         it('should return a new access token', async () => {
-            const userData = await generator.getRandomUser();
-
-            await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const data = {
                 email: userData.email,
-                password: '12345678',
+                password: userData.password,
             };
 
             let refreshToken = '';
@@ -106,21 +86,11 @@ describe('auth', () => {
 
     describe('try to use an expired refresh token', () => {
         it('should return unauthorized', async () => {
-            const userData = await generator.getRandomUser();
-
-            const createdUser = await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const user = {
-                id: createdUser.id,
-                name: userData.name,
+                email: userData.email,
+                password: userData.password,
             };
 
             const newRefreshToken = jwt.sign(
@@ -142,21 +112,11 @@ describe('auth', () => {
 
     describe('try to use the already used refresh token', () => {
         it('should return unauthorized', async () => {
-            const userData = await generator.getRandomUser();
-
-            await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const data = {
                 email: userData.email,
-                password: '12345678',
+                password: userData.password,
             };
 
             let refreshToken = '';
@@ -243,21 +203,11 @@ describe('auth', () => {
 
     describe('logout', () => {
         it('should destroy the refresh token and return ok', async () => {
-            const userData = await generator.getRandomUser();
-
-            await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const data = {
                 email: userData.email,
-                password: '12345678',
+                password: userData.password,
             };
 
             let refreshToken = '';
