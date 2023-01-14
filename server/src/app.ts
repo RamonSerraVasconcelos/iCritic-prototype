@@ -29,6 +29,8 @@ app.use(
             },
         });
 
+        if (!status) console.error(message);
+
         next();
     },
 );
