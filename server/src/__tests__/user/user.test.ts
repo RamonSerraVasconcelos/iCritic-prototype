@@ -31,21 +31,11 @@ describe('user', () => {
 
     describe('get user', () => {
         it('should return user info', async () => {
-            const userData = await generator.getRandomUser();
-
-            await prisma.user.create({
-                data: {
-                    email: userData.email,
-                    name: userData.name,
-                    description: userData.description,
-                    countryId: userData.countryId,
-                    password: userData.password,
-                },
-            });
+            const userData = await generator.createRandomUser();
 
             const data = {
                 email: userData.email,
-                password: '12345678',
+                password: userData.password,
             };
 
             let accessToken = '';
