@@ -127,7 +127,6 @@ describe('user', () => {
             await supertest(app)
                 .post(`/login`)
                 .send(data)
-                .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200)
                 .then(async (res) => {
                     accessToken = res.body.accessToken;
@@ -139,6 +138,7 @@ describe('user', () => {
             await supertest(app)
                 .patch(`users/${newUser.id}/role`)
                 .send({ role: newRole })
+                .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200);
 
             const newUserRole = await userService.findById(newUser.id);
