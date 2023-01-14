@@ -2,6 +2,8 @@ import { exec } from 'child_process';
 import supertest from 'supertest';
 import { prisma } from '@src/lib/prisma';
 import generator from '@src/utils/random-generator';
+import { userService } from '@src/services/user-service';
+import { UserProps } from '@src/ts/interfaces/user-props';
 import app from '../../app';
 
 describe('user', () => {
@@ -103,6 +105,44 @@ describe('user', () => {
                     expect(res.body.user.name).toBe('new name');
                     expect(res.body.user.description).toBe('new description');
                 });
+        });
+    });
+
+    describe('change user role', () => {
+        it('should change user role and return ok', async () => {
+            const userData = await generator.createRandomUser();
+            const userRole = {
+                role: 'ADMIN',
+            } as UserProps;
+
+            userService.update(userData.id, userRole);
+
+            const data = {
+                email: userData.email,
+                password: userData.password,
+            };
+
+            let accessToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(200)
+                .then(async (res) => {
+                    accessToken = res.body.accessToken;
+                });
+
+            const newUser = await generator.createRandomUser();
+            const newRole = 'MODERATOR';
+
+            await supertest(app)
+                .patch(`users/${newUser.id}/role`)
+                .send({ role: newRole })
+                .expect(200);
+
+            const newUserRole = await userService.findById(newUser.id);
+            expect(newUserRole!.role).toBe(newRole);
         });
     });
 });
