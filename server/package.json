@@ -4,6 +4,9 @@
   "license": "UNLICENSED",
   "main": "index.js",
   "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
+  "prisma": {
+    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+  },
   "scripts": {
     "dev": "tsnd --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
     "debug": "tsnd --exit-child --quiet --inspect -r tsconfig-paths/register ./src/index.ts",
@@ -11,6 +14,7 @@
     "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/src/index.js",
     "lint": "npx eslint ./",
     "migrate:start": "node ./node_modules/.bin/prisma migrate deploy && yarn start",
+    "migrate:windows": "dotenv -e ../.env npx prisma migrate dev --schema='./server/prisma/schema.prisma",
     "migrate:test": "dotenv -e ../.env.test -- npx prisma migrate reset --force",
     "test": "dotenv -e  ../.env.test jest --runInBand -i",
     "coverage": "jest --runInBand --coverage --coverageReporters='text-summary'",
