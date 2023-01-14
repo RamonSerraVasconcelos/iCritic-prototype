@@ -5,7 +5,7 @@
   "main": "index.js",
   "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
   "prisma": {
-    "seed": "ts-node --compiler-options {\"module\":\"CommonJS\"} prisma/seed.ts"
+    "seed": "ts-node prisma/seed.ts"
   },
   "scripts": {
     "dev": "tsnd --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
