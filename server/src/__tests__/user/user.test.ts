@@ -136,7 +136,7 @@ describe('user', () => {
             const newRole = 'MODERATOR';
 
             await supertest(app)
-                .patch(`users/${newUser.id}/role`)
+                .patch(`/users/${newUser.id}/role`)
                 .send({ role: newRole })
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200);
