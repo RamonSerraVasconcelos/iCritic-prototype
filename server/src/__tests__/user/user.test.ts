@@ -145,4 +145,79 @@ describe('user', () => {
             expect(newUserRole!.role).toBe(newRole);
         });
     });
+
+    describe('ban user', () => {
+        it('should ban user and return ok', async () => {
+            const userData = await generator.createRandomUser();
+            const userRole = {
+                role: 'ADMIN',
+            } as UserProps;
+
+            userService.update(userData.id, userRole);
+
+            const data = {
+                email: userData.email,
+                password: userData.password,
+            };
+
+            let accessToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    accessToken = res.body.accessToken;
+                });
+
+            const newUser = await generator.createRandomUser();
+            const body = { motive: 'ban user test' };
+
+            await supertest(app)
+                .patch(`/users/${newUser.id}/ban`)
+                .send(body)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(200);
+
+            const user = await userService.findById(newUser.id);
+            if (user) expect(user.active).toBe(false);
+        });
+    });
+
+    describe('unban user', () => {
+        it('should unban user and return ok', async () => {
+            const userData = await generator.createRandomUser();
+            const userRole = {
+                role: 'ADMIN',
+            } as UserProps;
+
+            userService.update(userData.id, userRole);
+
+            const data = {
+                email: userData.email,
+                password: userData.password,
+            };
+
+            const newUser = await generator.createRandomUser();
+            userService.ban(newUser.id, 'ban user test');
+
+            let accessToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    accessToken = res.body.accessToken;
+                });
+
+            await supertest(app)
+                .patch(`/users/${newUser.id}/unban`)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(200);
+
+            const user = await userService.findById(newUser.id);
+            if (user) expect(user.active).toBe(true);
+        });
+    });
 });
