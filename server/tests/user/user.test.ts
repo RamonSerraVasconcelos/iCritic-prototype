@@ -1,10 +1,9 @@
 import { exec } from 'child_process';
 import supertest from 'supertest';
-import { prisma } from '@src/lib/prisma';
 import generator from '@src/utils/random-generator';
 import { userService } from '@src/services/user-service';
 import { UserProps } from '@src/ts/interfaces/user-props';
-import app from '../../app';
+import app from '@src/app';
 
 describe('user', () => {
     beforeAll((done) => {

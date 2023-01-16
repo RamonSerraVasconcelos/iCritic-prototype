@@ -7,7 +7,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import generator from '@src/utils/random-generator';
 import { userService } from '@src/services/user-service';
-import app from '../../app';
+import app from '@src/app';
 
 describe('auth', () => {
     beforeAll((done) => {
