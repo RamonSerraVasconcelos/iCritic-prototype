@@ -17,7 +17,9 @@
         "migrate": "dotenv -e ../.env npx prisma migrate dev --schema='./prisma/schema.prisma'",
         "migrate:test": "dotenv -e ../.env.test -- npx prisma migrate reset --schema='./prisma/schema.prisma' --force",
         "push": "dotenv -e ../.env npx prisma db push --schema='./prisma/schema.prisma'",
-        "test": "dotenv -e  ../.env.test jest --runInBand -i",
+        "docker:up": "docker-compose up -d",
+        "docker:down": "docker-compose down",
+        "test": "yarn docker:up && yarn migrate:test && dotenv -e  ../.env.test jest -i",
         "coverage": "jest --runInBand --coverage --coverageReporters='text-summary'"
     },
     "dependencies": {
