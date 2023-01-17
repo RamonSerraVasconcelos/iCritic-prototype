@@ -4,9 +4,6 @@
     "license": "UNLICENSED",
     "main": "index.js",
     "author": "paulozaneripe <paulozaneripe@hotmail.com>, ramonvasconcelos <rserravasconcelos@gmail.com>",
-    "prisma": {
-        "seed": "dotenv -e ../.env.test tsnd prisma/seed.ts"
-    },
     "scripts": {
         "dev": "tsnd --exit-child --quiet -r tsconfig-paths/register ./src/index.ts",
         "debug": "tsnd --exit-child --quiet --inspect -r tsconfig-paths/register ./src/index.ts",
@@ -14,8 +11,10 @@
         "start": "node -r ts-node/register/transpile-only -r tsconfig-paths/register dist/src/index.js",
         "lint": "npx eslint ./",
         "generate": "dotenv -e ../.env npx prisma generate --schema='./prisma/schema.prisma'",
-        "migrate": "dotenv -e ../.env npx prisma migrate dev --schema='./prisma/schema.prisma'",
-        "migrate:test": "dotenv -e ../.env.test -- npx prisma migrate reset --schema='./prisma/schema.prisma' --force",
+        "migrate": "dotenv -e ../.env npx prisma migrate dev --schema='./prisma/schema.prisma' && yarn seed",
+        "migrate:test": "dotenv -e ../.env.test -- npx prisma migrate reset --schema='./prisma/schema.prisma' --force && yarn seed:test",
+        "seed": "dotenv -e ../.env tsnd prisma/seed.ts",
+        "seed:test": "dotenv -e ../.env.test tsnd prisma/seed.ts",
         "push": "dotenv -e ../.env npx prisma db push --schema='./prisma/schema.prisma'",
         "docker:up": "docker-compose up -d",
         "docker:down": "docker-compose down",
