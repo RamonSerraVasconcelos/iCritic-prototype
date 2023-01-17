@@ -2,7 +2,6 @@ import supertest from 'supertest';
 import { prisma } from '@src/lib/prisma';
 import { env } from '@src/config/env';
 import { hash } from 'bcrypt';
-import { exec } from 'child_process';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import generator from '@src/utils/random-generator';
@@ -10,13 +9,6 @@ import { userService } from '@src/services/user-service';
 import app from '@src/app';
 
 describe('auth', () => {
-    beforeAll((done) => {
-        exec('yarn migrate:test', (err): void => {
-            if (err) throw new Error(err.message);
-            done();
-        });
-    });
-
     describe('login', () => {
         it('should return a 200 with user info', async () => {
             const userData = await generator.createRandomUser();

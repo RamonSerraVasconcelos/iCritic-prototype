@@ -16,8 +16,8 @@
         "seed": "dotenv -e ../.env tsnd prisma/seed.ts",
         "seed:test": "dotenv -e ../.env.test tsnd prisma/seed.ts",
         "push": "dotenv -e ../.env npx prisma db push --schema='./prisma/schema.prisma'",
-        "docker:up": "docker-compose up -d",
-        "docker:down": "docker-compose down",
+        "docker:up": "docker compose up -d",
+        "docker:down": "docker compose down",
         "test": "yarn docker:up && yarn migrate:test && dotenv -e  ../.env.test jest -i",
         "coverage": "jest --runInBand --coverage --coverageReporters='text-summary'"
     },

@@ -1,4 +1,3 @@
-import { exec } from 'child_process';
 import supertest from 'supertest';
 import generator from '@src/utils/random-generator';
 import { userService } from '@src/services/user-service';
@@ -6,13 +5,6 @@ import { UserProps } from '@src/ts/interfaces/user-props';
 import app from '@src/app';
 
 describe('user', () => {
-    beforeAll((done) => {
-        exec('yarn migrate:test', (err): void => {
-            if (err) throw new Error(err.message);
-            done();
-        });
-    });
-
     describe('register user', () => {
         it('should create user and return his data', async () => {
             const userData = await generator.getRandomUser();
