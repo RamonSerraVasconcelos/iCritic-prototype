@@ -1,36 +1,14 @@
 import { env } from '@src/config/env';
-import {
-    createTransport,
-    getTestMessageUrl,
-    createTestAccount,
-} from 'nodemailer';
+import { createTransport, TransportOptions } from 'nodemailer';
 
-const isProduction = env.NODE_ENV === 'production';
-
-let transportOptions = {};
-
-if (isProduction) {
-    transportOptions = {
-        host: env.NODEMAILER_HOST,
-        port: env.NODEMAILER_PORT,
-        auth: {
-            user: env.NODEMAILER_USER,
-            pass: env.NODEMAILER_PASSWORD,
-        },
-    };
-} else {
-    createTestAccount().then((account) => {
-        transportOptions = {
-            host: account.smtp.host,
-            port: account.smtp.port,
-            secure: account.smtp.secure,
-            auth: {
-                user: account.user,
-                pass: account.pass,
-            },
-        };
-    });
-}
+const transportOptions = {
+    host: env.NODEMAILER_HOST,
+    port: env.NODEMAILER_PORT,
+    auth: {
+        user: env.NODEMAILER_USER,
+        pass: env.NODEMAILER_PASSWORD,
+    },
+} as TransportOptions;
 
 const sendPasswordResetLink = async (
     email: string,
@@ -39,7 +17,7 @@ const sendPasswordResetLink = async (
     const transport = createTransport(transportOptions);
     const link = `${env.SERVER_URL}/reset-password/${passwordResetHash}?email=${email}`;
 
-    const transporter = await transport.sendMail({
+    await transport.sendMail({
         from: `noreply@icritic.com`,
         to: email,
         subject: 'iCritic - Reset your password',
@@ -48,9 +26,6 @@ const sendPasswordResetLink = async (
             <a href=${link} target="_blank">Click here</a> to reset your password!
         `,
     });
-
-    if (!isProduction)
-        console.log(`Preview URL: ${getTestMessageUrl(transporter)}`);
 };
 
 export const nodemailer = { sendPasswordResetLink };

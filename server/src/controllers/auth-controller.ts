@@ -141,7 +141,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
             env.REFRESH_TOKEN_SECRET,
             async (error, decoded) => {
                 if (error)
-                    return next(new ResponseError('Invalid token!', 403));
+                    return next(new ResponseError('Invalid token!', 401));
 
                 const { user } = decoded as DecodedProps;
 
@@ -150,7 +150,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction) => {
             },
         );
 
-        throw new ResponseError('User not found!', 403);
+        throw new ResponseError('User not found!', 401);
     }
 
     jwt.verify(

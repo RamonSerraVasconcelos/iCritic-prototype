@@ -22,10 +22,7 @@
         "coverage": "yarn run coverage:server",
         "install:client": "cd client/src && yarn install",
         "install:server": "cd server/src && yarn install",
-        "postinstall": "concurrently --raw --group \"yarn run install:*\"",
-        "generate": "node ./server/node_modules/.bin/prisma generate --schema='./server/prisma/schema.prisma'",
-        "migrate": "node ./server/node_modules/.bin/prisma migrate dev --schema='./server/prisma/schema.prisma'",
-        "push": "node ./server/node_modules/.bin/prisma db push --schema='./server/prisma/schema.prisma'"
+        "postinstall": "concurrently --raw --group \"yarn run install:*\""
     },
     "devDependencies": {
         "concurrently": "^7.3.0"

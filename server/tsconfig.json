@@ -17,13 +17,13 @@
         "emitDecoratorMetadata": true,
         "rootDir": ".",
         "baseUrl": ".",
-        "types": ["node"],
+        "types": ["node", "jest"],
         "paths": {
             "@src/*": ["./src/*"]
         },
         "typeRoots": ["./src/ts/types", "./node_modules/@types"]
     },
-    "include": ["src"],
+    "include": ["src", "prisma", "tests", "jest.config.ts"],
     "exclude": ["node_modules", "dist"],
     "files": ["./src/ts/types/index.d.ts"]
 }
