@@ -3,6 +3,9 @@ import { ResponseError } from '@src/ts/classes/response-error';
 import { userService } from '@src/services/user-service';
 import { Role } from '@prisma/client';
 import { UserProps } from '@src/ts/interfaces/user-props';
+import { nodemailer } from '@src/lib/nodemailer';
+import crypto from 'crypto';
+import { hash } from 'bcrypt';
 
 const list = async (req: Request, res: Response) => {
     const users = await userService.list();
@@ -109,6 +112,32 @@ const unban = async (req: Request, res: Response) => {
     return res.sendStatus(200);
 };
 
+const requestEmailChange = async (req: Request, res: Response) => {
+    const { id } = req.user;
+    const newEmail = req.body.email;
+
+    const emailResetHash = crypto.randomUUID();
+    const encryptedHash = await hash(emailResetHash, 10);
+
+    const nowPlusTenMinutes = new Date();
+    nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 10);
+
+    await userService.updateEmailResetHash(
+        id,
+        newEmail,
+        encryptedHash,
+        nowPlusTenMinutes,
+    );
+
+    const user = await userService.findById(id);
+    if (user) await nodemailer.sendEmailResetSecurityLink(user.email);
+    await nodemailer.sendEmailResetLink(newEmail, emailResetHash);
+
+    return res.sendStatus(200);
+};
+
+const emailReset = (req: Request, res: Response) => {};
+
 export const userController = {
     list,
     get,
@@ -116,4 +145,6 @@ export const userController = {
     changeRole,
     ban,
     unban,
+    requestEmailChange,
+    emailReset,
 };
