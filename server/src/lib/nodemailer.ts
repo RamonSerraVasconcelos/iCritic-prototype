@@ -43,9 +43,13 @@ const sendEmailResetSecurityLink = async (email: string) => {
     });
 };
 
-const sendEmailResetLink = async (email: string, emailResetHash: string) => {
+const sendEmailResetLink = async (
+    email: string,
+    userId: number,
+    emailResetHash: string,
+) => {
     const transport = createTransport(transportOptions);
-    const link = `${env.SERVER_URL}/users/email-reset/${emailResetHash}`;
+    const link = `${env.SERVER_URL}/users/email-reset/${userId}/${emailResetHash}`;
 
     await transport.sendMail({
         from: `noreply@icritic.com`,

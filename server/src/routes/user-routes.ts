@@ -39,6 +39,4 @@ routes.post(
     tryCatch(userController.requestEmailChange),
 );
 
-routes.get('/email-reset/:emailResetHash', tryCatch(userController.emailReset));
-
 export default routes;

@@ -146,7 +146,7 @@ const updatePasswordResetHash = async (
 
 const updateEmailResetHash = async (
     userId: number,
-    newEmailReset: string,
+    newEmailReset: string | null,
     emailResetHash: string | null,
     emailResetDate: Date | null,
 ) => {
@@ -158,6 +158,20 @@ const updateEmailResetHash = async (
             newEmailReset,
             emailResetHash,
             emailResetDate,
+        },
+    });
+
+    return user;
+};
+
+const updateUserEmail = async (id: number, email: string) => {
+    const user = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            email,
+            newEmailReset: null,
         },
     });
 
@@ -203,6 +217,7 @@ export const userService = {
     update,
     updatePasswordResetHash,
     updateEmailResetHash,
+    updateUserEmail,
     updateAvatar,
     deleteRefreshToken,
     deleteAllRefreshTokens,

@@ -5,7 +5,7 @@ import { Role } from '@prisma/client';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import { nodemailer } from '@src/lib/nodemailer';
 import crypto from 'crypto';
-import { hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 
 const list = async (req: Request, res: Response) => {
     const users = await userService.list();
@@ -129,14 +129,34 @@ const requestEmailChange = async (req: Request, res: Response) => {
         nowPlusTenMinutes,
     );
 
-    const user = await userService.findById(id);
-    if (user) await nodemailer.sendEmailResetSecurityLink(user.email);
-    await nodemailer.sendEmailResetLink(newEmail, emailResetHash);
+    await nodemailer.sendEmailResetLink(newEmail, id, emailResetHash);
 
     return res.sendStatus(200);
 };
 
-const emailReset = (req: Request, res: Response) => {};
+const emailReset = async (req: Request, res: Response) => {
+    const { id, emailResetHash } = req.params;
+
+    const user = await userService.findById(Number(id));
+    if (!user) throw new ResponseError('No user found!', 404);
+
+    if (!user.emailResetHash)
+        throw new ResponseError('No email change was requested!', 400);
+
+    const isResetHashValid = await compare(emailResetHash, user.emailResetHash);
+    if (!isResetHashValid) throw new ResponseError('Invalid hash!', 403);
+
+    if (new Date() > user.emailResetDate!) {
+        await userService.updateEmailResetHash(user.id, null, null, null);
+        throw new ResponseError('Expired hash!', 403);
+    }
+
+    await userService.updateUserEmail(user.id, user.newEmailReset!);
+    await nodemailer.sendEmailResetSecurityLink(user.email);
+    await userService.updateEmailResetHash(user.id, null, null, null);
+
+    return res.sendStatus(200);
+};
 
 export const userController = {
     list,
