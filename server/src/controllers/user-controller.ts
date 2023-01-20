@@ -116,6 +116,16 @@ const requestEmailChange = async (req: Request, res: Response) => {
     const { id } = req.user;
     const newEmail = req.body.email;
 
+    const user = await userService.findById(id);
+    if (user) {
+        if (user.email === newEmail) {
+            throw new ResponseError(
+                'New email must be different from your current one!',
+                400,
+            );
+        }
+    }
+
     const emailResetHash = crypto.randomUUID();
     const encryptedHash = await hash(emailResetHash, 10);
 
@@ -135,7 +145,7 @@ const requestEmailChange = async (req: Request, res: Response) => {
 };
 
 const emailReset = async (req: Request, res: Response) => {
-    const { id, emailResetHash } = req.params;
+    const { id, emailResetHash } = req.body;
 
     const user = await userService.findById(Number(id));
     if (!user) throw new ResponseError('No user found!', 404);
