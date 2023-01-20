@@ -330,4 +330,35 @@ describe('user', () => {
                 .expect(200);
         });
     });
+
+    describe('try to use an invalid email', () => {
+        it('should return bad request 400', async () => {
+            const userData = await generator.createRandomUser();
+
+            const data = {
+                email: userData.email,
+                password: userData.password,
+            };
+
+            let accessToken = '';
+
+            await supertest(app)
+                .post(`/login`)
+                .send(data)
+                .expect(200)
+                .then(async (res) => {
+                    accessToken = res.body.accessToken;
+                });
+
+            const newEmail = {
+                email: 'invalidemail',
+            };
+
+            await supertest(app)
+                .post(`/users/request-email-change`)
+                .send(newEmail)
+                .set('Authorization', `Bearer ${accessToken}`)
+                .expect(400);
+        });
+    });
 });
