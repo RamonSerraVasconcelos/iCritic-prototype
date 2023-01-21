@@ -3,6 +3,8 @@ import generator from '@src/utils/random-generator';
 import { userService } from '@src/services/user-service';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import app from '@src/app';
+import crypto from 'crypto';
+import { hash } from 'bcrypt';
 
 describe('user', () => {
     describe('password must be at least 8 characters long', () => {
@@ -359,6 +361,32 @@ describe('user', () => {
                 .send(newEmail)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(400);
+        });
+    });
+
+    describe('confirm email change', () => {
+        it('should return ok 200', async () => {
+            const userData = await generator.createRandomUser();
+
+            const emailResetHash = crypto.randomUUID();
+            const encryptedHash = await hash(emailResetHash, 10);
+
+            const nowPlusTenMinutes = new Date();
+            nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 10);
+
+            await userService.updateEmailResetHash(
+                userData.id,
+                'confirmemailchange@test.test',
+                encryptedHash,
+                nowPlusTenMinutes,
+            );
+
+            const data = {
+                id: userData.id,
+                emailResetHash,
+            };
+
+            await supertest(app).post(`/email-reset`).send(data).expect(200);
         });
     });
 });
