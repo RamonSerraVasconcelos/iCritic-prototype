@@ -372,7 +372,7 @@ describe('user', () => {
             const encryptedHash = await hash(emailResetHash, 10);
 
             const nowPlusTenMinutes = new Date();
-            nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 10);
+            nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 1);
 
             await userService.updateEmailResetHash(
                 userData.id,
@@ -387,6 +387,35 @@ describe('user', () => {
             };
 
             await supertest(app).post(`/email-reset`).send(data).expect(200);
+        });
+    });
+
+    describe('a user cannot change another user email even with a valid hash', () => {
+        it('should return forbidden 403', async () => {
+            const userData = await generator.createRandomUser();
+
+            const emailResetHash = crypto.randomUUID();
+            const encryptedHash = await hash(emailResetHash, 10);
+
+            const nowPlusTenMinutes = new Date();
+            nowPlusTenMinutes.setMinutes(nowPlusTenMinutes.getMinutes() + 1);
+
+            await userService.updateEmailResetHash(
+                userData.id,
+                'validateuseremailchange@test.test',
+                encryptedHash,
+                nowPlusTenMinutes,
+            );
+
+            // generate another user and try to change his email with a valid hash
+            const userToBeModified = await generator.createRandomUser();
+
+            const data = {
+                id: userToBeModified.id,
+                emailResetHash,
+            };
+
+            await supertest(app).post(`/email-reset`).send(data).expect(400);
         });
     });
 });
