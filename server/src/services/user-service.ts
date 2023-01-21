@@ -87,10 +87,6 @@ const userService = {
         return createdRefreshToken;
     },
     async update(userId: number, user: UserProps) {
-        const password = user.password
-            ? await hash(user.password, 10)
-            : undefined;
-
         const updatedUser = await prisma.user.update({
             where: {
                 id: userId,
@@ -98,7 +94,6 @@ const userService = {
             data: {
                 name: user.name || undefined,
                 email: user.email || undefined,
-                password,
                 description: user.description || undefined,
                 role: user.role || undefined,
                 countryId: user.countryId || undefined,
@@ -107,6 +102,20 @@ const userService = {
                 passwordResetDate: user.passwordResetDate || undefined,
                 emailResetHash: user.emailResetHash || undefined,
                 emailResetDate: user.emailResetDate || undefined,
+            },
+        });
+
+        return updatedUser;
+    },
+    async updatePassword(userId: number, password: string) {
+        const hashedPassword = await hash(password, 10);
+
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                password: hashedPassword,
             },
         });
 

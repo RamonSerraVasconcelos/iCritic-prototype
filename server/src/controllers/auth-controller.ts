@@ -253,11 +253,7 @@ const authController = {
                 400,
             );
 
-        const userData = {
-            password,
-        } as UserProps;
-
-        await userService.update(user.id, userData);
+        await userService.updatePassword(user.id, password);
         await userService.updatePasswordResetHash(user.id, null);
 
         return res.sendStatus(200);
