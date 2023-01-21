@@ -3,7 +3,7 @@ import { compare, hash } from 'bcrypt';
 import { env } from '@src/config/env';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
-import { userService } from '@src/services/user-service';
+import userService from '@src/services/user-service';
 import { ResponseError } from '@src/ts/classes/response-error';
 import { nodemailer } from '@src/lib/nodemailer';
 import { DecodedProps } from '@src/ts/interfaces/decoded-props';

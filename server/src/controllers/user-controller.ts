@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { ResponseError } from '@src/ts/classes/response-error';
-import { userService } from '@src/services/user-service';
+import userService from '@src/services/user-service';
 import { Role } from '@prisma/client';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import { nodemailer } from '@src/lib/nodemailer';

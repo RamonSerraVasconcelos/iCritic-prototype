@@ -5,7 +5,7 @@ import { hash } from 'bcrypt';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import generator from '@src/utils/random-generator';
-import { userService } from '@src/services/user-service';
+import userService from '@src/services/user-service';
 import app from '@src/app';
 
 describe('auth', () => {
