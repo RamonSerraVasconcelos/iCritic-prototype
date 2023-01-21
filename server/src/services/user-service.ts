@@ -2,6 +2,7 @@ import { hash } from 'bcrypt';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import { prisma, excludeFields, includeFields } from '@src/lib/prisma';
 import { RefreshTokenProps } from '@src/ts/interfaces/refresh-token-props';
+import { Role } from '@prisma/client';
 
 const userService = {
     async list() {
@@ -95,7 +96,6 @@ const userService = {
                 name: user.name || undefined,
                 email: user.email || undefined,
                 description: user.description || undefined,
-                role: user.role || undefined,
                 countryId: user.countryId || undefined,
                 active: user.active,
                 passwordResetHash: user.passwordResetHash || undefined,
@@ -116,6 +116,18 @@ const userService = {
             },
             data: {
                 password: hashedPassword,
+            },
+        });
+
+        return updatedUser;
+    },
+    async updateRole(userId: number, role: Role) {
+        const updatedUser = await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                role,
             },
         });
 

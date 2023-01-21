@@ -165,11 +165,9 @@ describe('user', () => {
     describe('change user role', () => {
         it('should change user role and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,
@@ -233,11 +231,9 @@ describe('user', () => {
     describe('ban user', () => {
         it('should ban user and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,
@@ -271,11 +267,9 @@ describe('user', () => {
     describe('unban user', () => {
         it('should unban user and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,

@@ -63,11 +63,7 @@ const userController = {
             throw new ResponseError('Invalid role', 400);
         }
 
-        const userData = {
-            role,
-        } as UserProps;
-
-        await userService.update(userId, userData);
+        await userService.updateRole(userId, role);
 
         return res.sendStatus(200);
     },
