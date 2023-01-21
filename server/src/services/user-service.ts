@@ -94,14 +94,8 @@ const userService = {
             },
             data: {
                 name: user.name || undefined,
-                email: user.email || undefined,
                 description: user.description || undefined,
                 countryId: user.countryId || undefined,
-                active: user.active,
-                passwordResetHash: user.passwordResetHash || undefined,
-                passwordResetDate: user.passwordResetDate || undefined,
-                emailResetHash: user.emailResetHash || undefined,
-                emailResetDate: user.emailResetDate || undefined,
             },
         });
 
@@ -211,14 +205,35 @@ const userService = {
         return user;
     },
     async ban(userId: number, motive: string) {
-        const insertedBan = await prisma.banList.create({
+        const bannedUser = await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                active: false,
+            },
+        });
+
+        await prisma.banList.create({
             data: {
                 userId,
                 motive,
             },
         });
 
-        return insertedBan;
+        return bannedUser;
+    },
+    async unban(userId: number) {
+        const unbannedUser = await prisma.user.update({
+            where: {
+                id: userId,
+            },
+            data: {
+                active: true,
+            },
+        });
+
+        return unbannedUser;
     },
 };
 

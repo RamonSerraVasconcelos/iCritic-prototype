@@ -79,11 +79,6 @@ const userController = {
             throw new ResponseError('Missing Ban motive', 400);
         }
 
-        const userData = {
-            active: false,
-        } as UserProps;
-
-        await userService.update(userId, userData);
         await userService.ban(userId, motive);
 
         return res.sendStatus(200);
@@ -95,11 +90,7 @@ const userController = {
             throw new ResponseError('Missing user Id!', 400);
         }
 
-        const userData = {
-            active: true,
-        } as UserProps;
-
-        await userService.update(userId, userData);
+        await userService.unban(userId);
 
         return res.sendStatus(200);
     },
