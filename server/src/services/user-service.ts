@@ -104,6 +104,8 @@ const update = async (userId: number, user: UserProps) => {
             active: user.active,
             passwordResetHash: user.passwordResetHash || undefined,
             passwordResetDate: user.passwordResetDate || undefined,
+            emailResetHash: user.emailResetHash || undefined,
+            emailResetDate: user.emailResetDate || undefined,
         },
     });
 
@@ -136,6 +138,40 @@ const updatePasswordResetHash = async (
         data: {
             passwordResetHash,
             passwordResetDate: nowPlusTenMinutes,
+        },
+    });
+
+    return user;
+};
+
+const updateEmailResetHash = async (
+    userId: number,
+    newEmailReset: string | null,
+    emailResetHash: string | null,
+    emailResetDate: Date | null,
+) => {
+    const user = await prisma.user.update({
+        where: {
+            id: userId,
+        },
+        data: {
+            newEmailReset,
+            emailResetHash,
+            emailResetDate,
+        },
+    });
+
+    return user;
+};
+
+const updateUserEmail = async (id: number, email: string) => {
+    const user = await prisma.user.update({
+        where: {
+            id,
+        },
+        data: {
+            email,
+            newEmailReset: null,
         },
     });
 
@@ -180,6 +216,8 @@ export const userService = {
     createRefreshToken,
     update,
     updatePasswordResetHash,
+    updateEmailResetHash,
+    updateUserEmail,
     updateAvatar,
     deleteRefreshToken,
     deleteAllRefreshTokens,

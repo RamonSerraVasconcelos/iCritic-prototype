@@ -8,4 +8,8 @@ const edit = object({
     countryId: number(),
 });
 
-export const userSchema = { edit };
+const emailValidation = object({
+    email: userRules.email.required(),
+});
+
+export const userSchema = { edit, emailValidation };

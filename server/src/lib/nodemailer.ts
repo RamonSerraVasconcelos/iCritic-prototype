@@ -28,4 +28,42 @@ const sendPasswordResetLink = async (
     });
 };
 
-export const nodemailer = { sendPasswordResetLink };
+const sendEmailResetSecurityLink = async (email: string) => {
+    const transport = createTransport(transportOptions);
+    const link = `${env.SERVER_URL}/????`;
+
+    await transport.sendMail({
+        from: `noreply@icritic.com`,
+        to: email,
+        subject: 'iCritic - Email change warning',
+        html: `
+            <p>We received a email change request for your account</p>
+            <a href=${link} target="_blank">Click here</a> if you didn't make this request!
+        `,
+    });
+};
+
+const sendEmailResetLink = async (
+    email: string,
+    userId: number,
+    emailResetHash: string,
+) => {
+    const transport = createTransport(transportOptions);
+    const link = `${env.SERVER_URL}/users/email-reset/${userId}/${emailResetHash}`;
+
+    await transport.sendMail({
+        from: `noreply@icritic.com`,
+        to: email,
+        subject: 'iCritic - Confirm new email',
+        html: `
+            <p>If you didn't request an email change, ignore this email.</p>
+            <a href=${link} target="_blank">Click here</a> to change your email!
+        `,
+    });
+};
+
+export const nodemailer = {
+    sendPasswordResetLink,
+    sendEmailResetSecurityLink,
+    sendEmailResetLink,
+};

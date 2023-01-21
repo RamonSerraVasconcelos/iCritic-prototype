@@ -32,4 +32,11 @@ routes.patch(
     tryCatch(userController.unban),
 );
 
+// Emails reset
+routes.post(
+    '/request-email-change',
+    validate(userSchema.emailValidation),
+    tryCatch(userController.requestEmailChange),
+);
+
 export default routes;

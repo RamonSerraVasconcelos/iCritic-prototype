@@ -3,6 +3,7 @@ import { validate } from '@src/middlewares/validate-middleware';
 import { tryCatch } from '@src/utils/try-catch';
 import { authSchema } from '@src/schemas/auth-schema';
 import { authController } from '@src/controllers/auth-controller';
+import { userController } from '@src/controllers/user-controller';
 
 const routes = Router();
 
@@ -31,5 +32,8 @@ routes.post(
     validate(authSchema.resetPassword),
     tryCatch(authController.resetPassword),
 );
+
+// Email change
+routes.post('/email-reset', tryCatch(userController.emailReset));
 
 export default routes;
