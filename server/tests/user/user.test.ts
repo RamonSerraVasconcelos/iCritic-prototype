@@ -452,4 +452,29 @@ describe('user', () => {
             await supertest(app).post(`/email-reset`).send(data).expect(403);
         });
     });
+
+    describe('try to change the email using an expired token', () => {
+        it('should return forbidden 403', async () => {
+            const userData = await generator.createRandomUser();
+
+            const emailResetHash = crypto.randomUUID();
+            const encryptedHash = await hash(emailResetHash, 10);
+
+            const now = new Date();
+
+            await userService.updateEmailResetHash(
+                userData.id,
+                'validatetokenexpiretime@test.test',
+                encryptedHash,
+                now,
+            );
+
+            const data = {
+                id: userData.id,
+                emailResetHash,
+            };
+
+            await supertest(app).post(`/email-reset`).send(data).expect(403);
+        });
+    });
 });
