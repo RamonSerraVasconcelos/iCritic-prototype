@@ -16,7 +16,6 @@ const userService = {
 
         return users;
     },
-
     async findById(userId: number) {
         const user = await prisma.user.findUnique({
             where: { id: userId },
@@ -30,7 +29,6 @@ const userService = {
 
         return user;
     },
-
     async findByEmail(email: string) {
         const user = await prisma.user.findUnique({
             where: { email: email.toLowerCase() },
@@ -38,7 +36,6 @@ const userService = {
 
         return user;
     },
-
     async findByRefreshToken(refreshToken: string) {
         const token = await prisma.refreshToken.findFirst({
             where: { token: refreshToken },
@@ -49,7 +46,6 @@ const userService = {
 
         return token?.user;
     },
-
     async findByResetHashPassword(email: string) {
         const user = await prisma.user.findFirst({
             where: { email },
@@ -63,7 +59,6 @@ const userService = {
 
         return user;
     },
-
     async create(user: UserProps) {
         const hashedPassword = await hash(user.password, 10);
 
@@ -84,7 +79,6 @@ const userService = {
 
         return createdUser;
     },
-
     async createRefreshToken(refreshToken: RefreshTokenProps) {
         const createdRefreshToken = await prisma.refreshToken.create({
             data: refreshToken,
@@ -92,7 +86,6 @@ const userService = {
 
         return createdRefreshToken;
     },
-
     async update(userId: number, user: UserProps) {
         const password = user.password
             ? await hash(user.password, 10)
@@ -119,19 +112,16 @@ const userService = {
 
         return updatedUser;
     },
-
     async deleteRefreshToken(refreshToken: string) {
         await prisma.refreshToken.deleteMany({
             where: { token: refreshToken },
         });
     },
-
     async deleteAllRefreshTokens(userId: number) {
         await prisma.refreshToken.deleteMany({
             where: { userId },
         });
     },
-
     async updatePasswordResetHash(
         userId: number,
         passwordResetHash: string | null,
@@ -151,7 +141,6 @@ const userService = {
 
         return user;
     },
-
     async updateEmailResetHash(
         userId: number,
         newEmailReset: string | null,
@@ -171,7 +160,6 @@ const userService = {
 
         return user;
     },
-
     async updateUserEmail(id: number, email: string) {
         const user = await prisma.user.update({
             where: {
@@ -185,7 +173,6 @@ const userService = {
 
         return user;
     },
-
     async updateAvatar(userId: number, imagePath: string) {
         const user = await prisma.user.update({
             where: {
@@ -202,7 +189,6 @@ const userService = {
 
         return user;
     },
-
     async ban(userId: number, motive: string) {
         const insertedBan = await prisma.banList.create({
             data: {

@@ -6,7 +6,7 @@ import app from '@src/app';
 import crypto from 'crypto';
 import { hash } from 'bcrypt';
 import { Request, Response } from 'express';
-import { userController } from '@src/controllers/user-controller';
+import userController from '@src/controllers/user-controller';
 import { requestMock, responseMock } from '../mock/expressRequestMock';
 
 describe('user', () => {
