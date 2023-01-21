@@ -5,6 +5,9 @@ import { UserProps } from '@src/ts/interfaces/user-props';
 import app from '@src/app';
 import crypto from 'crypto';
 import { hash } from 'bcrypt';
+import { Request, Response } from 'express';
+import { userController } from '@src/controllers/user-controller';
+import { requestMock, responseMock } from '../mock/expressRequestMock';
 
 describe('user', () => {
     describe('password must be at least 8 characters long', () => {
@@ -416,6 +419,37 @@ describe('user', () => {
             };
 
             await supertest(app).post(`/email-reset`).send(data).expect(400);
+        });
+    });
+
+    describe('try to change the email using an invalid token', () => {
+        it('should return forbidden 403', async () => {
+            const userData = await generator.createRandomUser();
+
+            const request = requestMock;
+            const response = responseMock;
+
+            request.body = {
+                email: 'validateemailchangewithinvalidtoken@test.test',
+            };
+
+            request.user = {
+                id: userData.id,
+                name: 'validateemailchangewithinvalidtoken',
+                role: 'DEFAULT',
+            };
+
+            await userController.requestEmailChange(
+                request,
+                response as Response,
+            );
+
+            const data = {
+                id: userData.id,
+                emailResetHash: 'randomresethash',
+            };
+
+            await supertest(app).post(`/email-reset`).send(data).expect(403);
         });
     });
 });
