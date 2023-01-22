@@ -8,9 +8,13 @@ const userService = {
     async list() {
         const users = await prisma.user.findMany({
             select: excludeFields('User', [
+                'email',
                 'password',
                 'passwordResetHash',
                 'passwordResetDate',
+                'emailResetHash',
+                'emailResetDate',
+                'newEmailReset',
                 'updatedAt',
             ]),
         });
@@ -21,9 +25,13 @@ const userService = {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: excludeFields('User', [
+                'email',
                 'password',
                 'passwordResetHash',
                 'passwordResetDate',
+                'emailResetHash',
+                'emailResetDate',
+                'newEmailReset',
                 'updatedAt',
             ]),
         });
