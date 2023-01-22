@@ -15,6 +15,7 @@ const userController = {
             users,
         });
     },
+
     async get(req: Request, res: Response) {
         const userId = Number(req.params.id);
         const user = await userService.findById(userId);
@@ -27,9 +28,10 @@ const userController = {
             user,
         });
     },
+
     async edit(req: Request, res: Response) {
-        const userId = Number(req.params.id);
-        const user = await userService.findById(userId);
+        const { id } = req.user;
+        const user = await userService.findById(id);
 
         if (!user) {
             throw new ResponseError('No user found!', 404);
@@ -38,14 +40,15 @@ const userController = {
         const { file } = req;
 
         if (file && file.filename) {
-            userService.updateAvatar(userId, file.filename);
+            userService.updateAvatar(id, file.filename);
         }
 
         const userData = req.body;
-        await userService.update(userId, userData);
+        await userService.update(id, userData);
 
         return res.sendStatus(200);
     },
+
     async changeRole(req: Request, res: Response) {
         const userId = Number(req.params.id);
         const user = await userService.findById(userId);
@@ -67,6 +70,7 @@ const userController = {
 
         return res.sendStatus(200);
     },
+
     async ban(req: Request, res: Response) {
         const userId = Number(req.params.id);
         const { motive } = req.body;
@@ -83,6 +87,7 @@ const userController = {
 
         return res.sendStatus(200);
     },
+
     async unban(req: Request, res: Response) {
         const userId = Number(req.params.id);
 
@@ -94,6 +99,7 @@ const userController = {
 
         return res.sendStatus(200);
     },
+
     async requestEmailChange(req: Request, res: Response) {
         const { id } = req.user;
         const newEmail = req.body.email;
@@ -125,6 +131,7 @@ const userController = {
 
         return res.sendStatus(200);
     },
+
     async emailReset(req: Request, res: Response) {
         const { id, emailResetHash } = req.body;
 

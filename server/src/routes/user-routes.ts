@@ -12,7 +12,7 @@ const routes = Router();
 routes.get('/', tryCatch(userController.list));
 routes.get('/:id', tryCatch(userController.get));
 routes.put(
-    '/:id/edit',
+    '/edit',
     validate(userSchema.edit),
     uploadImage.single('file'),
     tryCatch(userController.edit),

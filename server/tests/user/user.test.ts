@@ -116,7 +116,7 @@ describe('user', () => {
             };
 
             await supertest(app)
-                .put(`/users/${userData.id}/edit`)
+                .put(`/users/edit`)
                 .send(body)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200);
