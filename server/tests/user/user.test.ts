@@ -81,7 +81,6 @@ describe('user', () => {
                 .then(async (res) => {
                     expect(res.body.user.id).toBeTruthy();
                     expect(res.body.user.name).toBeTruthy();
-                    expect(res.body.user.email).toBeTruthy();
                     expect(res.body.user.description).toBeTruthy();
                     expect(res.body.user.role).toBeTruthy();
                     expect(res.body.user.active).toBeTruthy();

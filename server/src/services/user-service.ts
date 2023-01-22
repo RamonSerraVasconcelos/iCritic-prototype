@@ -21,6 +21,13 @@ const userService = {
 
         return users;
     },
+    async findByIdWithAllFields(id: number) {
+        const user = await prisma.user.findUnique({
+            where: { id },
+        });
+
+        return user;
+    },
     async findById(userId: number) {
         const user = await prisma.user.findUnique({
             where: { id: userId },

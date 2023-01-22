@@ -104,7 +104,7 @@ const userController = {
         const { id } = req.user;
         const newEmail = req.body.email;
 
-        const user = await userService.findById(id);
+        const user = await userService.findByIdWithAllFields(id);
         if (user) {
             if (user.email === newEmail) {
                 throw new ResponseError(
@@ -135,7 +135,7 @@ const userController = {
     async emailReset(req: Request, res: Response) {
         const { id, emailResetHash } = req.body;
 
-        const user = await userService.findById(Number(id));
+        const user = await userService.findByIdWithAllFields(Number(id));
         if (!user) throw new ResponseError('No user found!', 404);
 
         if (!user.emailResetHash)
