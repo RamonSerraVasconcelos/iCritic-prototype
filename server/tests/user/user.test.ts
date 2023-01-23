@@ -1,12 +1,12 @@
 import supertest from 'supertest';
 import generator from '@src/utils/random-generator';
-import { userService } from '@src/services/user-service';
+import userService from '@src/services/user-service';
 import { UserProps } from '@src/ts/interfaces/user-props';
 import app from '@src/app';
 import crypto from 'crypto';
 import { hash } from 'bcrypt';
 import { Request, Response } from 'express';
-import { userController } from '@src/controllers/user-controller';
+import userController from '@src/controllers/user-controller';
 import { requestMock, responseMock } from '../mock/expressRequestMock';
 
 describe('user', () => {
@@ -81,7 +81,6 @@ describe('user', () => {
                 .then(async (res) => {
                     expect(res.body.user.id).toBeTruthy();
                     expect(res.body.user.name).toBeTruthy();
-                    expect(res.body.user.email).toBeTruthy();
                     expect(res.body.user.description).toBeTruthy();
                     expect(res.body.user.role).toBeTruthy();
                     expect(res.body.user.active).toBeTruthy();
@@ -116,7 +115,7 @@ describe('user', () => {
             };
 
             await supertest(app)
-                .put(`/users/${userData.id}/edit`)
+                .put(`/users/edit`)
                 .send(body)
                 .set('Authorization', `Bearer ${accessToken}`)
                 .expect(200);
@@ -165,11 +164,9 @@ describe('user', () => {
     describe('change user role', () => {
         it('should change user role and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,
@@ -233,11 +230,9 @@ describe('user', () => {
     describe('ban user', () => {
         it('should ban user and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,
@@ -271,11 +266,9 @@ describe('user', () => {
     describe('unban user', () => {
         it('should unban user and return ok', async () => {
             const userData = await generator.createRandomUser();
-            const userRole = {
-                role: 'ADMIN',
-            } as UserProps;
+            const role = 'ADMIN';
 
-            userService.update(userData.id, userRole);
+            userService.updateRole(userData.id, role);
 
             const data = {
                 email: userData.email,

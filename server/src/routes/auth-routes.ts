@@ -2,8 +2,8 @@ import { Router } from 'express';
 import { validate } from '@src/middlewares/validate-middleware';
 import { tryCatch } from '@src/utils/try-catch';
 import { authSchema } from '@src/schemas/auth-schema';
-import { authController } from '@src/controllers/auth-controller';
-import { userController } from '@src/controllers/user-controller';
+import authController from '@src/controllers/auth-controller';
+import userController from '@src/controllers/user-controller';
 
 const routes = Router();
 
