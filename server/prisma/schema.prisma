@@ -53,6 +53,14 @@ model Country {
     @@map("countries")
 }
 
+model Language {
+    id    Int     @id @default(autoincrement())
+    name  String
+    movie Movie[]
+
+    @@map("languages")
+}
+
 model BanList {
     id        Int      @id @default(autoincrement())
     motive    String
@@ -69,18 +77,29 @@ model Movie {
     name          String
     synopsis      String
     releaseDate   String           @map("release_date")
-    language      String
+    language      Language         @relation(fields: [languageId], references: [id])
+    languageId    Int              @map("language_id")
     rating        Int
     country       Country          @relation(fields: [countryId], references: [id])
     countryId     Int              @map("country_id")
-    director      Director         @relation(fields: [directorId], references: [id])
-    directorId    Int              @unique @map("director_id")
     movieCategory Movie_Category[]
+    director      Director         @relation(fields: [directorId], references: [id])
+    directorId    Int              @map("director_id")
     movieActor    Movie_Actor[]
     createdAt     DateTime         @default(now()) @map("created_at")
     updatedAt     DateTime         @updatedAt @map("updated_at")
 
     @@map("movies")
+}
+
+model Category {
+    id            Int              @id @default(autoincrement())
+    name          String
+    movieCategory Movie_Category[]
+    createdAt     DateTime         @default(now()) @map("created_at")
+    updatedAt     DateTime         @updatedAt @map("updated_at")
+
+    @@map("categories")
 }
 
 model Movie_Category {
@@ -93,16 +112,6 @@ model Movie_Category {
     updatedAt  DateTime @updatedAt @map("updated_at")
 
     @@map("movie_category")
-}
-
-model Category {
-    id            Int              @id @default(autoincrement())
-    name          String
-    movieCategory Movie_Category[]
-    createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
-
-    @@map("categories")
 }
 
 model Movie_Actor {
@@ -120,12 +129,12 @@ model Movie_Actor {
 model Director {
     id            Int              @id @default(autoincrement())
     name          String
-    movie         Movie?
     directorImage Director_Image[]
     country       Country          @relation(fields: [countryId], references: [id])
     countryId     Int              @map("country_id")
     createdAt     DateTime         @default(now()) @map("created_at")
     updatedAt     DateTime         @updatedAt @map("updated_at")
+    movie         Movie[]
 
     @@map("directors")
 }

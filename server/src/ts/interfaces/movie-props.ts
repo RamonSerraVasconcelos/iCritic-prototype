@@ -3,8 +3,9 @@ export interface MovieProps {
     name: string;
     synopsis: string;
     releaseDate: string;
-    language: string;
-    rating: number;
-    countryId: number;
+    categories: Array<object>;
     directorId: number;
+    countryId: number;
+    languageId: number;
+    rating: number;
 }

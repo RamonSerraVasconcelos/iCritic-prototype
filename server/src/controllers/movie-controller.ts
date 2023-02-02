@@ -4,11 +4,22 @@ import movieService from '@src/services/movie-service';
 
 const movieController = {
     async register(req: Request, res: Response) {
+        const categories: Array<object> = [];
+
+        req.body.categories.forEach((category: number) => {
+            categories.push({
+                categoryId: category,
+            });
+        });
+
+        req.body.categories = categories;
         const movie = await movieService.create(req.body);
 
-        return res.status(201).json({
-            movie,
-        });
+        if (!movie) {
+            throw new ResponseError('', 500);
+        }
+
+        return res.sendStatus(201);
     },
 
     async list(req: Request, res: Response) {

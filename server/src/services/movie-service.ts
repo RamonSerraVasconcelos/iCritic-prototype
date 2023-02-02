@@ -1,5 +1,6 @@
 import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
+import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 
 const movieService = {
     async list() {
@@ -19,8 +20,18 @@ const movieService = {
     async create(movie: MovieProps) {
         const createdMovie = await prisma.movie.create({
             data: {
-                ...movie,
+                name: movie.name,
+                synopsis: movie.synopsis,
+                releaseDate: movie.releaseDate,
+                languageId: Number(movie.languageId),
+                countryId: Number(movie.countryId),
+                directorId: Number(movie.directorId),
                 rating: 0,
+                movieCategory: {
+                    createMany: {
+                        data: movie.categories as Array<MovieCategory>,
+                    },
+                },
             },
         });
 
@@ -36,7 +47,7 @@ const movieService = {
                 name: movie.name || undefined,
                 synopsis: movie.synopsis || undefined,
                 releaseDate: movie.releaseDate || undefined,
-                language: movie.language || undefined,
+                languageId: movie.languageId || undefined,
                 rating: movie.rating,
                 countryId: movie.countryId,
                 directorId: movie.directorId || undefined,
