@@ -26,7 +26,7 @@ const movieController = {
     async list(req: Request, res: Response) {
         const movies = await movieService.list();
 
-        return res.status(200).send({
+        return res.status(200).json({
             movies,
         });
     },
@@ -36,10 +36,10 @@ const movieController = {
         const movie = await movieService.findById(movieId);
 
         if (!movie) {
-            throw new ResponseError('No movie found!', 404);
+            throw new ResponseError('Movie not found!', 404);
         }
 
-        return res.status(200).send({
+        return res.status(200).json({
             movie,
         });
     },
@@ -117,9 +117,9 @@ const movieController = {
     },
 
     async getCategories(req: Request, res: Response) {
-        const movies = await movieService.listCategories();
+        const categories = await movieService.listCategories();
 
-        return res.status(200).json(movies);
+        return res.status(200).json(categories);
     },
 };
 

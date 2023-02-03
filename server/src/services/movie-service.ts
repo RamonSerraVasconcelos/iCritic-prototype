@@ -1,10 +1,25 @@
-import { prisma } from '@src/lib/prisma';
+import { excludeFields, prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 
 const movieService = {
     async list() {
-        const movies = await prisma.movie.findMany();
+        const movies = await prisma.movie.findMany({
+            select: {
+                name: true,
+                synopsis: true,
+                releaseDate: true,
+                rating: true,
+                countryId: true,
+                directorId: true,
+                languageId: true,
+                movieCategory: {
+                    select: {
+                        categoryId: true,
+                    },
+                },
+            },
+        });
 
         return movies;
     },
@@ -12,6 +27,30 @@ const movieService = {
     async findById(movieId: number) {
         const movie = await prisma.movie.findUnique({
             where: { id: movieId },
+            select: {
+                name: true,
+                synopsis: true,
+                releaseDate: true,
+                rating: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+                directorId: true,
+                languageId: true,
+                movieCategory: {
+                    select: {
+                        category: {
+                            select: {
+                                id: true,
+                                name: true,
+                            },
+                        },
+                    },
+                },
+            },
         });
 
         return movie;
