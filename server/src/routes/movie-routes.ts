@@ -10,24 +10,25 @@ const routes = Router();
 
 routes.post(
     '/',
+    roles(Role.MODERATOR),
     validate(movieSchema.register),
     tryCatch(movieController.register),
 );
 routes.get('/', tryCatch(movieController.list));
 routes.get('/:id', tryCatch(movieController.get));
-routes.put('/:id', validate(movieSchema.edit), tryCatch(movieController.edit));
+routes.patch('/:id', roles(Role.MODERATOR), tryCatch(movieController.edit));
 
 // Categories
 routes.post(
     '/categories',
-    validate(movieSchema.registerCategory),
     roles(Role.MODERATOR),
+    validate(movieSchema.registerCategory),
     tryCatch(movieController.registerCategory),
 );
-routes.put(
+routes.patch(
     '/categories/:id',
-    validate(movieSchema.registerCategory),
     roles(Role.ADMIN),
+    validate(movieSchema.registerCategory),
     tryCatch(movieController.editCategory),
 );
 routes.get('/categories/list', tryCatch(movieController.getCategories));

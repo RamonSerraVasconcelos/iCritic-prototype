@@ -38,19 +38,25 @@ const movieService = {
         return createdMovie;
     },
 
-    async update(movie: MovieProps) {
+    async update(id: number, movie: MovieProps) {
         const updatedMovie = await prisma.movie.update({
             where: {
-                id: movie.id,
+                id,
             },
             data: {
                 name: movie.name || undefined,
                 synopsis: movie.synopsis || undefined,
                 releaseDate: movie.releaseDate || undefined,
-                languageId: movie.languageId || undefined,
-                rating: movie.rating,
-                countryId: movie.countryId,
-                directorId: movie.directorId || undefined,
+                languageId: Number(movie.languageId) || undefined,
+                countryId: Number(movie.countryId) || undefined,
+                directorId: Number(movie.directorId) || undefined,
+                movieCategory: {
+                    createMany: {
+                        data:
+                            (movie.categories as Array<MovieCategory>) ||
+                            undefined,
+                    },
+                },
             },
         });
 

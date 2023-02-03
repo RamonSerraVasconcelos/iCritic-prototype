@@ -4,16 +4,17 @@ import movieService from '@src/services/movie-service';
 
 const movieController = {
     async register(req: Request, res: Response) {
+        const movieData = req.body;
         const categories: Array<object> = [];
 
-        req.body.categories.forEach((category: number) => {
+        movieData.categories.forEach((category: number) => {
             categories.push({
                 categoryId: category,
             });
         });
 
-        req.body.categories = categories;
-        const movie = await movieService.create(req.body);
+        movieData.categories = categories;
+        const movie = await movieService.create(movieData);
 
         if (!movie) {
             throw new ResponseError('', 500);
@@ -44,12 +45,35 @@ const movieController = {
     },
 
     async edit(req: Request, res: Response) {
-        const movieData = req.body;
-        const movie = await movieService.update(movieData);
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed!', 400);
+        }
 
-        return res.status(200).json({
-            movie,
-        });
+        const { id } = req.params;
+        const movieData = req.body;
+        const categories: Array<object> = [];
+
+        const originalMovie = await movieService.findById(Number(id));
+        if (!originalMovie) {
+            throw new ResponseError('Movie not found!', 404);
+        }
+
+        if (categories.length > 0) {
+            movieData.categories.forEach((category: number) => {
+                categories.push({
+                    categoryId: category,
+                });
+            });
+        }
+
+        movieData.categories = categories;
+        const updatedMovie = await movieService.update(Number(id), movieData);
+
+        if (!updatedMovie) {
+            throw new ResponseError('', 500);
+        }
+
+        return res.sendStatus(200);
     },
 
     async registerCategory(req: Request, res: Response) {
