@@ -17,4 +17,17 @@ const registerCategory = object({
     name: movieRules.name.required(),
 });
 
-export const movieSchema = { register, edit, registerCategory };
+const registerDirector = object({
+    name: movieRules.name.required(),
+    countryId: movieRules.countryId.required(),
+});
+
+const editDirector = registerDirector;
+
+export const movieSchema = {
+    register,
+    edit,
+    registerCategory,
+    registerDirector,
+    editDirector,
+};

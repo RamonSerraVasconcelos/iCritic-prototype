@@ -33,4 +33,28 @@ routes.patch(
 );
 routes.get('/categories/list', tryCatch(movieController.getCategories));
 
+// Directors
+routes.post(
+    '/directors',
+    roles(Role.MODERATOR),
+    validate(movieSchema.registerDirector),
+    tryCatch(movieController.registerDirector),
+);
+routes.get(
+    '/directors/list',
+    roles(Role.MODERATOR),
+    movieController.getDirectors,
+);
+routes.get(
+    '/directors/:id',
+    roles(Role.MODERATOR),
+    tryCatch(movieController.getDirector),
+);
+routes.patch(
+    '/directors/:id',
+    roles(Role.MODERATOR),
+    validate(movieSchema.editDirector),
+    tryCatch(movieController.editDirector),
+);
+
 export default routes;

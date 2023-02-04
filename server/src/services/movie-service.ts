@@ -1,4 +1,4 @@
-import { excludeFields, prisma } from '@src/lib/prisma';
+import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 
@@ -139,6 +139,90 @@ const movieService = {
         });
 
         return updatedCategory;
+    },
+
+    async createDirecor(name: string, countryId: number) {
+        const createdDirector = await prisma.director.create({
+            data: {
+                name,
+                countryId,
+            },
+            select: {
+                name: true,
+                countryId: true,
+            },
+        });
+
+        return createdDirector;
+    },
+
+    async updateDirector(directorId: number, name: string, countryId: number) {
+        const updatedDirector = await prisma.director.update({
+            where: {
+                id: directorId,
+            },
+            data: {
+                name: name || undefined,
+                countryId: countryId || undefined,
+            },
+            select: {
+                name: true,
+                countryId: true,
+            },
+        });
+
+        return updatedDirector;
+    },
+
+    async listDirectors() {
+        const directors = await prisma.director.findMany({
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return directors;
+    },
+
+    async findDirectorByName(name: string) {
+        const director = await prisma.director.findMany({
+            where: {
+                name,
+            },
+            select: {
+                name: true,
+                countryId: true,
+            },
+        });
+
+        return director;
+    },
+
+    async findDirectorById(directorId: number) {
+        const director = await prisma.director.findUnique({
+            where: {
+                id: directorId,
+            },
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return director;
     },
 };
 

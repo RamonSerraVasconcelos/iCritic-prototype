@@ -121,6 +121,72 @@ const movieController = {
 
         return res.status(200).json(categories);
     },
+
+    async registerDirector(req: Request, res: Response) {
+        const { name, countryId } = req.body;
+
+        const isDirectorDuplicated = await movieService.findDirectorByName(
+            name,
+        );
+
+        if (isDirectorDuplicated.length !== 0) {
+            throw new ResponseError('This director is already registered', 500);
+        }
+
+        const director = await movieService.createDirecor(name, countryId);
+        if (!director) {
+            throw new ResponseError('', 500);
+        }
+
+        return res.status(201).json(director);
+    },
+
+    async editDirector(req: Request, res: Response) {
+        const { id } = req.params;
+        const { name, countryId } = req.body;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const isDirectorDuplicated = await movieService.findDirectorByName(
+            name,
+        );
+
+        if (isDirectorDuplicated.length !== 0) {
+            throw new ResponseError('This director is already registered', 500);
+        }
+
+        const director = await movieService.updateDirector(
+            Number(id),
+            name,
+            countryId,
+        );
+
+        return res.status(200).json(director);
+    },
+
+    async getDirectors(req: Request, res: Response) {
+        const directors = await movieService.listDirectors();
+
+        return res.status(200).json(directors);
+    },
+
+    async getDirector(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const director = await movieService.findDirectorById(Number(id));
+
+        if (!director) {
+            throw new ResponseError('Director not found', 404);
+        }
+
+        return res.status(200).json(director);
+    },
 };
 
 export default movieController;
