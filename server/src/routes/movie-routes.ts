@@ -25,13 +25,14 @@ routes.post(
     validate(movieSchema.registerCategory),
     tryCatch(movieController.registerCategory),
 );
+routes.get('/categories/list', tryCatch(movieController.getCategories));
+routes.get('/categories/:id', tryCatch(movieController.getCategory));
 routes.patch(
     '/categories/:id',
     roles(Role.ADMIN),
     validate(movieSchema.registerCategory),
     tryCatch(movieController.editCategory),
 );
-routes.get('/categories/list', tryCatch(movieController.getCategories));
 
 // Directors
 routes.post(
@@ -40,16 +41,8 @@ routes.post(
     validate(movieSchema.registerDirector),
     tryCatch(movieController.registerDirector),
 );
-routes.get(
-    '/directors/list',
-    roles(Role.MODERATOR),
-    movieController.getDirectors,
-);
-routes.get(
-    '/directors/:id',
-    roles(Role.MODERATOR),
-    tryCatch(movieController.getDirector),
-);
+routes.get('/directors/list', movieController.getDirectors);
+routes.get('/directors/:id', tryCatch(movieController.getDirector));
 routes.patch(
     '/directors/:id',
     roles(Role.MODERATOR),

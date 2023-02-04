@@ -16,11 +16,7 @@ const movieController = {
         movieData.categories = categories;
         const movie = await movieService.create(movieData);
 
-        if (!movie) {
-            throw new ResponseError('', 500);
-        }
-
-        return res.sendStatus(201);
+        return res.status(201).json(movie);
     },
 
     async list(req: Request, res: Response) {
@@ -69,11 +65,7 @@ const movieController = {
         movieData.categories = categories;
         const updatedMovie = await movieService.update(Number(id), movieData);
 
-        if (!updatedMovie) {
-            throw new ResponseError('', 500);
-        }
-
-        return res.sendStatus(200);
+        return res.send(200).json(updatedMovie);
     },
 
     async registerCategory(req: Request, res: Response) {
@@ -85,13 +77,9 @@ const movieController = {
             throw new ResponseError('This category is already registered', 409);
         }
 
-        const createdCategory = await movieService.createCategory(name);
+        const category = await movieService.createCategory(name);
 
-        if (!createdCategory) {
-            throw new ResponseError('', 500);
-        }
-
-        return res.sendStatus(201);
+        return res.sendStatus(201).json(category);
     },
 
     async editCategory(req: Request, res: Response) {
@@ -104,22 +92,31 @@ const movieController = {
             throw new ResponseError('This category is already registered', 409);
         }
 
-        const updatedCategory = await movieService.updateCategory(
-            categoryId,
-            name,
-        );
+        const category = await movieService.updateCategory(categoryId, name);
 
-        if (!updatedCategory) {
-            throw new ResponseError('', 500);
-        }
-
-        return res.sendStatus(200);
+        return res.sendStatus(200).json(category);
     },
 
     async getCategories(req: Request, res: Response) {
         const categories = await movieService.listCategories();
 
         return res.status(200).json(categories);
+    },
+
+    async getCategory(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const category = await movieService.findCategoryById(Number(id));
+
+        if (!category) {
+            throw new ResponseError('Category not found', 404);
+        }
+
+        return res.status(200).json(category);
     },
 
     async registerDirector(req: Request, res: Response) {

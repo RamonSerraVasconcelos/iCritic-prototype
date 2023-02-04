@@ -2,60 +2,32 @@ import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 
+const selectMovieFields = {
+    name: true,
+    synopsis: true,
+    releaseDate: true,
+    rating: true,
+    country: {
+        select: {
+            id: true,
+            name: true,
+        },
+    },
+    directorId: true,
+    languageId: true,
+    movieCategory: {
+        select: {
+            category: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    },
+};
+
 const movieService = {
-    async list() {
-        const movies = await prisma.movie.findMany({
-            select: {
-                name: true,
-                synopsis: true,
-                releaseDate: true,
-                rating: true,
-                countryId: true,
-                directorId: true,
-                languageId: true,
-                movieCategory: {
-                    select: {
-                        categoryId: true,
-                    },
-                },
-            },
-        });
-
-        return movies;
-    },
-
-    async findById(movieId: number) {
-        const movie = await prisma.movie.findUnique({
-            where: { id: movieId },
-            select: {
-                name: true,
-                synopsis: true,
-                releaseDate: true,
-                rating: true,
-                country: {
-                    select: {
-                        id: true,
-                        name: true,
-                    },
-                },
-                directorId: true,
-                languageId: true,
-                movieCategory: {
-                    select: {
-                        category: {
-                            select: {
-                                id: true,
-                                name: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        return movie;
-    },
-
     async create(movie: MovieProps) {
         const createdMovie = await prisma.movie.create({
             data: {
@@ -72,9 +44,27 @@ const movieService = {
                     },
                 },
             },
+            select: selectMovieFields,
         });
 
         return createdMovie;
+    },
+
+    async list() {
+        const movies = await prisma.movie.findMany({
+            select: selectMovieFields,
+        });
+
+        return movies;
+    },
+
+    async findById(movieId: number) {
+        const movie = await prisma.movie.findUnique({
+            where: { id: movieId },
+            select: selectMovieFields,
+        });
+
+        return movie;
     },
 
     async update(id: number, movie: MovieProps) {
@@ -97,6 +87,7 @@ const movieService = {
                     },
                 },
             },
+            select: selectMovieFields,
         });
 
         return updatedMovie;
@@ -114,7 +105,27 @@ const movieService = {
 
     async findCategoryByName(name: string) {
         const category = await prisma.category.findMany({
-            where: { name },
+            where: {
+                name,
+            },
+            select: {
+                id: true,
+                name: true,
+            },
+        });
+
+        return category;
+    },
+
+    async findCategoryById(categoryId: number) {
+        const category = await prisma.category.findUnique({
+            where: {
+                id: categoryId,
+            },
+            select: {
+                id: true,
+                name: true,
+            },
         });
 
         return category;
@@ -122,7 +133,13 @@ const movieService = {
 
     async listCategories() {
         const categories = await prisma.category.findMany({
-            orderBy: { id: 'asc' },
+            select: {
+                id: true,
+                name: true,
+            },
+            orderBy: {
+                id: 'asc',
+            },
         });
 
         return categories;
