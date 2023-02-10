@@ -65,7 +65,7 @@ const movieController = {
         movieData.categories = categories;
         const updatedMovie = await movieService.update(Number(id), movieData);
 
-        return res.send(200).json(updatedMovie);
+        return res.status(200).json(updatedMovie);
     },
 
     async registerCategory(req: Request, res: Response) {
@@ -79,7 +79,7 @@ const movieController = {
 
         const category = await movieService.createCategory(name);
 
-        return res.sendStatus(201).json(category);
+        return res.status(201).json(category);
     },
 
     async editCategory(req: Request, res: Response) {
@@ -94,7 +94,7 @@ const movieController = {
 
         const category = await movieService.updateCategory(categoryId, name);
 
-        return res.sendStatus(200).json(category);
+        return res.status(200).json(category);
     },
 
     async getCategories(req: Request, res: Response) {

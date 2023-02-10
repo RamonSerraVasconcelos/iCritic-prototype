@@ -98,6 +98,10 @@ const movieService = {
             data: {
                 name,
             },
+            select: {
+                id: true,
+                name: true,
+            },
         });
 
         return category;
@@ -165,8 +169,14 @@ const movieService = {
                 countryId,
             },
             select: {
+                id: true,
                 name: true,
-                countryId: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
         });
 
@@ -183,8 +193,14 @@ const movieService = {
                 countryId: countryId || undefined,
             },
             select: {
+                id: true,
                 name: true,
-                countryId: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
         });
 
@@ -214,8 +230,14 @@ const movieService = {
                 name,
             },
             select: {
+                id: true,
                 name: true,
-                countryId: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
             },
         });
 
