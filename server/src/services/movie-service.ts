@@ -157,6 +157,10 @@ const movieService = {
             data: {
                 name,
             },
+            select: {
+                id: true,
+                name: true,
+            },
         });
 
         return updatedCategory;
