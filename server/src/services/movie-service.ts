@@ -166,7 +166,7 @@ const movieService = {
         return updatedCategory;
     },
 
-    async createDirecor(name: string, countryId: number) {
+    async createDirector(name: string, countryId: number) {
         const createdDirector = await prisma.director.create({
             data: {
                 name,

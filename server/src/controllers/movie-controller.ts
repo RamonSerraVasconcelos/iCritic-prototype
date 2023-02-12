@@ -130,7 +130,7 @@ const movieController = {
             throw new ResponseError('This director is already registered', 500);
         }
 
-        const director = await movieService.createDirecor(name, countryId);
+        const director = await movieService.createDirector(name, countryId);
         if (!director) {
             throw new ResponseError('', 500);
         }
