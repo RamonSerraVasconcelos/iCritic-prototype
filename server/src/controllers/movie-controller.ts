@@ -6,6 +6,7 @@ const movieController = {
     async register(req: Request, res: Response) {
         const movieData = req.body;
         const categories: Array<object> = [];
+        const directors: Array<object> = [];
 
         movieData.categories.forEach((category: number) => {
             categories.push({
@@ -13,7 +14,14 @@ const movieController = {
             });
         });
 
+        movieData.directors.forEach((director: number) => {
+            directors.push({
+                directorId: director,
+            });
+        });
+
         movieData.categories = categories;
+        movieData.directors = directors;
         const movie = await movieService.create(movieData);
 
         return res.status(201).json(movie);

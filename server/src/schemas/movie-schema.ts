@@ -6,12 +6,10 @@ const register = object({
     synopsis: movieRules.synopsis.required(),
     releaseDate: movieRules.releaseDate.required(),
     categories: movieRules.categories.required(),
-    directorId: movieRules.directorId.required(),
+    directors: movieRules.directors.required(),
     countryId: movieRules.countryId.required(),
     languageId: movieRules.languageId.required(),
 });
-
-const edit = register;
 
 const registerCategory = object({
     name: movieRules.name.required(),
@@ -26,7 +24,6 @@ const editDirector = registerDirector;
 
 export const movieSchema = {
     register,
-    edit,
     registerCategory,
     registerDirector,
     editDirector,

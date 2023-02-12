@@ -1,6 +1,7 @@
 import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
+import { MovieDirector } from '@src/ts/interfaces/movie-director-props';
 
 const selectMovieFields = {
     name: true,
@@ -13,11 +14,20 @@ const selectMovieFields = {
             name: true,
         },
     },
-    directorId: true,
     languageId: true,
     movieCategory: {
         select: {
             category: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    },
+    movieDirector: {
+        select: {
+            director: {
                 select: {
                     id: true,
                     name: true,
@@ -36,11 +46,15 @@ const movieService = {
                 releaseDate: movie.releaseDate,
                 languageId: Number(movie.languageId),
                 countryId: Number(movie.countryId),
-                directorId: Number(movie.directorId),
                 rating: 0,
                 movieCategory: {
                     createMany: {
                         data: movie.categories as Array<MovieCategory>,
+                    },
+                },
+                movieDirector: {
+                    createMany: {
+                        data: movie.directors as Array<MovieDirector>,
                     },
                 },
             },
@@ -78,12 +92,16 @@ const movieService = {
                 releaseDate: movie.releaseDate || undefined,
                 languageId: Number(movie.languageId) || undefined,
                 countryId: Number(movie.countryId) || undefined,
-                directorId: Number(movie.directorId) || undefined,
                 movieCategory: {
                     createMany: {
                         data:
                             (movie.categories as Array<MovieCategory>) ||
                             undefined,
+                    },
+                },
+                movieDirector: {
+                    createMany: {
+                        data: movie.directors as Array<MovieDirector>,
                     },
                 },
             },

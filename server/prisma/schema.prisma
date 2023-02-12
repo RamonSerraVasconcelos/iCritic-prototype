@@ -83,8 +83,7 @@ model Movie {
     country       Country          @relation(fields: [countryId], references: [id])
     countryId     Int              @map("country_id")
     movieCategory Movie_Category[]
-    director      Director         @relation(fields: [directorId], references: [id])
-    directorId    Int              @map("director_id")
+    movieDirector Movie_Director[]
     movieActor    Movie_Actor[]
     createdAt     DateTime         @default(now()) @map("created_at")
     updatedAt     DateTime         @updatedAt @map("updated_at")
@@ -114,29 +113,29 @@ model Movie_Category {
     @@map("movie_category")
 }
 
-model Movie_Actor {
-    id        Int      @id @default(autoincrement())
-    movie     Movie    @relation(fields: [movieId], references: [id])
-    movieId   Int      @map("movie_id")
-    actor     Actor    @relation(fields: [actorId], references: [id])
-    actorId   Int      @map("actor_id")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
-
-    @@map("movie_actor")
-}
-
 model Director {
-    id            Int              @id @default(autoincrement())
-    name          String
-    directorImage Director_Image[]
-    country       Country          @relation(fields: [countryId], references: [id])
-    countryId     Int              @map("country_id")
-    createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
-    movie         Movie[]
+    id             Int              @id @default(autoincrement())
+    name           String
+    directorImage  Director_Image[]
+    country        Country          @relation(fields: [countryId], references: [id])
+    countryId      Int              @map("country_id")
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime         @updatedAt @map("updated_at")
+    Movie_Director Movie_Director[]
 
     @@map("directors")
+}
+
+model Movie_Director {
+    id         Int      @id @default(autoincrement())
+    movie      Movie    @relation(fields: [movieId], references: [id])
+    movieId    Int      @map("movie_id")
+    director   Director @relation(fields: [directorId], references: [id])
+    directorId Int      @map("director_id")
+    createdAt  DateTime @default(now()) @map("created_at")
+    updatedAt  DateTime @updatedAt @map("updated_at")
+
+    @@map("movie_director")
 }
 
 model Director_Image {
@@ -162,6 +161,18 @@ model Actor {
     updatedAt  DateTime      @updatedAt @map("updated_at")
 
     @@map("actors")
+}
+
+model Movie_Actor {
+    id        Int      @id @default(autoincrement())
+    movie     Movie    @relation(fields: [movieId], references: [id])
+    movieId   Int      @map("movie_id")
+    actor     Actor    @relation(fields: [actorId], references: [id])
+    actorId   Int      @map("actor_id")
+    createdAt DateTime @default(now()) @map("created_at")
+    updatedAt DateTime @updatedAt @map("updated_at")
+
+    @@map("movie_actor")
 }
 
 model Actor_Image {
