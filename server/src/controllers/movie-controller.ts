@@ -56,13 +56,14 @@ const movieController = {
         const { id } = req.params;
         const movieData = req.body;
         const categories: Array<object> = [];
+        const directors: Array<object> = [];
 
         const originalMovie = await movieService.findById(Number(id));
         if (!originalMovie) {
             throw new ResponseError('Movie not found!', 404);
         }
 
-        if (categories.length > 0) {
+        if (req.body.categories && req.body.categories.length > 0) {
             movieData.categories.forEach((category: number) => {
                 categories.push({
                     categoryId: category,
@@ -70,7 +71,16 @@ const movieController = {
             });
         }
 
+        if (req.body.directors && req.body.directors.length > 0) {
+            movieData.directors.forEach((director: number) => {
+                directors.push({
+                    directorId: director,
+                });
+            });
+        }
+
         movieData.categories = categories;
+        movieData.directors = directors;
         const updatedMovie = await movieService.update(Number(id), movieData);
 
         return res.status(200).json(updatedMovie);

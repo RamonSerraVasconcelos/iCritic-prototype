@@ -5,8 +5,8 @@ const register = object({
     name: movieRules.name.required(),
     synopsis: movieRules.synopsis.required(),
     releaseDate: movieRules.releaseDate.required(),
-    categories: movieRules.categories.required(),
-    directors: movieRules.directors.required(),
+    categories: movieRules.categories.required().min(1),
+    directors: movieRules.directors.required().min(1),
     countryId: movieRules.countryId.required(),
     languageId: movieRules.languageId.required(),
 });
