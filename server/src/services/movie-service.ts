@@ -101,7 +101,9 @@ const movieService = {
                 },
                 movieDirector: {
                     createMany: {
-                        data: movie.directors as Array<MovieDirector>,
+                        data:
+                            (movie.directors as Array<MovieDirector>) ||
+                            undefined,
                     },
                 },
             },
