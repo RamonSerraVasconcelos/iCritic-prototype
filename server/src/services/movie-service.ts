@@ -92,13 +92,6 @@ const movieService = {
                 releaseDate: movie.releaseDate || undefined,
                 languageId: Number(movie.languageId) || undefined,
                 countryId: Number(movie.countryId) || undefined,
-                movieCategory: {
-                    createMany: {
-                        data:
-                            (movie.categories as Array<MovieCategory>) ||
-                            undefined,
-                    },
-                },
                 movieDirector: {
                     createMany: {
                         data:
@@ -111,6 +104,33 @@ const movieService = {
         });
 
         return updatedMovie;
+    },
+
+    async upsertMovieCategory(movieId: number, categories: Array<number>) {
+        const duplicates = await prisma.movie_Category.findMany({
+            where: {
+                movieId,
+                categoryId: {
+                    in: categories,
+                },
+            },
+        });
+
+        const duplicatedIds = duplicates.map((category) => category.categoryId);
+
+        const categoriesIds = categories.filter(
+            (category) => !duplicatedIds.includes(category) ?? category,
+        );
+
+        const categoriesToBeInserted = categoriesIds.map((categoryId) => {
+            return { movieId, categoryId };
+        });
+
+        const insertedCategories = prisma.movie_Category.createMany({
+            data: categoriesToBeInserted,
+        });
+
+        return insertedCategories;
     },
 
     async createCategory(name: string) {
