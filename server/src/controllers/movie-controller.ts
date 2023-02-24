@@ -55,28 +55,25 @@ const movieController = {
 
         const { id } = req.params;
         const movieData = req.body;
-        const directors: Array<object> = [];
 
         const originalMovie = await movieService.findById(Number(id));
         if (!originalMovie) {
             throw new ResponseError('Movie not found!', 404);
         }
 
-        if (req.body.directors && req.body.directors.length > 0) {
-            movieData.directors.forEach((director: number) => {
-                directors.push({
-                    directorId: director,
-                });
-            });
-        }
-
-        movieData.directors = directors;
         const updatedMovie = await movieService.update(Number(id), movieData);
 
         if (req.body.categories && req.body.categories.length > 0) {
             await movieService.upsertMovieCategory(
                 Number(id),
                 movieData.categories,
+            );
+        }
+
+        if (req.body.directors && req.body.directors.length > 0) {
+            await movieService.upsertMovieDirector(
+                Number(id),
+                movieData.directors,
             );
         }
 
