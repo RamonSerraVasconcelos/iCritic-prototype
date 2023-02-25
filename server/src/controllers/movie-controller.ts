@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { ResponseError } from '@src/ts/classes/response-error';
 import movieService from '@src/services/movie-service';
+import { request } from 'http';
 
 const movieController = {
     async register(req: Request, res: Response) {
@@ -64,17 +65,11 @@ const movieController = {
         const updatedMovie = await movieService.update(Number(id), movieData);
 
         if (req.body.categories && req.body.categories.length > 0) {
-            await movieService.upsertMovieCategory(
-                Number(id),
-                movieData.categories,
-            );
+            await movieService.upsertMovieCategory(Number(id), movieData.categories);
         }
 
         if (req.body.directors && req.body.directors.length > 0) {
-            await movieService.upsertMovieDirector(
-                Number(id),
-                movieData.directors,
-            );
+            await movieService.upsertMovieDirector(Number(id), movieData.directors);
         }
 
         return res.status(200).json(updatedMovie);
@@ -134,18 +129,13 @@ const movieController = {
     async registerDirector(req: Request, res: Response) {
         const { name, countryId } = req.body;
 
-        const isDirectorDuplicated = await movieService.findDirectorByName(
-            name,
-        );
+        const isDirectorDuplicated = await movieService.findDirectorByName(name);
 
         if (isDirectorDuplicated.length !== 0) {
-            throw new ResponseError('This director is already registered', 500);
+            throw new ResponseError('This director is already registered', 409);
         }
 
         const director = await movieService.createDirector(name, countryId);
-        if (!director) {
-            throw new ResponseError('', 500);
-        }
 
         return res.status(201).json(director);
     },
@@ -158,19 +148,13 @@ const movieController = {
             throw new ResponseError('Invalid Id format', 400);
         }
 
-        const isDirectorDuplicated = await movieService.findDirectorByName(
-            name,
-        );
+        const isDirectorDuplicated = await movieService.findDirectorByName(name);
 
         if (isDirectorDuplicated.length !== 0) {
-            throw new ResponseError('This director is already registered', 500);
+            throw new ResponseError('This director is already registered', 409);
         }
 
-        const director = await movieService.updateDirector(
-            Number(id),
-            name,
-            countryId,
-        );
+        const director = await movieService.updateDirector(Number(id), name, countryId);
 
         return res.status(200).json(director);
     },
@@ -196,6 +180,26 @@ const movieController = {
 
         return res.status(200).json(director);
     },
+
+    async registerActor(req: Request, res: Response) {
+        const { name, countryId } = req.body;
+
+        const isActorDuplicated = await movieService.findActorByName(name);
+
+        if (isActorDuplicated.length > 0) {
+            throw new ResponseError('This actor is already registered', 409);
+        }
+
+        const actor = await movieService.createActor(name, countryId);
+
+        return res.status(201).json(actor);
+    },
+
+    async editActor(req: Request, res: Response) {},
+
+    async getActors(req: Request, res: Response) {},
+
+    async getActor(req: Request, res: Response) {},
 };
 
 export default movieController;

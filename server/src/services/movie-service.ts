@@ -327,6 +327,91 @@ const movieService = {
 
         return director;
     },
+
+    async createActor(name: string, countryId: number) {
+        const actor = await prisma.actor.create({
+            data: {
+                name,
+                countryId,
+            },
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return actor;
+    },
+
+    async updateActor(actorId: number, name: string, countryId: number) {
+        const updatedActor = await prisma.actor.update({
+            where: {
+                id: actorId,
+            },
+            data: {
+                name: name || undefined,
+                countryId: countryId || undefined,
+            },
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return updatedActor;
+    },
+
+    async findActorByName(name: string) {
+        const actor = prisma.actor.findMany({
+            where: {
+                name,
+            },
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return actor;
+    },
+
+    async findActorById(actorId: number) {
+        const actor = prisma.actor.findUnique({
+            where: {
+                id: actorId,
+            },
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return actor;
+    },
 };
 
 export default movieService;

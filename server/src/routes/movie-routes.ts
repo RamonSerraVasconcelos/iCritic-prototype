@@ -50,4 +50,20 @@ routes.patch(
     tryCatch(movieController.editDirector),
 );
 
+// Actors
+routes.post(
+    '/actors',
+    roles(Role.MODERATOR),
+    validate(movieSchema.registerActor),
+    tryCatch(movieController.registerActor),
+);
+routes.get('/actors/list', movieController.getActors);
+routes.get('/actors/:id', tryCatch(movieController.getActor));
+routes.patch(
+    '/actors/:id',
+    roles(Role.MODERATOR),
+    validate(movieSchema.editActor),
+    tryCatch(movieController.editActor),
+);
+
 export default routes;

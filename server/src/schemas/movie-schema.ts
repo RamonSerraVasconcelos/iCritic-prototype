@@ -22,9 +22,14 @@ const registerDirector = object({
 
 const editDirector = registerDirector;
 
+const registerActor = registerDirector;
+const editActor = registerActor;
+
 export const movieSchema = {
     register,
     registerCategory,
     registerDirector,
     editDirector,
+    registerActor,
+    editActor,
 };

@@ -136,6 +136,7 @@ model Movie_Director {
     createdAt  DateTime  @default(now()) @map("created_at")
     updatedAt  DateTime? @updatedAt @map("updated_at")
 
+    @@unique([movieId, directorId])
     @@map("movie_director")
 }
 
@@ -173,6 +174,7 @@ model Movie_Actor {
     createdAt DateTime  @default(now()) @map("created_at")
     updatedAt DateTime? @updatedAt @map("updated_at")
 
+    @@unique([movieId, actorId])
     @@map("movie_actor")
 }
 
