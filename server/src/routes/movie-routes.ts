@@ -8,12 +8,7 @@ import { Role } from '@prisma/client';
 
 const routes = Router();
 
-routes.post(
-    '/',
-    roles(Role.MODERATOR),
-    validate(movieSchema.register),
-    tryCatch(movieController.register),
-);
+routes.post('/', roles(Role.MODERATOR), validate(movieSchema.register), tryCatch(movieController.register));
 routes.get('/', tryCatch(movieController.list));
 routes.get('/:id', tryCatch(movieController.get));
 routes.patch('/:id', roles(Role.MODERATOR), tryCatch(movieController.edit));
@@ -43,12 +38,7 @@ routes.post(
 );
 routes.get('/directors/list', movieController.getDirectors);
 routes.get('/directors/:id', tryCatch(movieController.getDirector));
-routes.patch(
-    '/directors/:id',
-    roles(Role.MODERATOR),
-    validate(movieSchema.editDirector),
-    tryCatch(movieController.editDirector),
-);
+routes.patch('/directors/:id', roles(Role.MODERATOR), tryCatch(movieController.editDirector));
 
 // Actors
 routes.post(
@@ -59,11 +49,6 @@ routes.post(
 );
 routes.get('/actors/list', movieController.getActors);
 routes.get('/actors/:id', tryCatch(movieController.getActor));
-routes.patch(
-    '/actors/:id',
-    roles(Role.MODERATOR),
-    validate(movieSchema.editActor),
-    tryCatch(movieController.editActor),
-);
+routes.patch('/actors/:id', roles(Role.MODERATOR), tryCatch(movieController.editActor));
 
 export default routes;

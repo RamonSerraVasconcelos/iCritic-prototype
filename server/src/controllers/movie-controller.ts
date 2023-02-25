@@ -195,7 +195,35 @@ const movieController = {
         return res.status(201).json(actor);
     },
 
-    async editActor(req: Request, res: Response) {},
+    async editActor(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name, countryId } = req.body;
+
+        const doesActorExist = await movieService.findActorById(Number(id));
+
+        if (!doesActorExist) {
+            throw new ResponseError('Actor not found', 404);
+        }
+
+        const isActorDuplicated = await movieService.findActorByName(name);
+
+        if (isActorDuplicated.length > 0) {
+            throw new ResponseError('This actor is already registered', 409);
+        }
+
+        const actor = await movieService.updateActor(Number(id), name, countryId);
+
+        return res.status(200).json(actor);
+    },
 
     async getActors(req: Request, res: Response) {},
 

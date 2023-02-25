@@ -20,16 +20,11 @@ const registerDirector = object({
     countryId: movieRules.countryId.required(),
 });
 
-const editDirector = registerDirector;
-
 const registerActor = registerDirector;
-const editActor = registerActor;
 
 export const movieSchema = {
     register,
     registerCategory,
     registerDirector,
-    editDirector,
     registerActor,
-    editActor,
 };
