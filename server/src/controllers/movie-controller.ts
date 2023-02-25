@@ -90,7 +90,22 @@ const movieController = {
     },
 
     async editCategory(req: Request, res: Response) {
-        const categoryId = Number(req.params.id);
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const doesCategoryExist = await movieService.findCategoryById(Number(id));
+
+        if (!doesCategoryExist) {
+            throw new ResponseError('Category not found', 404);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
         const { name } = req.body;
 
         const foundCategory = await movieService.findCategoryByName(name);
@@ -99,7 +114,7 @@ const movieController = {
             throw new ResponseError('This category is already registered', 409);
         }
 
-        const category = await movieService.updateCategory(categoryId, name);
+        const category = await movieService.updateCategory(Number(id), name);
 
         return res.status(200).json(category);
     },
@@ -142,11 +157,22 @@ const movieController = {
 
     async editDirector(req: Request, res: Response) {
         const { id } = req.params;
-        const { name, countryId } = req.body;
 
         if (Number.isNaN(Number(id))) {
             throw new ResponseError('Invalid Id format', 400);
         }
+
+        const doesDirectorExist = await movieService.findDirectorById(Number(id));
+
+        if (!doesDirectorExist) {
+            throw new ResponseError('Director not found', 404);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name, countryId } = req.body;
 
         const isDirectorDuplicated = await movieService.findDirectorByName(name);
 
@@ -202,17 +228,17 @@ const movieController = {
             throw new ResponseError('Invalid Id format', 400);
         }
 
-        if (Object.keys(req.body).length === 0) {
-            throw new ResponseError('No data informed', 400);
-        }
-
-        const { name, countryId } = req.body;
-
         const doesActorExist = await movieService.findActorById(Number(id));
 
         if (!doesActorExist) {
             throw new ResponseError('Actor not found', 404);
         }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name, countryId } = req.body;
 
         const isActorDuplicated = await movieService.findActorByName(name);
 

@@ -22,12 +22,7 @@ routes.post(
 );
 routes.get('/categories/list', tryCatch(movieController.getCategories));
 routes.get('/categories/:id', tryCatch(movieController.getCategory));
-routes.patch(
-    '/categories/:id',
-    roles(Role.ADMIN),
-    validate(movieSchema.registerCategory),
-    tryCatch(movieController.editCategory),
-);
+routes.patch('/categories/:id', roles(Role.ADMIN), tryCatch(movieController.editCategory));
 
 // Directors
 routes.post(
