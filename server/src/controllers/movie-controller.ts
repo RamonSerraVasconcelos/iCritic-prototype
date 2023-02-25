@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { ResponseError } from '@src/ts/classes/response-error';
 import movieService from '@src/services/movie-service';
-import { request } from 'http';
 
 const movieController = {
     async register(req: Request, res: Response) {
@@ -251,9 +250,27 @@ const movieController = {
         return res.status(200).json(actor);
     },
 
-    async getActors(req: Request, res: Response) {},
+    async getActors(req: Request, res: Response) {
+        const actors = await movieService.listActors();
 
-    async getActor(req: Request, res: Response) {},
+        return res.status(200).json(actors);
+    },
+
+    async getActor(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const actor = await movieService.findActorById(Number(id));
+
+        if (!actor) {
+            throw new ResponseError('Actor not found', 404);
+        }
+
+        return res.status(200).json(actor);
+    },
 };
 
 export default movieController;

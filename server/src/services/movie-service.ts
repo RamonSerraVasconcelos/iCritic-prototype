@@ -111,9 +111,7 @@ const movieService = {
 
         const duplicatedIds = duplicates.map((category) => category.categoryId);
 
-        const categoriesIds = categories.filter(
-            (category) => !duplicatedIds.includes(category) ?? category,
-        );
+        const categoriesIds = categories.filter((category) => !duplicatedIds.includes(category) ?? category);
 
         const categoriesToBeInserted = categoriesIds.map((categoryId) => {
             return { movieId, categoryId };
@@ -138,9 +136,7 @@ const movieService = {
 
         const duplicatedIds = duplicates.map((director) => director.directorId);
 
-        const directorsIds = directors.filter(
-            (director) => !duplicatedIds.includes(director) ?? director,
-        );
+        const directorsIds = directors.filter((director) => !duplicatedIds.includes(director) ?? director);
 
         const directorsToBeInserted = directorsIds.map((directorId) => {
             return { movieId, directorId };
@@ -371,6 +367,23 @@ const movieService = {
         });
 
         return updatedActor;
+    },
+
+    async listActors() {
+        const actors = await prisma.actor.findMany({
+            select: {
+                id: true,
+                name: true,
+                country: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        });
+
+        return actors;
     },
 
     async findActorByName(name: string) {
