@@ -389,7 +389,7 @@ const movieService = {
     async findActorByName(name: string) {
         const actor = prisma.actor.findMany({
             where: {
-                name,
+                name: name || '',
             },
             select: {
                 id: true,
