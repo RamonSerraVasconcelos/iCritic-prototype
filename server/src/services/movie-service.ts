@@ -4,6 +4,7 @@ import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 import { MovieDirector } from '@src/ts/interfaces/movie-director-props';
 
 const selectMovieFields = {
+    id: true,
     name: true,
     synopsis: true,
     releaseDate: true,
