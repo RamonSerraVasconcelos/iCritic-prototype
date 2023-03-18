@@ -31,6 +31,9 @@ describe('movie', () => {
 
         await movieService.createDirector('Test movie director 1', 218);
         await movieService.createDirector('Test movie director 2', 218);
+
+        await movieService.createActor('Test movie actor 1', 218);
+        await movieService.createActor('Test movie actor 2', 218);
     });
 
     describe('register movie', () => {
@@ -41,6 +44,7 @@ describe('movie', () => {
                 releaseDate: '2018-03-10',
                 categories: [1, 2],
                 directors: [1, 2],
+                actors: [1, 2],
                 countryId: 218,
                 languageId: 27,
             };
@@ -63,6 +67,7 @@ describe('movie', () => {
                 releaseDate: '2018-03-10',
                 categories: [{ categoryId: 1 }, { categoryId: 2 }],
                 directors: [{ directorId: 1 }, { directorId: 2 }],
+                actors: [{ actorId: 1 }, { actorId: 2 }],
                 countryId: 218,
                 languageId: 27,
             };
@@ -96,6 +101,7 @@ describe('movie', () => {
                 releaseDate: '2018-03-10',
                 categories: [{ categoryId: 1 }, { categoryId: 2 }],
                 directors: [{ directorId: 1 }, { directorId: 2 }],
+                actors: [{ actorId: 1 }, { actorId: 2 }],
                 countryId: 218,
                 languageId: 27,
             };
@@ -108,6 +114,7 @@ describe('movie', () => {
                 releaseDate: '2018-03-10',
                 categories: [{ categoryId: 1 }, { categoryId: 2 }],
                 directors: [{ directorId: 1 }, { directorId: 2 }],
+                actors: [{ actorId: 1 }, { actorId: 2 }],
                 countryId: 218,
                 languageId: 27,
             };
@@ -135,6 +142,7 @@ describe('movie', () => {
                 releaseDate: '2018-03-10',
                 categories: [{ categoryId: 1 }, { categoryId: 2 }],
                 directors: [{ directorId: 1 }, { directorId: 2 }],
+                actors: [{ actorId: 1 }, { actorId: 2 }],
                 countryId: 218,
                 languageId: 27,
             };
