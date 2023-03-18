@@ -7,6 +7,7 @@ const movieController = {
         const movieData = req.body;
         const categories: Array<object> = [];
         const directors: Array<object> = [];
+        const actors: Array<object> = [];
 
         movieData.categories.forEach((category: number) => {
             categories.push({
@@ -20,8 +21,15 @@ const movieController = {
             });
         });
 
+        movieData.actors.forEach((actor: number) => {
+            actors.push({
+                actorId: actor,
+            });
+        });
+
         movieData.categories = categories;
         movieData.directors = directors;
+        movieData.actors = actors;
         const movie = await movieService.create(movieData);
 
         return res.status(201).json(movie);
@@ -69,6 +77,10 @@ const movieController = {
 
         if (req.body.directors && req.body.directors.length > 0) {
             await movieService.upsertMovieDirector(Number(id), movieData.directors);
+        }
+
+        if (req.body.actors && req.body.actors.length > 0) {
+            await movieService.upsertMovieActor(Number(id), movieData.actors);
         }
 
         return res.status(200).json(updatedMovie);

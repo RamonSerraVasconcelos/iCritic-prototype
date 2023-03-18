@@ -2,6 +2,7 @@ import { prisma } from '@src/lib/prisma';
 import { MovieProps } from '@src/ts/interfaces/movie-props';
 import { MovieCategory } from '@src/ts/interfaces/movie-category-props';
 import { MovieDirector } from '@src/ts/interfaces/movie-director-props';
+import { MovieActor } from '@src/ts/interfaces/movie-actor-props';
 
 const selectMovieFields = {
     id: true,
@@ -36,6 +37,16 @@ const selectMovieFields = {
             },
         },
     },
+    movieActor: {
+        select: {
+            actor: {
+                select: {
+                    id: true,
+                    name: true,
+                },
+            },
+        },
+    },
 };
 
 const movieService = {
@@ -56,6 +67,11 @@ const movieService = {
                 movieDirector: {
                     createMany: {
                         data: movie.directors as Array<MovieDirector>,
+                    },
+                },
+                movieActor: {
+                    createMany: {
+                        data: movie.actors as Array<MovieActor>,
                     },
                 },
             },
@@ -148,6 +164,31 @@ const movieService = {
         });
 
         return insertedDirectors;
+    },
+
+    async upsertMovieActor(movieId: number, actors: Array<number>) {
+        const duplicates = await prisma.movie_Actor.findMany({
+            where: {
+                movieId,
+                actorId: {
+                    in: actors,
+                },
+            },
+        });
+
+        const duplicatedIds = duplicates.map((actor) => actor.actorId);
+
+        const actorsIds = actors.filter((actor) => !duplicatedIds.includes(actor) ?? actor);
+
+        const actorsToBeInserted = actorsIds.map((actorId) => {
+            return { movieId, actorId };
+        });
+
+        const insertedActors = prisma.movie_Actor.createMany({
+            data: actorsToBeInserted,
+        });
+
+        return insertedActors;
     },
 
     async createCategory(name: string) {

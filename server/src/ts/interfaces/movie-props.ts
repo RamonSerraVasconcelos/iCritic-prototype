@@ -5,6 +5,7 @@ export interface MovieProps {
     releaseDate: string;
     categories: Array<object>;
     directors: Array<object>;
+    actors: Array<object>;
     countryId: number;
     languageId: number;
     rating: number;
