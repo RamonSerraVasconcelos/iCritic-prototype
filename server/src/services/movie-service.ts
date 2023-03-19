@@ -150,25 +150,33 @@ const movieService = {
     },
 
     async upsertMovieDirector(movieId: number, directors: Array<number>) {
-        const duplicates = await prisma.movie_Director.findMany({
+        const existingDirectors = await prisma.movie_Director.findMany({
             where: {
                 movieId,
-                directorId: {
-                    in: directors,
-                },
             },
         });
 
-        const duplicatedIds = duplicates.map((director) => director.directorId);
+        const existingDirectorsIds = existingDirectors.map((director) => director.directorId);
+
+        const duplicatedIds = existingDirectorsIds.filter((directorId) => directors.includes(directorId));
+        const excludedIds = existingDirectorsIds.filter((directorId) => !directors.includes(directorId));
 
         const directorsIds = directors.filter((director) => !duplicatedIds.includes(director) ?? director);
-
         const directorsToBeInserted = directorsIds.map((directorId) => {
             return { movieId, directorId };
         });
 
         const insertedDirectors = prisma.movie_Director.createMany({
             data: directorsToBeInserted,
+        });
+
+        await prisma.movie_Director.deleteMany({
+            where: {
+                movieId,
+                directorId: {
+                    in: excludedIds,
+                },
+            },
         });
 
         return insertedDirectors;
