@@ -69,8 +69,6 @@ const movieController = {
             throw new ResponseError('Movie not found!', 404);
         }
 
-        const updatedMovie = await movieService.update(Number(id), movieData);
-
         if (req.body.categories && req.body.categories.length > 0) {
             await movieService.upsertMovieCategory(Number(id), movieData.categories);
         }
@@ -82,6 +80,8 @@ const movieController = {
         if (req.body.actors && req.body.actors.length > 0) {
             await movieService.upsertMovieActor(Number(id), movieData.actors);
         }
+
+        const updatedMovie = await movieService.update(Number(id), movieData);
 
         return res.status(200).json(updatedMovie);
     },

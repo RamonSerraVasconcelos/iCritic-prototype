@@ -117,25 +117,33 @@ const movieService = {
     },
 
     async upsertMovieCategory(movieId: number, categories: Array<number>) {
-        const duplicates = await prisma.movie_Category.findMany({
+        const existingCategories = await prisma.movie_Category.findMany({
             where: {
                 movieId,
-                categoryId: {
-                    in: categories,
-                },
             },
         });
 
-        const duplicatedIds = duplicates.map((category) => category.categoryId);
+        const existingCategoriesIds = existingCategories.map((category) => category.categoryId);
+
+        const duplicatedIds = existingCategoriesIds.filter((categoryId) => categories.includes(categoryId));
+        const excludedIds = existingCategoriesIds.filter((categoryId) => !categories.includes(categoryId));
 
         const categoriesIds = categories.filter((category) => !duplicatedIds.includes(category) ?? category);
-
         const categoriesToBeInserted = categoriesIds.map((categoryId) => {
             return { movieId, categoryId };
         });
 
-        const insertedCategories = prisma.movie_Category.createMany({
+        const insertedCategories = await prisma.movie_Category.createMany({
             data: categoriesToBeInserted,
+        });
+
+        await prisma.movie_Category.deleteMany({
+            where: {
+                movieId,
+                categoryId: {
+                    in: excludedIds,
+                },
+            },
         });
 
         return insertedCategories;
