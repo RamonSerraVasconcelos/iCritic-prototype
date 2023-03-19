@@ -1,23 +1,31 @@
-import { date, number, object } from 'yup';
+import { object } from 'yup';
 import { movieRules } from '@src/schemas/rules/movie-rules';
 
-const add = object({
+const register = object({
     name: movieRules.name.required(),
     synopsis: movieRules.synopsis.required(),
-    releaseDate: date().required(),
-    language: movieRules.language.required(),
-    countryId: number().required(),
-    requiredId: number().required(),
+    releaseDate: movieRules.releaseDate.required(),
+    categories: movieRules.categories.required().min(1),
+    directors: movieRules.directors.required().min(1),
+    actors: movieRules.actors.required().min(1),
+    countryId: movieRules.countryId.required(),
+    languageId: movieRules.languageId.required(),
 });
 
-const edit = object({
-    id: number().required(),
+const registerCategory = object({
     name: movieRules.name.required(),
-    synopsis: movieRules.synopsis.required(),
-    releaseDate: date().required(),
-    language: movieRules.language.required(),
-    countryId: number().required(),
-    requiredId: number().required(),
 });
 
-export const movieSchema = { add, edit };
+const registerDirector = object({
+    name: movieRules.name.required(),
+    countryId: movieRules.countryId.required(),
+});
+
+const registerActor = registerDirector;
+
+export const movieSchema = {
+    register,
+    registerCategory,
+    registerDirector,
+    registerActor,
+};

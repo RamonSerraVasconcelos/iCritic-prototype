@@ -27,7 +27,7 @@ model User {
     newEmailReset     String?        @map("new_email_reset")
     refreshToken      RefreshToken[]
     createdAt         DateTime       @default(now()) @map("created_at")
-    updatedAt         DateTime       @updatedAt @map("updated_at")
+    updatedAt         DateTime?      @updatedAt @map("updated_at")
 
     @@map("users")
 }
@@ -53,13 +53,21 @@ model Country {
     @@map("countries")
 }
 
+model Language {
+    id    Int     @id @default(autoincrement())
+    name  String
+    movie Movie[]
+
+    @@map("languages")
+}
+
 model BanList {
-    id        Int      @id @default(autoincrement())
+    id        Int       @id @default(autoincrement())
     motive    String
-    user      User     @relation(fields: [userId], references: [id])
-    userId    Int      @map("user_id")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    user      User      @relation(fields: [userId], references: [id])
+    userId    Int       @map("user_id")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime? @updatedAt @map("updated_at")
 
     @@map("banlist")
 }
@@ -69,30 +77,18 @@ model Movie {
     name          String
     synopsis      String
     releaseDate   String           @map("release_date")
-    language      String
+    language      Language         @relation(fields: [languageId], references: [id])
+    languageId    Int              @map("language_id")
     rating        Int
     country       Country          @relation(fields: [countryId], references: [id])
     countryId     Int              @map("country_id")
-    director      Director         @relation(fields: [directorId], references: [id])
-    directorId    Int              @unique @map("director_id")
     movieCategory Movie_Category[]
+    movieDirector Movie_Director[]
     movieActor    Movie_Actor[]
     createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
+    updatedAt     DateTime?        @updatedAt @map("updated_at")
 
     @@map("movies")
-}
-
-model Movie_Category {
-    id         Int      @id @default(autoincrement())
-    movie      Movie    @relation(fields: [movieId], references: [id])
-    movieId    Int      @map("movie_id")
-    category   Category @relation(fields: [categoryId], references: [id])
-    categoryId Int      @map("category_id")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
-
-    @@map("movie_category")
 }
 
 model Category {
@@ -100,44 +96,58 @@ model Category {
     name          String
     movieCategory Movie_Category[]
     createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
+    updatedAt     DateTime?        @updatedAt @map("updated_at")
 
     @@map("categories")
 }
 
-model Movie_Actor {
-    id        Int      @id @default(autoincrement())
-    movie     Movie    @relation(fields: [movieId], references: [id])
-    movieId   Int      @map("movie_id")
-    actor     Actor    @relation(fields: [actorId], references: [id])
-    actorId   Int      @map("actor_id")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+model Movie_Category {
+    id         Int       @id @default(autoincrement())
+    movie      Movie     @relation(fields: [movieId], references: [id])
+    movieId    Int       @map("movie_id")
+    category   Category  @relation(fields: [categoryId], references: [id])
+    categoryId Int       @map("category_id")
+    createdAt  DateTime  @default(now()) @map("created_at")
+    updatedAt  DateTime? @updatedAt @map("updated_at")
 
-    @@map("movie_actor")
+    @@unique([movieId, categoryId])
+    @@map("movie_category")
 }
 
 model Director {
-    id            Int              @id @default(autoincrement())
-    name          String
-    movie         Movie?
-    directorImage Director_Image[]
-    country       Country          @relation(fields: [countryId], references: [id])
-    countryId     Int              @map("country_id")
-    createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
+    id             Int              @id @default(autoincrement())
+    name           String
+    directorImage  Director_Image[]
+    country        Country          @relation(fields: [countryId], references: [id])
+    countryId      Int              @map("country_id")
+    createdAt      DateTime         @default(now()) @map("created_at")
+    updatedAt      DateTime?        @updatedAt @map("updated_at")
+    Movie_Director Movie_Director[]
 
     @@map("directors")
 }
 
+model Movie_Director {
+    id         Int       @id @default(autoincrement())
+    movie      Movie     @relation(fields: [movieId], references: [id])
+    movieId    Int       @map("movie_id")
+    director   Director  @relation(fields: [directorId], references: [id])
+    directorId Int       @map("director_id")
+    createdAt  DateTime  @default(now()) @map("created_at")
+    updatedAt  DateTime? @updatedAt @map("updated_at")
+
+    @@unique([movieId, directorId])
+    @@map("movie_director")
+}
+
 model Director_Image {
-    id         Int      @id @default(autoincrement())
-    director   Director @relation(fields: [directorId], references: [id])
-    directorId Int      @map("director_id")
-    image      Image    @relation(fields: [imageId], references: [id])
-    imageId    Int      @map("image_id")
-    createdAt  DateTime @default(now()) @map("created_at")
-    updatedAt  DateTime @updatedAt @map("updated_at")
+    id         Int       @id @default(autoincrement())
+    director   Director  @relation(fields: [directorId], references: [id])
+    directorId Int       @map("director_id")
+    image      Image     @relation(fields: [imageId], references: [id])
+    imageId    Int       @map("image_id")
+    createdAt  DateTime  @default(now()) @map("created_at")
+    updatedAt  DateTime? @updatedAt @map("updated_at")
 
     @@map("director_image")
 }
@@ -150,19 +160,32 @@ model Actor {
     country    Country       @relation(fields: [countryId], references: [id])
     countryId  Int           @map("country_id")
     createdAt  DateTime      @default(now()) @map("created_at")
-    updatedAt  DateTime      @updatedAt @map("updated_at")
+    updatedAt  DateTime?     @updatedAt @map("updated_at")
 
     @@map("actors")
 }
 
+model Movie_Actor {
+    id        Int       @id @default(autoincrement())
+    movie     Movie     @relation(fields: [movieId], references: [id])
+    movieId   Int       @map("movie_id")
+    actor     Actor     @relation(fields: [actorId], references: [id])
+    actorId   Int       @map("actor_id")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime? @updatedAt @map("updated_at")
+
+    @@unique([movieId, actorId])
+    @@map("movie_actor")
+}
+
 model Actor_Image {
-    id        Int      @id @default(autoincrement())
-    actor     Actor    @relation(fields: [actorId], references: [id])
-    actorId   Int      @map("actor_id")
-    image     Image    @relation(fields: [imageId], references: [id])
-    imageId   Int      @map("image_id")
-    createdAt DateTime @default(now()) @map("created_at")
-    updatedAt DateTime @updatedAt @map("updated_at")
+    id        Int       @id @default(autoincrement())
+    actor     Actor     @relation(fields: [actorId], references: [id])
+    actorId   Int       @map("actor_id")
+    image     Image     @relation(fields: [imageId], references: [id])
+    imageId   Int       @map("image_id")
+    createdAt DateTime  @default(now()) @map("created_at")
+    updatedAt DateTime? @updatedAt @map("updated_at")
 
     @@map("actor_image")
 }
@@ -174,7 +197,7 @@ model Image {
     actorImage    Actor_Image[]
     user          User?
     createdAt     DateTime         @default(now()) @map("created_at")
-    updatedAt     DateTime         @updatedAt @map("updated_at")
+    updatedAt     DateTime?        @updatedAt @map("updated_at")
 
     @@map("images")
 }

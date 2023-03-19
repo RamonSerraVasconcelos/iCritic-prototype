@@ -14,8 +14,11 @@ CREATE TABLE "users" (
     "image_id" INTEGER,
     "password_reset_hash" TEXT,
     "password_reset_date" TIMESTAMP(3),
+    "email_reset_hash" TEXT,
+    "email_reset_date" TIMESTAMP(3),
+    "new_email_reset" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -39,12 +42,20 @@ CREATE TABLE "countries" (
 );
 
 -- CreateTable
+CREATE TABLE "languages" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "languages_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
 CREATE TABLE "banlist" (
     "id" SERIAL NOT NULL,
     "motive" TEXT NOT NULL,
     "user_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "banlist_pkey" PRIMARY KEY ("id")
 );
@@ -55,14 +66,23 @@ CREATE TABLE "movies" (
     "name" TEXT NOT NULL,
     "synopsis" TEXT NOT NULL,
     "release_date" TEXT NOT NULL,
-    "language" TEXT NOT NULL,
+    "language_id" INTEGER NOT NULL,
     "rating" INTEGER NOT NULL,
     "country_id" INTEGER NOT NULL,
-    "director_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "movies_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "categories" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "categories_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -71,30 +91,9 @@ CREATE TABLE "movie_category" (
     "movie_id" INTEGER NOT NULL,
     "category_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "movie_category_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "categories" (
-    "id" SERIAL NOT NULL,
-    "name" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "categories_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "movie_actor" (
-    "id" SERIAL NOT NULL,
-    "movie_id" INTEGER NOT NULL,
-    "actor_id" INTEGER NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-
-    CONSTRAINT "movie_actor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -103,9 +102,20 @@ CREATE TABLE "directors" (
     "name" TEXT NOT NULL,
     "country_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "directors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "movie_director" (
+    "id" SERIAL NOT NULL,
+    "movie_id" INTEGER NOT NULL,
+    "director_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "movie_director_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -114,7 +124,7 @@ CREATE TABLE "director_image" (
     "director_id" INTEGER NOT NULL,
     "image_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "director_image_pkey" PRIMARY KEY ("id")
 );
@@ -125,9 +135,20 @@ CREATE TABLE "actors" (
     "name" TEXT NOT NULL,
     "country_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "actors_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "movie_actor" (
+    "id" SERIAL NOT NULL,
+    "movie_id" INTEGER NOT NULL,
+    "actor_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3),
+
+    CONSTRAINT "movie_actor_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -136,7 +157,7 @@ CREATE TABLE "actor_image" (
     "actor_id" INTEGER NOT NULL,
     "image_id" INTEGER NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "actor_image_pkey" PRIMARY KEY ("id")
 );
@@ -146,7 +167,7 @@ CREATE TABLE "images" (
     "id" SERIAL NOT NULL,
     "path" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "updated_at" TIMESTAMP(3),
 
     CONSTRAINT "images_pkey" PRIMARY KEY ("id")
 );
@@ -158,7 +179,13 @@ CREATE UNIQUE INDEX "users_email_key" ON "users"("email");
 CREATE UNIQUE INDEX "users_image_id_key" ON "users"("image_id");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "movies_director_id_key" ON "movies"("director_id");
+CREATE UNIQUE INDEX "movie_category_movie_id_category_id_key" ON "movie_category"("movie_id", "category_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "movie_director_movie_id_director_id_key" ON "movie_director"("movie_id", "director_id");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "movie_actor_movie_id_actor_id_key" ON "movie_actor"("movie_id", "actor_id");
 
 -- AddForeignKey
 ALTER TABLE "users" ADD CONSTRAINT "users_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -173,10 +200,10 @@ ALTER TABLE "refresh_tokens" ADD CONSTRAINT "refresh_tokens_user_id_fkey" FOREIG
 ALTER TABLE "banlist" ADD CONSTRAINT "banlist_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "movies" ADD CONSTRAINT "movies_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "movies" ADD CONSTRAINT "movies_language_id_fkey" FOREIGN KEY ("language_id") REFERENCES "languages"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "movies" ADD CONSTRAINT "movies_director_id_fkey" FOREIGN KEY ("director_id") REFERENCES "directors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "movies" ADD CONSTRAINT "movies_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "movie_category" ADD CONSTRAINT "movie_category_movie_id_fkey" FOREIGN KEY ("movie_id") REFERENCES "movies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -185,13 +212,13 @@ ALTER TABLE "movie_category" ADD CONSTRAINT "movie_category_movie_id_fkey" FOREI
 ALTER TABLE "movie_category" ADD CONSTRAINT "movie_category_category_id_fkey" FOREIGN KEY ("category_id") REFERENCES "categories"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "movie_actor" ADD CONSTRAINT "movie_actor_movie_id_fkey" FOREIGN KEY ("movie_id") REFERENCES "movies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "movie_actor" ADD CONSTRAINT "movie_actor_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "actors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
 ALTER TABLE "directors" ADD CONSTRAINT "directors_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "movie_director" ADD CONSTRAINT "movie_director_movie_id_fkey" FOREIGN KEY ("movie_id") REFERENCES "movies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "movie_director" ADD CONSTRAINT "movie_director_director_id_fkey" FOREIGN KEY ("director_id") REFERENCES "directors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "director_image" ADD CONSTRAINT "director_image_director_id_fkey" FOREIGN KEY ("director_id") REFERENCES "directors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -201,6 +228,12 @@ ALTER TABLE "director_image" ADD CONSTRAINT "director_image_image_id_fkey" FOREI
 
 -- AddForeignKey
 ALTER TABLE "actors" ADD CONSTRAINT "actors_country_id_fkey" FOREIGN KEY ("country_id") REFERENCES "countries"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "movie_actor" ADD CONSTRAINT "movie_actor_movie_id_fkey" FOREIGN KEY ("movie_id") REFERENCES "movies"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "movie_actor" ADD CONSTRAINT "movie_actor_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "actors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "actor_image" ADD CONSTRAINT "actor_image_actor_id_fkey" FOREIGN KEY ("actor_id") REFERENCES "actors"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

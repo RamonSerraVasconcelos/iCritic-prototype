@@ -1,48 +1,288 @@
 import { Request, Response } from 'express';
 import { ResponseError } from '@src/ts/classes/response-error';
-import { movieService } from '@src/services/movie-service';
+import movieService from '@src/services/movie-service';
 
-const list = async (req: Request, res: Response) => {
-    const movies = await movieService.list();
+const movieController = {
+    async register(req: Request, res: Response) {
+        const movieData = req.body;
+        const categories: Array<object> = [];
+        const directors: Array<object> = [];
+        const actors: Array<object> = [];
 
-    return res.status(200).send({
-        movies,
-    });
+        movieData.categories.forEach((category: number) => {
+            categories.push({
+                categoryId: category,
+            });
+        });
+
+        movieData.directors.forEach((director: number) => {
+            directors.push({
+                directorId: director,
+            });
+        });
+
+        movieData.actors.forEach((actor: number) => {
+            actors.push({
+                actorId: actor,
+            });
+        });
+
+        movieData.categories = categories;
+        movieData.directors = directors;
+        movieData.actors = actors;
+        const movie = await movieService.create(movieData);
+
+        return res.status(201).json(movie);
+    },
+
+    async list(req: Request, res: Response) {
+        const movies = await movieService.list();
+
+        return res.status(200).json({
+            movies,
+        });
+    },
+
+    async get(req: Request, res: Response) {
+        const movieId = Number(req.params.id);
+        const movie = await movieService.findById(movieId);
+
+        if (!movie) {
+            throw new ResponseError('Movie not found!', 404);
+        }
+
+        return res.status(200).json({
+            movie,
+        });
+    },
+
+    async edit(req: Request, res: Response) {
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed!', 400);
+        }
+
+        const { id } = req.params;
+        const movieData = req.body;
+
+        const originalMovie = await movieService.findById(Number(id));
+        if (!originalMovie) {
+            throw new ResponseError('Movie not found!', 404);
+        }
+
+        if (req.body.categories && req.body.categories.length > 0) {
+            await movieService.upsertMovieCategory(Number(id), movieData.categories);
+        }
+
+        if (req.body.directors && req.body.directors.length > 0) {
+            await movieService.upsertMovieDirector(Number(id), movieData.directors);
+        }
+
+        if (req.body.actors && req.body.actors.length > 0) {
+            await movieService.upsertMovieActor(Number(id), movieData.actors);
+        }
+
+        const updatedMovie = await movieService.update(Number(id), movieData);
+
+        return res.status(200).json(updatedMovie);
+    },
+
+    async registerCategory(req: Request, res: Response) {
+        const { name } = req.body;
+
+        const foundCategory = await movieService.findCategoryByName(name);
+
+        if (foundCategory.length !== 0) {
+            throw new ResponseError('This category is already registered', 409);
+        }
+
+        const category = await movieService.createCategory(name);
+
+        return res.status(201).json(category);
+    },
+
+    async editCategory(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const doesCategoryExist = await movieService.findCategoryById(Number(id));
+
+        if (!doesCategoryExist) {
+            throw new ResponseError('Category not found', 404);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name } = req.body;
+
+        const foundCategory = await movieService.findCategoryByName(name);
+
+        if (foundCategory.length !== 0) {
+            throw new ResponseError('This category is already registered', 409);
+        }
+
+        const category = await movieService.updateCategory(Number(id), name);
+
+        return res.status(200).json(category);
+    },
+
+    async getCategories(req: Request, res: Response) {
+        const categories = await movieService.listCategories();
+
+        return res.status(200).json(categories);
+    },
+
+    async getCategory(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const category = await movieService.findCategoryById(Number(id));
+
+        if (!category) {
+            throw new ResponseError('Category not found', 404);
+        }
+
+        return res.status(200).json(category);
+    },
+
+    async registerDirector(req: Request, res: Response) {
+        const { name, countryId } = req.body;
+
+        const isDirectorDuplicated = await movieService.findDirectorByName(name);
+
+        if (isDirectorDuplicated.length !== 0) {
+            throw new ResponseError('This director is already registered', 409);
+        }
+
+        const director = await movieService.createDirector(name, countryId);
+
+        return res.status(201).json(director);
+    },
+
+    async editDirector(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const doesDirectorExist = await movieService.findDirectorById(Number(id));
+
+        if (!doesDirectorExist) {
+            throw new ResponseError('Director not found', 404);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name, countryId } = req.body;
+
+        const isDirectorDuplicated = await movieService.findDirectorByName(name);
+
+        if (isDirectorDuplicated.length !== 0) {
+            throw new ResponseError('This director is already registered', 409);
+        }
+
+        const director = await movieService.updateDirector(Number(id), name, countryId);
+
+        return res.status(200).json(director);
+    },
+
+    async getDirectors(req: Request, res: Response) {
+        const directors = await movieService.listDirectors();
+
+        return res.status(200).json(directors);
+    },
+
+    async getDirector(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const director = await movieService.findDirectorById(Number(id));
+
+        if (!director) {
+            throw new ResponseError('Director not found', 404);
+        }
+
+        return res.status(200).json(director);
+    },
+
+    async registerActor(req: Request, res: Response) {
+        const { name, countryId } = req.body;
+
+        const isActorDuplicated = await movieService.findActorByName(name);
+
+        if (isActorDuplicated.length > 0) {
+            throw new ResponseError('This actor is already registered', 409);
+        }
+
+        const actor = await movieService.createActor(name, countryId);
+
+        return res.status(201).json(actor);
+    },
+
+    async editActor(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const doesActorExist = await movieService.findActorById(Number(id));
+
+        if (!doesActorExist) {
+            throw new ResponseError('Actor not found', 404);
+        }
+
+        if (Object.keys(req.body).length === 0) {
+            throw new ResponseError('No data informed', 400);
+        }
+
+        const { name, countryId } = req.body;
+
+        const isActorDuplicated = await movieService.findActorByName(name);
+
+        if (isActorDuplicated.length > 0) {
+            throw new ResponseError('This actor is already registered', 409);
+        }
+
+        const actor = await movieService.updateActor(Number(id), name, countryId);
+
+        return res.status(200).json(actor);
+    },
+
+    async getActors(req: Request, res: Response) {
+        const actors = await movieService.listActors();
+
+        return res.status(200).json(actors);
+    },
+
+    async getActor(req: Request, res: Response) {
+        const { id } = req.params;
+
+        if (Number.isNaN(Number(id))) {
+            throw new ResponseError('Invalid Id format', 400);
+        }
+
+        const actor = await movieService.findActorById(Number(id));
+
+        if (!actor) {
+            throw new ResponseError('Actor not found', 404);
+        }
+
+        return res.status(200).json(actor);
+    },
 };
 
-const get = async (req: Request, res: Response) => {
-    const movieId = Number(req.params.id);
-    const movie = await movieService.findById(movieId);
-
-    if (!movie) {
-        throw new ResponseError('No movie found!', 404);
-    }
-
-    return res.status(200).send({
-        movie,
-    });
-};
-
-const edit = async (req: Request, res: Response) => {
-    const movieData = req.body;
-    const movie = await movieService.update(movieData);
-
-    return res.status(200).json({
-        movie,
-    });
-};
-
-const add = async (req: Request, res: Response) => {
-    const movie = await movieService.create(req.body);
-
-    return res.status(201).json({
-        movie,
-    });
-};
-
-export const movieController = {
-    list,
-    get,
-    edit,
-    add,
-};
+export default movieController;

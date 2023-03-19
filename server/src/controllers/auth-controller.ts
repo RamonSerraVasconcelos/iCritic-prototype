@@ -55,7 +55,10 @@ const authController = {
 
         const newRefreshToken = jwt.sign(
             {
-                user,
+                user: {
+                    ...user,
+                    role: foundUser.role,
+                },
             },
             env.REFRESH_TOKEN_SECRET,
             { expiresIn: env.REFRESH_TOKEN_EXPIRE_TIME },
